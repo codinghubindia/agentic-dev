@@ -1,11 +1,11 @@
 # 🏢 Software Engineering Company — Antigravity Agent Template
 
 > A **production-ready, multi-agent software engineering company** built for [Google Antigravity (AGY)](https://antigravity.dev).
-> Drop this `.agents/` folder into any project and get **43 specialized AI agents**, **20 rich skill guides**, and **3 workflow pipelines** — ready to build real software together.
+> Drop this `.agents/` folder into any project and get **43 specialized AI agents**, **20 rich skill guides**, and **4 workflow pipelines** — ready to build and maintain real software together.
 
 [![Agents](https://img.shields.io/badge/Agents-43-6366f1?style=flat-square)](#-agent-roster)
 [![Skills](https://img.shields.io/badge/Skills-20-10b981?style=flat-square)](#-skills-library)
-[![Workflows](https://img.shields.io/badge/Workflows-3-f59e0b?style=flat-square)](#-workflows)
+[![Workflows](https://img.shields.io/badge/Workflows-4-f59e0b?style=flat-square)](#-workflows)
 [![Registry](https://img.shields.io/badge/Registry-v2.3.0-8b5cf6?style=flat-square)](.agents/registry/agent-registry.json)
 [![License](https://img.shields.io/badge/License-MIT-gray?style=flat-square)](./LICENSE)
 
@@ -16,6 +16,9 @@
 - [What Is This?](#-what-is-this)
 - [How It Works](#-how-it-works)
 - [Quick Start](#-quick-start)
+- [Which Orchestrator to Use When?](#-which-orchestrator-to-use-when)
+- [How to Start with Agent Workflows](#-how-to-start-with-agent-workflows)
+- [Modular Pipelines — What If You Don't Need DevOps Now?](#-modular-pipelines--what-if-you-dont-need-devops-now)
 - [Architecture Overview](#-architecture-overview)
 - [Agent Roster](#-agent-roster)
   - [Orchestration](#orchestration-2)
@@ -198,6 +201,138 @@ Build a SaaS task management app with:
 ```
 
 The `project-manager` orchestrates the full team from there.
+
+---
+
+## 🎯 Which Orchestrator to Use When?
+
+This template provides **three levels of orchestration** depending on how open-ended, structured, or focused your task is:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1. OPEN-ENDED & NATURAL LANGUAGE   ──▶ personal-master                      │
+│    "Help me explore an idea, research options, or coordinate tasks"         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 2. DYNAMIC FULL-LIFECYCLE PLANNING ──▶ project-manager                      │
+│    "Build a multi-tenant SaaS" or "Update auth to support OAuth2"           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 3. RIGID, PRE-DEFINED WORKFLOW     ──▶ workflow-manager                     │
+│    "Execute software-project" or "Execute codebase-update"                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 4. DIRECT DOMAIN WORK (NO ORCHESTRATION) ──▶ Domain Leads (backend, ui, qa) │
+│    "Implement Stripe webhook endpoint" or "Audit accessibility"             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Orchestrator Comparison Matrix
+
+| Agent | Tier | When to Choose | What It Does | Best For |
+|---|---|---|---|---|
+| **`personal-master`** | Universal | You have an ambiguous or multi-faceted prompt and don't know which agent to talk to. | Analyzes user goals, discovers available specialists, delegates sub-tasks, and unifies the final outcome. | Open-ended exploration, ad-hoc tasks, cross-department requests. |
+| **`project-manager`** | Chief PM | You want end-to-end delivery of a product or feature that requires requirement intake, scoping, and dynamic coordination. | Conducts discovery interviews, writes `project-plan.json` & `milestones.json`, delegates to leads, tracks blockers, and coordinates QA/Release. | Greenfield projects, major feature epics, brownfield updates needing clarification. |
+| **`workflow-manager`** | Engine | You want a strictly enforced, reproducible, phase-gated pipeline from `.agents/workflows/`. | Reads workflow JSON schemas (`software-project`, `codebase-update`), enforces artifact phase gates, runs parallel streams, and writes `workflow-state.json`. | CI/CD-like execution, formal release cycles, standardized company SOPs. |
+| **Domain Leads** (`backend-lead`, `frontend-lead`, `data-lead`, `qa-lead`, etc.) | Leads | Your request is strictly confined to one domain (e.g. backend only, frontend only, test only). | Skips high-level project management overhead; architects, scaffolds, and delegates directly to domain workers. | Targeted features, API additions, schema migrations, component designs, test suites. |
+| **Individual Workers** (`mockup-wireframe-worker`, `unit-test-worker`, `performance-worker`, etc.) | Workers | You need a single specific artifact, test, or audit. | Executes a narrow slice of work with zero delegation and minimum token overhead. | Quick mockups, performance benchmarks, Sentry instrumentation, single unit tests. |
+
+### Decision Guide: Who Should I Talk To?
+
+- **"I have a general idea, need advice, or don't know who does what"** ➔ Talk to **`personal-master`**.
+- **"I want to build a full project or major feature from scratch"** ➔ Talk to **`project-manager`**.
+- **"I want to modify, update, or refactor an existing codebase"** ➔ Talk to **`project-manager`** or tell **`workflow-manager`** to run `codebase-update`.
+- **"I want a strict, step-by-step pipeline executed with phase gates"** ➔ Talk to **`workflow-manager`**.
+- **"I only need a backend API / database model / route"** ➔ Talk directly to **`backend-lead`**.
+- **"I only need UI components, state stores, or web pages"** ➔ Talk directly to **`frontend-lead`**.
+- **"I only need UI mockups or design wireframes"** ➔ Talk directly to **`mockup-wireframe-worker`**.
+- **"I only need an automated test suite or QA sign-off"** ➔ Talk directly to **`qa-lead`**.
+- **"I only need a security vulnerability scan or auth audit"** ➔ Talk directly to **`security-lead`**.
+
+---
+
+## 🚦 How to Start with Agent Workflows
+
+### 1. Launching via Antigravity CLI (`agy`) or IDE
+
+1. Open your terminal in your project directory containing the `.agents/` folder:
+   ```bash
+   agy
+   ```
+2. **Pro-Tip: Use `/goal` for Uninterrupted Autonomous Execution**:
+   If you want the agent team to run autonomously through all phases without pausing at intermediate conversational progress messages, use the `/goal` command:
+   ```
+   /goal Build a task management app with React frontend and Express backend.
+   ```
+   *(Alternatively, select `project-manager` in the Antigravity IDE sidebar chat).*
+
+### 2. The Greenfield Workflow (`software-project`)
+Used when building a brand new application from scratch:
+
+```
+Step 1: Discovery & Planning     ➔ project-manager asks clarifying questions, creates project-plan.json
+Step 2: Architecture & Contracts ➔ technical-architect creates architecture.json, api-contract.json, ownership-map.json
+Step 3: Parallel Implementation  ➔ backend-lead, frontend-lead, data-lead, security-lead build components simultaneously
+Step 4: Integration              ➔ integration-manager merges streams and verifies integration build
+Step 5: QA & Security Review     ➔ qa-lead executes automated test pyramid; security-lead audits vulnerabilities
+Step 6: Docs & Release           ➔ documentation-agent writes README.md; devops-release-lead packages release
+```
+
+### 3. The Brownfield Workflow (`codebase-update`)
+Used when updating, extending, or refactoring an existing codebase — following the strict standard of real software engineering companies:
+
+```
+Step 1: Baseline Verification    ➔ qa-lead runs existing tests to ensure green baseline; technical-architect maps impact
+Step 2: Contract Compatibility   ➔ technical-architect defines non-breaking contract delta (additive changes, versioning)
+Step 3: Surgical Implementation  ➔ leads apply minimal, targeted edits (replace_file_content); preserve comments & formatting
+Step 4: Full Regression Testing  ➔ qa-lead verifies 100% pass across pre-existing tests + new feature tests
+Step 5: Git Diff & Security      ➔ code-reviewer & security-lead audit git diff delta for scope creep and safety
+Step 6: SemVer & Changelog       ➔ devops-release-lead bumps SemVer; documentation-agent updates CHANGELOG.md
+```
+
+---
+
+## 🧩 Modular Pipelines — What If You Don't Need DevOps Now?
+
+One of the biggest advantages of this template is **modularity**. You do **NOT** have to run all 43 agents or all pipeline phases on every project.
+
+### "What if I don't need DevOps, Docker, or CI/CD right now?"
+
+For MVPs, local prototypes, CLI tools, libraries, or early hackathon projects, you often do not need Dockerfiles, GitHub Actions workflows, Sentry observability, or Kubernetes manifests.
+
+#### How to Skip DevOps & Observability
+Simply inform the `project-manager` or `workflow-manager` in your prompt:
+
+```
+Build a task management REST API with Express and SQLite.
+NOTE: Skip DevOps, Docker, CI/CD, Observability, and Mobile for now.
+Focus strictly on: architecture -> backend implementation -> unit/integration tests -> README.
+```
+
+#### How the Agents Adapt Automatically:
+1. **`project-manager` strips DevOps tasks**: Removes `devops-release-lead` and `observability-worker` from `project-plan.json`.
+2. **Phase Gate adjustments**: The pipeline completes upon `qa-lead` sign-off (`qa-report.json`) and `documentation-agent` documentation (`README.md`).
+3. **The Observability Blocking Gate is bypassed**: Normally, `observability-worker` blocks production release. In a non-DevOps run, this gate is cleanly skipped.
+
+#### Bringing DevOps in Later (When You Are Ready to Ship):
+When you are ready to take your prototype to staging or production, you do not need to re-run the entire project. Simply invoke `devops-release-lead` directly:
+
+```
+Tell devops-release-lead to package this existing project:
+- Create production multi-stage Dockerfile
+- Set up GitHub Actions CI/CD with build and test steps
+- Instrument Sentry error tracking, Pino structured logging, and /health endpoints
+- Produce release-report.json and release tag v1.0.0
+```
+
+---
+
+### Common Modular Pipeline Archetypes
+
+| Pipeline Archetype | Agents Used | Departments Skipped | Example Prompt |
+|---|---|---|---|
+| **Lean Prototype / MVP** | `technical-architect`, `backend-lead`, `frontend-lead`, `qa-lead` | DevOps, Observability, Mobile, Security audit | `"Build an MVP for X. Skip DevOps and Mobile."` |
+| **Backend / API Only** | `technical-architect`, `backend-lead`, `data-lead`, `qa-lead` | Frontend, UI/UX, Mobile, DevOps | `"Build a REST API service for X. Backend and database only."` |
+| **Frontend / Mockup Only**| `uiux-lead`, `mockup-wireframe-worker`, `frontend-lead` | Backend, Data, Mobile, DevOps | `"Design and build a responsive React landing page with shadcn/ui."` |
+| **Bug Fix / Refactor** | `technical-architect`, `qa-lead`, domain lead, `code-reviewer` | DevOps, Full planning, New architecture | `"Tell workflow-manager to run codebase-update for bug DEF-001."` |
+| **Full Production Enterprise** | All 43 agents across all 7 departments | None (observability and security gates enforced) | `"Build a production-grade multi-tenant SaaS application."` |
 
 ---
 
@@ -415,14 +550,20 @@ Pre-built workflow definitions that `workflow-manager` executes with phase gates
 
 | Workflow | Phases | Description |
 |---|---|---|
-| [`software-project`](.agents/workflows/software-project.json) | 6 | Planning → Architecture → Parallel Implementation → Integration → QA+Security → Release |
+| [`software-project`](.agents/workflows/software-project.json) | 6 | Greenfield: Planning → Architecture → Parallel Implementation → Integration → QA+Security → Release |
+| [`codebase-update`](.agents/workflows/codebase-update.json) | 6 | Brownfield: Baseline Verification → Impact Analysis → Contract Delta → Surgical Impl → Regression Testing → Diff Review → SemVer Release |
 | [`parallel-feature-development`](.agents/workflows/parallel-feature-development.json) | 3 | Parallel streams (backend/frontend/DB/security) → integration sync → validation |
 | [`integration-and-release`](.agents/workflows/integration-and-release.json) | 5 | Harmonize → Build verify → E2E → Security gate → Release |
 
 **How to trigger a workflow:**
 ```
+# For greenfield (new product from scratch):
 Tell workflow-manager to execute the "software-project" workflow for:
 [your full project requirements]
+
+# For brownfield (updating an existing codebase like an actual company does):
+Tell workflow-manager to execute the "codebase-update" workflow for:
+[your feature update / bug fix / refactor requirements]
 ```
 
 ---

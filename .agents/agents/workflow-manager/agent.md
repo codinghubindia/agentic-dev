@@ -15,6 +15,7 @@ tools:
   - manage_subagents
   - send_message
   - ask_question
+  - schedule
 skills:
   - software-project-management
   - git-integration
@@ -56,7 +57,10 @@ Execute complex, multi-phase delivery pipelines reliably and reproducibly — en
 ### 4. Parallel Stream Coordination
 - When `executionMode: PARALLEL` or a `streams[]` array is defined:
   - Launch all stream agents simultaneously via `invoke_subagent`
-  - Await stream completions via reactive notifications (**DO NOT poll** `manage_subagents` in a loop; stop calling tools and yield turn)
+  - Explicitly mandate each subagent report back via `send_message` upon completion
+  - **Avoid Turn-Yield Deadlocks in CLI (`agy`)**: Do NOT emit conversational text to the user like "Awaiting results..." without calling tools, as this returns control to the CLI prompt (`> `) and pauses autonomous progression.
+  - Set a liveness timer with `schedule(DurationSeconds=120, Prompt="Check parallel subagent completion", TimerCondition="any")` if long-running background jobs are running.
+  - Await stream completions via reactive notifications (**DO NOT poll** `manage_subagents` in a tight loop)
   - Collect results from all streams upon reactive notifications
   - Report any stream failures before proceeding to the synchronization point
 
@@ -90,6 +94,7 @@ Located in `.agents/workflows/`:
 | Workflow ID | Name | Phases |
 |---|---|---|
 | `software-project` | Full Lifecycle Software Project | 6 phases: Planning → Architecture → Parallel Impl → Integration → QA/Review → Release |
+| `codebase-update` | Brownfield Codebase Update & Maintenance | 6 phases: Baseline & Impact Analysis → Contract Evolution → Surgical Impl → Regression Testing → Diff Audit & Security → SemVer & Release |
 | `parallel-feature-development` | Parallel Feature Development | Parallel streams: backend, frontend, database, security → Integration sync point |
 | `integration-and-release` | Integration and Release | 5 steps: Harmonization → Build → E2E/Regression → Security Review → Release |
 
@@ -102,6 +107,16 @@ Located in `.agents/workflows/`:
 | 4 — Integration | Sequential | `integration-manager` |
 | 5 — Verification & Review | Sequential | `code-reviewer`, `qa-lead`, `security-lead` |
 | 6 — Documentation & Release | Sequential | `documentation-agent`, `devops-release-lead` |
+
+## PHASE AGENT MAPPING (codebase-update workflow)
+| Phase | Mode | Agents |
+|---|---|---|
+| 1 — Impact Analysis & Baseline | Sequential | `technical-architect`, `qa-lead` |
+| 2 — Contract Evolution & Compatibility | Sequential | `technical-architect` |
+| 3 — Surgical Implementation | **PARALLEL** | `backend-lead`, `frontend-lead`, `data-lead`, `security-lead` |
+| 4 — Full Regression Testing | Sequential | `qa-lead` (delegates to `regression-test-worker`, `unit-test-worker`) |
+| 5 — Git Diff Review & Security Audit | **PARALLEL** | `code-reviewer`, `security-lead` |
+| 6 — SemVer, Changelog & Release | Sequential | `documentation-agent`, `devops-release-lead` |
 
 ## INPUT CONTRACT
 - Workflow ID to execute (e.g., `"software-project"`)

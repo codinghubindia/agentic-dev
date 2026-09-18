@@ -1,0 +1,62 @@
+{
+  "workflowId": "codebase-update",
+  "name": "Brownfield Codebase Update & Maintenance Workflow",
+  "description": "Enterprise standard operating procedure for updating existing codebases — impact analysis, baseline test verification, backward-compatible contract evolution, surgical implementation, full regression testing, git diff auditing, and semantic versioning.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Impact Analysis & Baseline Verification",
+      "leadAgent": "technical-architect",
+      "collaborators": ["qa-lead"],
+      "executionMode": "SEQUENTIAL",
+      "description": "Inspect existing codebase, verify that existing tests pass (baseline), map affected files and downstream dependencies.",
+      "artifacts": ["impact-analysis.json", "baseline-qa-report.json"]
+    },
+    {
+      "phase": 2,
+      "name": "Contract Evolution & Compatibility Assessment",
+      "leadAgent": "technical-architect",
+      "executionMode": "SEQUENTIAL",
+      "description": "Ensure proposed changes maintain backward compatibility. If breaking, define versioning (/v2) and migration path.",
+      "artifacts": ["contract-delta.json"]
+    },
+    {
+      "phase": 3,
+      "name": "Surgical Parallel Implementation",
+      "agents": [
+        "backend-lead",
+        "frontend-lead",
+        "data-lead",
+        "security-lead"
+      ],
+      "executionMode": "PARALLEL",
+      "description": "Apply minimal, surgical edits to existing files. Preserve comments, docstrings, formatting, and unrelated logic. No destructive rewrites.",
+      "artifacts": ["src/", "tests/"]
+    },
+    {
+      "phase": 4,
+      "name": "Full Regression Testing & Verification",
+      "leadAgent": "qa-lead",
+      "delegates": ["regression-test-worker", "unit-test-worker", "integration-test-worker"],
+      "executionMode": "SEQUENTIAL",
+      "description": "Run the entire regression test suite (all existing tests + new tests). Enforce zero regressions on pre-existing capabilities.",
+      "artifacts": ["qa-report.json"]
+    },
+    {
+      "phase": 5,
+      "name": "Git Diff Code Review & Security Delta Audit",
+      "agents": ["code-reviewer", "security-lead"],
+      "executionMode": "PARALLEL",
+      "description": "Review git diff against base branch for unintended side effects, secret leakage, OWASP regressions, and scope creep.",
+      "artifacts": ["code-review.json", "security-audit.json"]
+    },
+    {
+      "phase": 6,
+      "name": "SemVer Bump, Changelog & Release",
+      "agents": ["documentation-agent", "devops-release-lead"],
+      "executionMode": "SEQUENTIAL",
+      "description": "Update CHANGELOG.md (Keep a Changelog format: Added, Changed, Fixed), bump semantic version (PATCH/MINOR/MAJOR), and produce release report.",
+      "artifacts": ["CHANGELOG.md", "release-report.json"]
+    }
+  ]
+}
