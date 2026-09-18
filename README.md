@@ -206,20 +206,17 @@ The `project-manager` orchestrates the full team from there.
 
 ## 🎯 Which Orchestrator to Use When?
 
-This template provides **three levels of orchestration** depending on how open-ended, structured, or focused your task is:
+This template provides **two primary orchestrators** plus direct lead/worker invocation, depending on whether you need dynamic full-lifecycle planning, rigid phase-gated execution, or focused domain execution:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 1. OPEN-ENDED & NATURAL LANGUAGE   ──▶ personal-master                      │
-│    "Help me explore an idea, research options, or coordinate tasks"         │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ 2. DYNAMIC FULL-LIFECYCLE PLANNING ──▶ project-manager                      │
+│ 1. DYNAMIC FULL-LIFECYCLE PLANNING ──▶ project-manager                      │
 │    "Build a multi-tenant SaaS" or "Update auth to support OAuth2"           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 3. RIGID, PRE-DEFINED WORKFLOW     ──▶ workflow-manager                     │
+│ 2. RIGID, PRE-DEFINED WORKFLOW     ──▶ workflow-manager                     │
 │    "Execute software-project" or "Execute codebase-update"                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 4. DIRECT DOMAIN WORK (NO ORCHESTRATION) ──▶ Domain Leads (backend, ui, qa) │
+│ 3. DIRECT DOMAIN WORK (NO ORCHESTRATION) ──▶ Domain Leads (backend, ui, qa) │
 │    "Implement Stripe webhook endpoint" or "Audit accessibility"             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -228,7 +225,6 @@ This template provides **three levels of orchestration** depending on how open-e
 
 | Agent | Tier | When to Choose | What It Does | Best For |
 |---|---|---|---|---|
-| **`personal-master`** | Universal | You have an ambiguous or multi-faceted prompt and don't know which agent to talk to. | Analyzes user goals, discovers available specialists, delegates sub-tasks, and unifies the final outcome. | Open-ended exploration, ad-hoc tasks, cross-department requests. |
 | **`project-manager`** | Chief PM | You want end-to-end delivery of a product or feature that requires requirement intake, scoping, and dynamic coordination. | Conducts discovery interviews, writes `project-plan.json` & `milestones.json`, delegates to leads, tracks blockers, and coordinates QA/Release. | Greenfield projects, major feature epics, brownfield updates needing clarification. |
 | **`workflow-manager`** | Engine | You want a strictly enforced, reproducible, phase-gated pipeline from `.agents/workflows/`. | Reads workflow JSON schemas (`software-project`, `codebase-update`), enforces artifact phase gates, runs parallel streams, and writes `workflow-state.json`. | CI/CD-like execution, formal release cycles, standardized company SOPs. |
 | **Domain Leads** (`backend-lead`, `frontend-lead`, `data-lead`, `qa-lead`, etc.) | Leads | Your request is strictly confined to one domain (e.g. backend only, frontend only, test only). | Skips high-level project management overhead; architects, scaffolds, and delegates directly to domain workers. | Targeted features, API additions, schema migrations, component designs, test suites. |
@@ -236,7 +232,6 @@ This template provides **three levels of orchestration** depending on how open-e
 
 ### Decision Guide: Who Should I Talk To?
 
-- **"I have a general idea, need advice, or don't know who does what"** ➔ Talk to **`personal-master`**.
 - **"I want to build a full project or major feature from scratch"** ➔ Talk to **`project-manager`**.
 - **"I want to modify, update, or refactor an existing codebase"** ➔ Talk to **`project-manager`** or tell **`workflow-manager`** to run `codebase-update`.
 - **"I want a strict, step-by-step pipeline executed with phase gates"** ➔ Talk to **`workflow-manager`**.
