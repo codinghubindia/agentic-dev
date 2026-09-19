@@ -47,6 +47,7 @@ Produce a complete, normalized, and well-constrained database schema that enforc
 
 ## WORKFLOW
 ```
+0. Read skills: database-engineering (mandatory before starting)
 1. Read entity model from data-lead
 2. Read architecture.json for database type
 3. For each entity:

@@ -11,6 +11,8 @@ tools:
   - grep_search
 skills:
   - backend-development
+  - api-design
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -59,6 +61,7 @@ Ensure every error in the backend produces a consistent, safe, and informative r
 
 ## WORKFLOW
 ```
+0. Read skills: backend-development, api-design, typescript-patterns (mandatory before starting)
 1. Read architecture.json for framework choice
 2. Define error class hierarchy with typed constructors
 3. Implement global error handler middleware

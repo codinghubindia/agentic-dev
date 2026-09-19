@@ -11,6 +11,7 @@ tools:
   - list_dir
 skills:
   - frontend-development
+  - react-patterns
 ---
 
 > [!IMPORTANT]
@@ -48,6 +49,7 @@ Make the application fully accessible to users with visual, motor, auditory, and
 
 ## WORKFLOW
 ```
+0. Read skills: frontend-development, react-patterns (mandatory before starting)
 1. Read all component files in frontend/src/components/
 2. Audit each component for WCAG 2.1 AA violations
 3. Apply direct fixes for: missing ARIA labels, wrong semantic elements, missing alt text, focus management issues

@@ -11,6 +11,8 @@ tools:
   - grep_search
 skills:
   - backend-development
+  - api-design
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -48,6 +50,7 @@ Deliver clean, testable, and maintainable service classes that encapsulate all b
 
 ## WORKFLOW
 ```
+0. Read skills: backend-development, api-design, typescript-patterns (mandatory before starting)
 1. Read feature specification and business rules from backend-lead
 2. Identify all service domains needed
 3. For each service:

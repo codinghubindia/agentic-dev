@@ -17,6 +17,7 @@ tools:
   - send_message
 skills:
   - git-integration
+  - devops-practices
   - testing
 ---
 
@@ -64,11 +65,13 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
 
 ## WORKFLOW
 ```
+0. Read skills: devops-practices, git-integration, observability (mandatory before starting)
 1. Verify qa-report.json PASS and security sign-off PASS
 2. Delegate:
    - ci-pipeline-worker → write/update CI workflow files
    - docker-worker → write/update Dockerfiles and docker-compose
    - release-notes-worker → collate changelog from git log
+   - observability-worker → implement monitoring, health checks, error tracking (BLOCKING: await observability-report.json PASS before release)
 3. Run CI pipeline locally to verify build passes
 4. Apply semantic version bump
 5. Tag git commit

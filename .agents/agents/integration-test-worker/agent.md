@@ -12,6 +12,7 @@ tools:
   - grep_search
 skills:
   - testing
+  - backend-development
 ---
 
 > [!IMPORTANT]
@@ -52,6 +53,7 @@ Prove that the assembled system works correctly end-to-end at the API level — 
 
 ## WORKFLOW
 ```
+0. Read skills: testing, backend-development (mandatory before starting)
 1. Read api-contract.json → catalog all endpoints for contract testing
 2. Set up test database and test server
 3. Seed minimal test data

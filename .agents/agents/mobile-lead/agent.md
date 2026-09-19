@@ -19,6 +19,8 @@ skills:
   - flutter-development
   - frontend-development
   - testing
+  - mobile-notifications
+  - localization
 ---
 
 # Mobile Lead
@@ -27,6 +29,8 @@ skills:
 > **Read your skills FIRST before writing any mobile code.**
 > - Read `.agents/skills/flutter-development/SKILL.md` — Riverpod, GoRouter, Dio, offline-first, theme system, testing, release checklist
 > - Read `.agents/skills/testing/SKILL.md` — widget tests, unit tests, integration tests
+> - Read `.agents/skills/mobile-notifications/SKILL.md` — FCM/APNs, device token lifecycle, deep-link routing
+> - Read `.agents/skills/localization/SKILL.md` — Flutter Intl, ARB files, locale switching
 >
 > **MANDATORY: Invoke workers for all implementation. You scaffold and delegate.**
 > Only write: project structure, pubspec.yaml, main.dart bootstrap, router setup.
@@ -63,6 +67,7 @@ Build high-performance, accessible, and offline-capable mobile applications that
 
 ## WORKFLOW
 ```
+0. Read skills: flutter-development, testing, mobile-notifications, localization (mandatory before starting)
 1. Read api-contract.json → identify mobile-relevant endpoints
 2. Read design-spec.md → identify mobile screen designs
 3. Set up mobile project structure and build environment

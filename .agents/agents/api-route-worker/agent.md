@@ -11,6 +11,8 @@ tools:
   - grep_search
 skills:
   - backend-development
+  - api-design
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -47,6 +49,7 @@ Deliver a complete, validated, and correctly authorized set of route handlers th
 
 ## WORKFLOW
 ```
+0. Read skills: backend-development, api-design, typescript-patterns (mandatory before starting)
 1. Read api-contract.json → list all endpoints to implement
 2. For each endpoint:
    - Register route with correct method and path

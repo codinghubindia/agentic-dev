@@ -12,6 +12,8 @@ tools:
   - grep_search
 skills:
   - frontend-development
+  - react-patterns
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -50,6 +52,7 @@ Produce pixel-accurate, accessible, thoroughly-typed UI components that match th
 
 ## WORKFLOW
 ```
+0. Read skills: frontend-development, uiux-design, react-patterns, typescript-patterns (mandatory before starting)
 1. Read design specification and any existing component conventions
 2. Read the theme/tokens file
 3. Implement component with all required variants

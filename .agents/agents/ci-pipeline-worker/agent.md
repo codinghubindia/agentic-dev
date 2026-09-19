@@ -11,6 +11,7 @@ tools:
   - grep_search
 skills:
   - git-integration
+  - devops-practices
 ---
 
 > [!IMPORTANT]
@@ -59,6 +60,7 @@ Deliver CI/CD workflows that run fast, catch all issues automatically, and provi
 
 ## WORKFLOW
 ```
+0. Read skills: git-integration, devops-practices (mandatory before starting)
 1. Read architecture.json for stack, framework, and platform
 2. Read existing package.json/Makefile for available scripts
 3. Write PR validation workflow with parallel jobs

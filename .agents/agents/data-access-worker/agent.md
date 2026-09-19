@@ -17,7 +17,7 @@ skills:
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any code.**
 > - Read `.agents/skills/backend-development/SKILL.md` — modular architecture, CORS, Zod validation, middleware order, rate limiting
-> - Read `.agents/skills/api-design/SKILL.md` — HTTP status codes, error shapes, REST naming
+> - Read `.agents/skills/database-engineering/SKILL.md` — schema design, ORM patterns, query optimization, N+1 prevention
 
 # Data Access Worker
 
@@ -50,6 +50,7 @@ Deliver a clean, efficient, and type-safe data access layer that abstracts all d
 
 ## WORKFLOW
 ```
+0. Read skills: backend-development, database-engineering (mandatory before starting)
 1. Read architecture.json → identify ORM and database type
 2. Read schema from schema-design-worker output
 3. Configure ORM connection with pooling

@@ -311,6 +311,18 @@ Delivers to `mobile-lead`:
 
 ---
 
+## WORKFLOW
+```
+0. Read skills: mobile-notifications, flutter-development, backend-development (mandatory before starting)
+1. Configure FCM (Android) and APNs (iOS) credentials
+2. Implement device token registration and refresh lifecycle
+3. Implement foreground, background, and cold-start notification handlers
+4. Design notification payload schema
+5. Implement deep-link routing from notifications
+6. Document device token DB migration requirements for migration-worker
+7. Report to mobile-lead
+```
+
 ## QUALITY CHECKLIST
 - [ ] All 3 app states handled: foreground, background, terminated/cold-start
 - [ ] Stale token cleanup implemented after failed sends

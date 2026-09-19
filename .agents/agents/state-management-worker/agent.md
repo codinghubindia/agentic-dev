@@ -11,6 +11,8 @@ tools:
   - grep_search
 skills:
   - frontend-development
+  - react-patterns
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -50,6 +52,7 @@ Deliver a predictable, performant, and type-safe state management layer that mak
 
 ## WORKFLOW
 ```
+0. Read skills: frontend-development, react-patterns, typescript-patterns (mandatory before starting)
 1. Read frontend architecture and state specification
 2. Read api-contract.json for typed response shapes
 3. Define state shape TypeScript types

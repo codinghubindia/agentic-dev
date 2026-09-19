@@ -13,6 +13,7 @@ tools:
 skills:
   - backend-development
   - testing
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -53,6 +54,7 @@ Deliver a comprehensive, reliable backend test suite that catches bugs before in
 
 ## WORKFLOW
 ```
+0. Read skills: testing, typescript-patterns (mandatory before starting)
 1. Identify all services and routes without tests
 2. For each service:
    - Mock repositories

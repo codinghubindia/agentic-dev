@@ -9,6 +9,7 @@ tools:
   - run_command
   - grep_search
   - list_dir
+  - write_to_file
 skills:
   - testing
 ---
@@ -47,6 +48,7 @@ Ensure that new code changes have not broken any previously-working functionalit
 
 ## WORKFLOW
 ```
+0. Read skills: testing (mandatory before starting)
 1. Read baseline test results
 2. Run full test suite: unit → integration → E2E
 3. Compare each test result against baseline

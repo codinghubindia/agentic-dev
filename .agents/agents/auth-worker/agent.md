@@ -12,6 +12,7 @@ tools:
 skills:
   - backend-development
   - security-review
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -56,6 +57,7 @@ Deliver a secure, complete authentication and authorization system that protects
 
 ## WORKFLOW
 ```
+0. Read skills: backend-development, security-review, typescript-patterns (mandatory before starting)
 1. Read auth specification from backend-lead and api-contract.json
 2. Implement password hash/verify utilities
 3. Implement JWT sign and verify utilities

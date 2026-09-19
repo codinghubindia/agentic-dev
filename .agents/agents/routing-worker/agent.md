@@ -11,6 +11,8 @@ tools:
   - grep_search
 skills:
   - frontend-development
+  - react-patterns
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -49,13 +51,14 @@ Deliver a complete, type-safe routing configuration that matches the application
 
 ## WORKFLOW
 ```
+0. Read skills: frontend-development, react-patterns, typescript-patterns (mandatory before starting)
 1. Read frontend architecture and route specification from frontend-lead
 2. Read existing auth state interface
 3. Implement route definitions with lazy imports
 4. Implement auth guard component/middleware
 5. Implement role-based route guard
 6. Configure 404 and error boundary routes
-7. Test route resolution logic manually
+7. Verify route configuration by reading generated route files and checking for correctness
 8. Report to frontend-lead
 ```
 

@@ -384,6 +384,7 @@ Delivers to `frontend-lead`:
 
 ## WORKFLOW
 ```
+0. Read skills: localization, frontend-development, flutter-development (mandatory before starting)
 1. Audit codebase for all hardcoded user-facing strings (grep)
 2. Design namespace structure based on feature areas
 3. Set up i18n library and configuration

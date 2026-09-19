@@ -16,6 +16,7 @@ tools:
 skills:
   - uiux-design
   - frontend-development
+  - localization
 ---
 
 # UI/UX Lead

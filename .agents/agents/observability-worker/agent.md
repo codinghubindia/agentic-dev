@@ -488,6 +488,7 @@ Delivers to `devops-release-lead`:
 
 ## WORKFLOW
 ```
+0. Read skills: observability, backend-development, devops-practices (mandatory before starting)
 1. Install and configure Sentry (backend + frontend)
 2. Set up Pino structured logger with redacted PII fields
 3. Implement /health and /readiness endpoints

@@ -62,6 +62,7 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 
 ## WORKFLOW
 ```
+0. Read skills: testing, code-review (mandatory before starting)
 1. Read project-plan.json → identify all features requiring QA
 2. Define test plan with coverage targets per layer
 3. Delegate in parallel:

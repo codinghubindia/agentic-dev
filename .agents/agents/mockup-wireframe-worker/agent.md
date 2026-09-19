@@ -183,6 +183,7 @@ Delivers to `uiux-lead`:
 ## WORKFLOW
 
 ```
+0. Read skills: uiux-design (mandatory before starting)
 1. RECEIVE brief from uiux-lead (feature scope, tokens, screen list)
 2. RESEARCH inspiration:
    a. search_web for UI patterns relevant to the screen types

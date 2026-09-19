@@ -7,6 +7,7 @@ subagent: true
 tools:
   - view_file
   - write_to_file
+  - replace_file_content
   - grep_search
   - run_command
 skills:
@@ -55,6 +56,7 @@ Produce accurate, clear, and well-organized release notes and CHANGELOG entries 
 
 ## WORKFLOW
 ```
+0. Read skills: git-integration (mandatory before starting)
 1. Run git log since last release tag to collect commits
 2. Categorize commits by type
 3. Identify breaking changes

@@ -15,6 +15,7 @@ tools:
 skills:
   - flutter-development
   - frontend-development
+  - localization
 ---
 
 # Mobile Screen Worker
@@ -163,6 +164,18 @@ mobile/lib/
 ```
 
 ---
+
+## WORKFLOW
+```
+0. Read skills: flutter-development, localization (mandatory before starting)
+1. Read design-spec.md from uiux-lead
+2. Set up navigation routes per mobile-lead specification
+3. Implement each screen: layout, widgets, platform conventions
+4. Wire data to state management layer
+5. Handle empty states, loading skeletons, and error states per screen
+6. Use localization keys — no hardcoded strings
+7. Report to mobile-lead
+```
 
 ## QUALITY CHECKLIST
 Before delivering any screen:

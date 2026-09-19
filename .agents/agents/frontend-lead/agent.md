@@ -18,6 +18,9 @@ tools:
 skills:
   - frontend-development
   - testing
+  - react-patterns
+  - api-design
+  - typescript-patterns
 ---
 
 # Frontend Lead
@@ -71,6 +74,7 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 
 ## WORKFLOW
 ```
+0. Read skills: frontend-development, testing, react-patterns, api-design, typescript-patterns (mandatory before starting)
 1. Read api-contract.json and ownership-map.json
 2. Define frontend architecture and folder structure
 3. Scaffold base project (if new) or audit existing structure

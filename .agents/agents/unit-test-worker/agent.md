@@ -52,6 +52,7 @@ Deliver a comprehensive unit test suite that verifies every business rule, calcu
 
 ## WORKFLOW
 ```
+0. Read skills: testing (mandatory before starting)
 1. Read source files to test
 2. Identify untested functions and branches
 3. For each function:

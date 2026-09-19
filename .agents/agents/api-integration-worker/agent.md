@@ -11,6 +11,8 @@ tools:
   - grep_search
 skills:
   - frontend-development
+  - react-patterns
+  - typescript-patterns
 ---
 
 > [!IMPORTANT]
@@ -51,6 +53,7 @@ Ensure every API endpoint defined in `api-contract.json` has a corresponding typ
 
 ## WORKFLOW
 ```
+0. Read skills: frontend-development, react-patterns, typescript-patterns (mandatory before starting)
 1. Read api-contract.json → catalog all endpoints
 2. Set up HTTP client with base config and interceptors
 3. For each endpoint:

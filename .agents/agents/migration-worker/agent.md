@@ -7,6 +7,7 @@ subagent: true
 tools:
   - view_file
   - write_to_file
+  - replace_file_content
   - run_command
   - grep_search
 skills:
@@ -47,6 +48,7 @@ Deliver version-controlled, idempotent, and safely reversible database migration
 
 ## WORKFLOW
 ```
+0. Read skills: database-engineering (mandatory before starting)
 1. Read current migration history to understand current schema state
 2. Read schema changes requested by data-lead
 3. Determine correct migration sequence

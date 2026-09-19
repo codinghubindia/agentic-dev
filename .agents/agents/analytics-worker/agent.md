@@ -16,6 +16,7 @@ skills:
   - analytics-tracking
   - backend-development
   - frontend-development
+  - typescript-patterns
 ---
 
 # Analytics Worker
@@ -333,6 +334,18 @@ For each event, document in `analytics/tracking-plan.md`:
 | `error_shown` | Error boundary or API error displayed | `error_code: string`, `page: string` | None | Client |
 
 ---
+
+## WORKFLOW
+```
+0. Read skills: analytics-tracking, typescript-patterns (mandatory before starting)
+1. Read analytics tracking plan and event taxonomy from backend-lead or project-manager
+2. Instrument events in the codebase per the tracking plan
+3. Wire analytics SDK (PostHog/Mixpanel/Amplitude/Segment)
+4. Implement PII scrubbing and consent-aware tracking
+5. Write server-side tracking where needed
+6. Verify all funnel events are firing correctly
+7. Report to backend-lead
+```
 
 ## QUALITY CHECKLIST
 - [ ] No PII in any event properties (names, emails, passwords, cards)

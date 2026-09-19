@@ -9,7 +9,7 @@ tools:
   - write_to_file
   - replace_file_content
 skills:
-  - git-integration
+  - devops-practices
 ---
 
 > [!IMPORTANT]
@@ -55,6 +55,7 @@ Deliver production-grade container configurations that are small, fast to build,
 
 ## WORKFLOW
 ```
+0. Read skills: devops-practices (mandatory before starting)
 1. Read architecture.json for runtime, language, and framework
 2. Write multi-stage Dockerfile:
    - builder stage (compile/build)

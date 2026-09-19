@@ -18,6 +18,9 @@ tools:
 skills:
   - backend-development
   - testing
+  - api-design
+  - security-review
+  - typescript-patterns
 ---
 
 # Backend Lead
@@ -69,6 +72,7 @@ Build reliable, secure, and high-performance backend services that strictly impl
 
 ## WORKFLOW
 ```
+0. Read skills: backend-development, testing, api-design, security-review, typescript-patterns (mandatory before starting)
 1. Read api-contract.json — understand all endpoints, schemas, auth requirements
 2. Read architecture.json — understand stack, database, and infrastructure
 3. Scaffold backend project structure or audit existing

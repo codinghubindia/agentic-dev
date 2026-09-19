@@ -8,6 +8,8 @@ tools:
   - view_file
   - write_to_file
   - replace_file_content
+  - grep_search
+  - run_command
 skills:
   - database-engineering
 ---
@@ -45,6 +47,7 @@ Produce realistic, consistent, and comprehensive seed datasets that cover all en
 
 ## WORKFLOW
 ```
+0. Read skills: database-engineering (mandatory before starting)
 1. Read schema to understand all entity types and relationships
 2. Plan seeding order (parent entities first)
 3. Write development seed with realistic data:

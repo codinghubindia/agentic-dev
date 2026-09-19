@@ -312,6 +312,7 @@ Delivers to `frontend-lead`:
 
 ## WORKFLOW
 ```
+0. Read skills: performance-optimization, frontend-development, react-patterns (mandatory before starting)
 1. Run Lighthouse audit on target pages — record baseline
 2. Run bundle analysis — identify top contributors to bundle size
 3. Prioritize fixes by impact (biggest gains first):

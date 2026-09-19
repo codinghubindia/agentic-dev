@@ -13,6 +13,7 @@ tools:
 skills:
   - frontend-development
   - testing
+  - react-patterns
 ---
 
 > [!IMPORTANT]
@@ -48,6 +49,7 @@ Deliver a comprehensive, reliable, and fast frontend test suite that catches reg
 
 ## WORKFLOW
 ```
+0. Read skills: testing, frontend-development, react-patterns (mandatory before starting)
 1. Identify all components, hooks, and API functions without tests
 2. For each component:
    - Test default render

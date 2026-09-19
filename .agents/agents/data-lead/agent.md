@@ -61,6 +61,7 @@ Guarantee data consistency, integrity, performance, and version-controlled migra
 
 ## WORKFLOW
 ```
+0. Read skills: database-engineering (mandatory before starting)
 1. Read architecture.json → identify entities, relationships, database type
 2. Read api-contract.json → infer query access patterns and cardinality
 3. Design normalized schema with constraints → delegate DDL to schema-design-worker
