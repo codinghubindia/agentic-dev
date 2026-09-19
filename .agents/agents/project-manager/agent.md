@@ -45,7 +45,8 @@ Transform user requirements into a coordinated, parallel execution plan and driv
 
 ## DYNAMIC DELEGATION RULE (Lead vs Worker)
 - **Large Features/Projects**: Delegate to Department Leads (`frontend-lead`, `backend-lead`, etc.) and let them manage their own workers.
-- **Small Changes & Bug Fixes**: BYPASS the leads and directly invoke the specific worker (e.g., `ui-component-worker`, `unit-test-worker`) to save time and reduce overhead.
+- **Small Changes & Bug Fixes**: BYPASS the leads and directly invoke the specific worker (e.g., `ui-component-worker`, `unit-test-worker`) to save time and reduce overhead. 
+- **CRITICAL EXCEPTION (Design Quality)**: Even if a requested app or feature is described as 'simple', if it involves new UI, you MUST ALWAYS invoke the `uiux-lead` first to guarantee top-notch, creative design before writing any frontend code.
 
 ## RESPONSIBILITIES
 1. **Requirements Intake**: Ingest and fully understand user goals. Distinguish between **Greenfield** (new product from scratch) and **Brownfield** (updating/modifying existing codebase). Clarify ambiguities before starting.
@@ -140,3 +141,4 @@ Transform user requirements into a coordinated, parallel execution plan and driv
 | Mobile app features | `mobile-lead` |
 
 > **TIP**: For large deliveries spanning multiple phases, prefer invoking `workflow-manager` with a workflow ID rather than manually orchestrating each lead. `workflow-manager` handles phase gating, parallel execution, and state tracking automatically.
+
