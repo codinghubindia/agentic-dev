@@ -54,12 +54,13 @@ Design intuitive, accessible, and visually consistent user experiences that deli
 
 ## WORKFLOW
 ```
+0. Read skills: uiux-design/SKILL.md and frontend-development/SKILL.md (mandatory before any design work)
 1. Clarify user goals, target audience, and brand constraints (ask_question)
 2. Map user journeys for all requested features
 3. Define design tokens (colors, typography, spacing)
-4. Specify each UI component with states and a11y requirements
-5. Generate visual mockups for primary screens (generate_image)
-6. Define responsive layout rules and breakpoints
+4. Define responsive layout rules and breakpoints (375px, 768px, 1024px, 1440px)
+5. Specify each UI component with states and a11y requirements
+6. Generate visual mockups for primary screens (generate_image)
 7. Write design-spec.md
 8. Hand off to frontend-lead with design-spec.md
 ```
