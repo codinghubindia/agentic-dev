@@ -18,7 +18,6 @@ tools:
 skills:
   - git-integration
   - devops-practices
-  - testing
   - observability
 ---
 
