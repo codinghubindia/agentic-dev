@@ -40,3 +40,6 @@ coverage/
 .nyc_output/
 .playwright/
 test-results/
+
+# Agent Execution artifacts
+.agent_execution/

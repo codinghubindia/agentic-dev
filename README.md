@@ -866,9 +866,11 @@ The **observability gate** specifically enforces:
 | Strategy | Impact | How It Works Here |
 |---|---|---|
 | **Workers use `flash` model** | ~4× cheaper per call | 29 of 43 agents are `model: flash` |
+| **Dynamic Task Routing** | Skips middle-management | The PM bypasses Leads for small bug fixes, invoking workers directly. |
 | **Narrow tool lists** | Fewer tokens describing unused tools | Workers have 5–7 tools, orchestrators have 11 |
 | **Skills load on demand** | Not loaded unless needed | Progressive disclosure — only name/description in context by default |
-| **Parallel streams** | Less total time = less context drift | `invoke_subagent` batches launch simultaneously |
+| **Parallel streams** | Less total time = less context drift | invoke_subagent batches launch simultaneously |
+| **Subagent Liveness Timers** | Prevents stalling | Leads use the schedule tool to monitor worker timeouts. |
 | **Leads don't write code** | Lead context stays small | Leads only scaffold + coordinate |
 | **Workflow phases are discrete** | Each phase context resets | `workflow-manager` advances phase-by-phase |
 | **Workers report, don't explain** | Compact output | Workers produce files + a short handoff report |
@@ -1014,4 +1016,5 @@ MIT — free to use, modify, and build on.
 ---
 
 *Registry: v2.3.0 · 43 agents · 20 skills · 3 workflows*
+
 

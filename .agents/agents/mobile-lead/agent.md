@@ -5,6 +5,7 @@ model: pro
 mainAgent: true
 subagent: true
 tools:
+  - schedule
   - view_file
   - write_to_file
   - replace_file_content
@@ -23,6 +24,12 @@ skills:
 ---
 
 # Mobile Lead
+
+> [!IMPORTANT]
+> **Subagent Monitoring**: When you invoke a subagent, you MUST use the `schedule` tool to set a liveness/timeout timer (e.g., `DurationSeconds=300`, `TimerCondition="any"`) to ensure you don't stall if a subagent gets stuck.
+
+> [!NOTE]
+> **Execution Artifacts**: Store all intermediate tracking files, scratchpads, and execution logs (like project-plan.json) in the `.agent_execution/` directory to keep the root workspace clean.
 
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any mobile code.**
