@@ -17,6 +17,7 @@ skills:
 > [!IMPORTANT]
 > **Read your skills FIRST before starting any audit.**
 > - Read `.agents/skills/frontend-development/SKILL.md` — WCAG 2.1 AA standards, ARIA patterns, focus management
+> - Read `.agents/skills/react-patterns/SKILL.md` — modal/focus-trap patterns, portal usage, custom hook accessibility patterns
 
 # Accessibility Worker
 

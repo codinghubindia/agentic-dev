@@ -17,7 +17,6 @@ tools:
   - send_message
 skills:
   - flutter-development
-  - frontend-development
   - testing
   - mobile-notifications
   - localization

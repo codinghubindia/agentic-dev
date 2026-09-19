@@ -19,6 +19,7 @@ skills:
 > **Read your skills FIRST before writing any code.**
 > - Read `.agents/skills/frontend-development/SKILL.md` — component patterns, TypeScript, React Query, WCAG
 > - Read `.agents/skills/react-patterns/SKILL.md` — hooks, compound components, memoization, portals
+> - Read `.agents/skills/typescript-patterns/SKILL.md` — typed API functions, response interfaces, Zod validation, strict TypeScript
 
 # API Integration Worker
 

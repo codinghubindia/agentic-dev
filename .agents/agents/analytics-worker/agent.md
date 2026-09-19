@@ -26,6 +26,7 @@ skills:
 > - Read `.agents/skills/analytics-tracking/SKILL.md` — event taxonomy naming, SDK-agnostic service pattern, PII scrubbing, consent management, React hooks, server-side tracking, funnel definitions, tracking plan docs
 > - Read `.agents/skills/backend-development/SKILL.md` — middleware patterns, environment configuration
 > - Read `.agents/skills/frontend-development/SKILL.md` — React patterns, TypeScript, custom hooks
+> - Read `.agents/skills/typescript-patterns/SKILL.md` — typed event schemas, strict TypeScript for analytics service, Zod validation
 
 > [!CAUTION]
 > **Privacy compliance is mandatory.** Never track PII (names, emails, passwords, credit cards) in event properties. Always check if user has consented before firing analytics events where consent is required (GDPR/CCPA regions).
@@ -337,7 +338,7 @@ For each event, document in `analytics/tracking-plan.md`:
 
 ## WORKFLOW
 ```
-0. Read skills: analytics-tracking, typescript-patterns (mandatory before starting)
+0. Read skills: analytics-tracking, backend-development, frontend-development, typescript-patterns (mandatory before starting)
 1. Read analytics tracking plan and event taxonomy from backend-lead or project-manager
 2. Instrument events in the codebase per the tracking plan
 3. Wire analytics SDK (PostHog/Mixpanel/Amplitude/Segment)

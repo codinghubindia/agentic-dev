@@ -19,6 +19,7 @@ skills:
 > **Read your skills FIRST before writing any auth code.**
 > - Read `.agents/skills/backend-development/SKILL.md` — modular architecture, middleware patterns
 > - Read `.agents/skills/security-review/SKILL.md` — JWT requirements, password hashing, timing attacks, token rotation
+> - Read `.agents/skills/typescript-patterns/SKILL.md` — typed auth middleware, JWT error discriminated unions, strict TypeScript
 
 # Auth Worker
 

@@ -18,6 +18,7 @@ skills:
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any tests.**
 > - Read `.agents/skills/testing/SKILL.md` — test pyramid, AAA pattern, coverage targets, Playwright/RTL/Supertest patterns
+> - Read `.agents/skills/backend-development/SKILL.md` — Express/Node.js service patterns to write better integration tests against them
 
 # Integration Test Worker
 

@@ -37,6 +37,7 @@ skills:
 > Every implementation task MUST be delegated to the appropriate worker via `invoke_subagent`.
 > Writing code yourself instead of invoking workers is a process violation.
 > The only code you may write directly is scaffolding (package.json, vite.config.ts, main.tsx, App.tsx routing shell).
+> - Read `.agents/skills/testing/SKILL.md` — React Testing Library, Jest/Vitest, MSW mocking, coverage thresholds, E2E strategy
 
 
 ## ROLE

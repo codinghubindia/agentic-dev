@@ -19,6 +19,7 @@ skills:
 > **Read your skills FIRST before writing any code.**
 > - Read `.agents/skills/backend-development/SKILL.md` — modular architecture, CORS, Zod validation, middleware order, rate limiting
 > - Read `.agents/skills/api-design/SKILL.md` — HTTP status codes, error shapes, REST naming
+> - Read `.agents/skills/typescript-patterns/SKILL.md` — typed middleware, controller types, strict TypeScript patterns
 
 # API Route Worker
 

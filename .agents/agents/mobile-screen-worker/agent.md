@@ -25,6 +25,7 @@ skills:
 > - Read `.agents/skills/flutter-development/SKILL.md` — Riverpod, GoRouter, widget architecture, theming, offline storage, testing patterns
 > - Read `.agents/skills/frontend-development/SKILL.md` — component patterns, TypeScript, responsive layout principles
 > - For screens with notification entry points: coordinate with `push-notification-worker` for deep-link route registration
+> - Read `.agents/skills/localization/SKILL.md` — Flutter Intl, ARB localization keys, no hardcoded strings, locale switching
 
 ---
 
@@ -167,7 +168,7 @@ mobile/lib/
 
 ## WORKFLOW
 ```
-0. Read skills: flutter-development, localization (mandatory before starting)
+0. Read skills: flutter-development, frontend-development, localization (mandatory before starting)
 1. Read design-spec.md from uiux-lead
 2. Set up navigation routes per mobile-lead specification
 3. Implement each screen: layout, widgets, platform conventions

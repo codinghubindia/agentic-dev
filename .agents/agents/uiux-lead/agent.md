@@ -25,6 +25,7 @@ skills:
 > **Read your skills FIRST before designing anything.**
 > - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, component specs, typography, color theory, handoff checklist
 > - Read `.agents/skills/frontend-development/SKILL.md` — understand what the frontend team can implement
+> - Read `.agents/skills/localization/SKILL.md` — RTL layout design, locale-specific token behavior, design for i18n
 
 
 ## ROLE
@@ -55,7 +56,7 @@ Design intuitive, accessible, and visually consistent user experiences that deli
 
 ## WORKFLOW
 ```
-0. Read skills: uiux-design/SKILL.md and frontend-development/SKILL.md (mandatory before any design work)
+0. Read skills: uiux-design, frontend-development, localization (mandatory before starting)
 1. Clarify user goals, target audience, and brand constraints (ask_question)
 2. Map user journeys for all requested features
 3. Define design tokens (colors, typography, spacing)

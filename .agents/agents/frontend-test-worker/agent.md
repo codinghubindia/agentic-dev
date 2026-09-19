@@ -20,6 +20,7 @@ skills:
 > **Read your skills FIRST before writing any tests.**
 > - Read `.agents/skills/frontend-development/SKILL.md` — component behavior standards
 > - Read `.agents/skills/testing/SKILL.md` — RTL best practices, MSW mocking, coverage targets
+> - Read `.agents/skills/react-patterns/SKILL.md` — hook testing, compound component testing, context testing patterns
 
 # Frontend Test Worker
 

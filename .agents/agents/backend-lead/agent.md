@@ -37,6 +37,7 @@ skills:
 > Every implementation task MUST be delegated to the appropriate worker via `invoke_subagent`.
 > The only code you write directly: project scaffolding (package.json, tsconfig.json, app.ts entry point bootstrap).
 > Writing business logic, routes, or models yourself instead of delegating is a process violation.
+> - Read `.agents/skills/testing/SKILL.md` — test pyramid, unit/integration/contract tests, coverage thresholds, test strategy
 
 
 ## ROLE

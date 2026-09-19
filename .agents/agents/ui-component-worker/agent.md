@@ -14,12 +14,15 @@ skills:
   - frontend-development
   - react-patterns
   - typescript-patterns
+  - uiux-design
 ---
 
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any code.**
 > - Read `.agents/skills/frontend-development/SKILL.md` — component patterns, TypeScript, React Query, WCAG
 > - Read `.agents/skills/react-patterns/SKILL.md` — hooks, compound components, memoization, portals
+> - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, component specs, typography, color theory
+> - Read `.agents/skills/typescript-patterns/SKILL.md` — generic component prop typing, strict TypeScript interfaces, discriminated unions
 
 # UI Component Worker
 

@@ -18,7 +18,6 @@ tools:
   - schedule
 skills:
   - software-project-management
-  - git-integration
 ---
 
 # Workflow Manager

@@ -20,6 +20,7 @@ skills:
 > **Read your skills FIRST before writing any tests.**
 > - Read `.agents/skills/backend-development/SKILL.md` — service patterns to understand what to test
 > - Read `.agents/skills/testing/SKILL.md` — Supertest patterns, integration test DB management, coverage targets
+> - Read `.agents/skills/typescript-patterns/SKILL.md` — typed test mocks, Zod in tests, strict TypeScript for test code
 
 # Backend Test Worker
 
@@ -54,7 +55,7 @@ Deliver a comprehensive, reliable backend test suite that catches bugs before in
 
 ## WORKFLOW
 ```
-0. Read skills: testing, typescript-patterns (mandatory before starting)
+0. Read skills: backend-development, testing, typescript-patterns (mandatory before starting)
 1. Identify all services and routes without tests
 2. For each service:
    - Mock repositories
