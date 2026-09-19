@@ -1,7 +1,7 @@
-# 🏢 Software Engineering Company — Antigravity Agent Template
+# 🏢 AgenticDev: Autonomous AI Software Company Framework (Multi-Agent Team)
 
-> A **production-ready, multi-agent software engineering company** built for [Google Antigravity (AGY)](https://antigravity.dev).
-> Drop this `.agents/` folder into any project and get **43 specialized AI agents**, **20 rich skill guides**, and **4 workflow pipelines** — ready to build and maintain real software together.
+> An **SEO-optimized, production-ready autonomous multi-agent software engineering company** built for [Google Antigravity (AGY)](https://antigravity.dev).
+> Drop this .agents/ folder into any workspace to instantly deploy **43 specialized AI software engineers**, **20 rich skill guides**, and **4 automated workflows**. Build, test, and release real software with an autonomous AI developer team.
 
 [![Agents](https://img.shields.io/badge/Agents-43-6366f1?style=flat-square)](#-agent-roster)
 [![Skills](https://img.shields.io/badge/Skills-20-10b981?style=flat-square)](#-skills-library)
@@ -1017,4 +1017,28 @@ MIT — free to use, modify, and build on.
 
 *Registry: v2.3.0 · 43 agents · 20 skills · 3 workflows*
 
+
+
+## 🚀 How to Use (Quickstart)
+
+Transform any empty repository or existing codebase into an autonomous AI development environment in 4 easy steps:
+
+### 1. Install the Agent Framework
+Clone or copy this repository so that the .agents folder sits at the root of your project workspace.
+
+### 2. Prepare the Execution Environment
+Ensure your workspace root is clean. (Note: Agents will automatically create an .agent_execution/ folder for their scratchpads and task tracking to keep your root directory organized).
+
+### 3. Invoke the Root Orchestrator
+Use the Antigravity CLI or interface to invoke the **Project Manager** (the root orchestrator). 
+`ash
+agy invoke project-manager
+`
+
+### 4. Provide the Requirements
+Give the Project Manager a natural language prompt describing what you want to build or fix.
+* **Example (New Project):** *"Build a responsive React landing page for a coffee shop with a contact form."*
+* **Example (Small Fix):** *"Fix the caching issue on the user API route."*
+
+The Project Manager will dynamically size the task, route it to the correct specialized AI workers, monitor their execution, and return the finished, production-ready code!
 
