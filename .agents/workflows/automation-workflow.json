@@ -1,0 +1,48 @@
+{
+  "name": "automation-workflow",
+  "version": "1.0",
+  "description": "Pipeline for automation and integration projects (e.g., n8n, Zapier-style, or custom scripts).",
+  "projectTypes": ["automation"],
+  "phases": [
+    {
+      "id": "phase_1_requirements",
+      "name": "Requirements & Tool Selection",
+      "skipConditions": ["user_skip_requirements"],
+      "agents": ["technical-architect"],
+      "requiredArtifacts": ["automation-spec.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_2_architecture",
+      "name": "Workflow Architecture",
+      "skipConditions": ["user_skip_architecture"],
+      "agents": ["technical-architect", "data-lead"],
+      "requiredArtifacts": ["workflow-diagram.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_3_implementation",
+      "name": "Implementation",
+      "skipConditions": [],
+      "agents": ["backend-lead"],
+      "requiredArtifacts": ["automation_impl_complete_flag"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_4_testing",
+      "name": "Testing & Validation",
+      "skipConditions": ["user_skip_testing"],
+      "agents": ["qa-lead"],
+      "requiredArtifacts": ["automation-test-report.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_5_deployment",
+      "name": "Deployment",
+      "skipConditions": ["user_skip_deployment"],
+      "agents": ["devops-release-lead"],
+      "requiredArtifacts": ["automation_deployment_flag"],
+      "hardGate": false
+    }
+  ]
+}

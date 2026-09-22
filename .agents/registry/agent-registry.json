@@ -1,8 +1,8 @@
 {
-  "companyName": "Software Engineering Company",
-  "version": "2.3.0",
-  "lastUpdated": "2026-09-18",
-  "totalAgents": 43,
+  "companyName": "AgenticDev: Autonomous AI Software Company",
+  "version": "3.0.0",
+  "lastUpdated": "2026-09-22",
+  "totalAgents": 49,
   "agents": [
     {
       "name": "project-manager",
@@ -10,12 +10,24 @@
       "type": "orchestrator",
       "scope": "workspace",
       "location": ".agents/agents/project-manager/agent.md",
-      "capabilities": ["planning", "task-decomposition", "orchestration", "milestone-tracking", "sprint-management"],
+      "capabilities": [
+        "planning",
+        "task-decomposition",
+        "orchestration",
+        "milestone-tracking",
+        "sprint-management",
+        "project-type-detection",
+        "adaptive-pipeline",
+        "workflow-execution"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["software-project-management"]
+      "skills": [
+        "software-project-management"
+      ],
+      "description": "Smart orchestrator \u2014 detects project type (fullstack/ai-rag/mobile/automation/game), interviews user, routes to correct leads/workers, executes workflow pipelines, tracks milestones with schedule-based liveness monitoring."
     },
     {
       "name": "workflow-manager",
@@ -23,13 +35,23 @@
       "type": "orchestrator",
       "scope": "workspace",
       "location": ".agents/agents/workflow-manager/agent.md",
-      "capabilities": ["workflow-execution", "phase-gate-enforcement", "parallel-stream-coordination", "workflow-resumption"],
+      "capabilities": [
+        "workflow-execution",
+        "phase-gate-enforcement",
+        "parallel-stream-coordination",
+        "workflow-resumption"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["software-project-management", "git-integration"],
-      "reads": [".agents/workflows/*.json"]
+      "skills": [
+        "software-project-management",
+        "git-integration"
+      ],
+      "reads": [
+        ".agents/workflows/*.json"
+      ]
     },
     {
       "name": "technical-architect",
@@ -37,12 +59,19 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/technical-architect/agent.md",
-      "capabilities": ["architecture-design", "api-contract-definition", "tech-stack-selection", "ownership-mapping"],
+      "capabilities": [
+        "architecture-design",
+        "api-contract-definition",
+        "tech-stack-selection",
+        "ownership-mapping"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["architecture-design"]
+      "skills": [
+        "architecture-design"
+      ]
     },
     {
       "name": "uiux-lead",
@@ -50,13 +79,24 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/uiux-lead/agent.md",
-      "capabilities": ["user-journey-mapping", "design-system", "component-specs", "accessibility-standards", "design-handoff"],
+      "capabilities": [
+        "user-journey-mapping",
+        "design-system",
+        "component-specs",
+        "accessibility-standards",
+        "design-handoff"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["uiux-design", "frontend-development"],
-      "workers": ["mockup-wireframe-worker"]
+      "skills": [
+        "uiux-design",
+        "frontend-development"
+      ],
+      "workers": [
+        "mockup-wireframe-worker"
+      ]
     },
     {
       "name": "mockup-wireframe-worker",
@@ -64,12 +104,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/mockup-wireframe-worker/agent.md",
-      "capabilities": ["wireframe-generation", "ui-inspiration-research", "mockup-generation", "screen-specs", "design-pattern-research"],
+      "capabilities": [
+        "wireframe-generation",
+        "ui-inspiration-research",
+        "mockup-generation",
+        "screen-specs",
+        "design-pattern-research"
+      ],
       "model": "pro",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["uiux-design"],
+      "skills": [
+        "uiux-design"
+      ],
       "parent": "uiux-lead"
     },
     {
@@ -78,13 +126,33 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/frontend-lead/agent.md",
-      "capabilities": ["component-architecture", "state-management", "routing", "api-integration", "frontend-testing", "performance-budgets", "i18n-strategy"],
+      "capabilities": [
+        "component-architecture",
+        "state-management",
+        "routing",
+        "api-integration",
+        "frontend-testing",
+        "performance-budgets",
+        "i18n-strategy"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["frontend-development", "testing"],
-      "workers": ["ui-component-worker", "routing-worker", "state-management-worker", "api-integration-worker", "frontend-test-worker", "accessibility-worker", "performance-worker", "localization-worker"]
+      "skills": [
+        "frontend-development",
+        "testing"
+      ],
+      "workers": [
+        "ui-component-worker",
+        "routing-worker",
+        "state-management-worker",
+        "api-integration-worker",
+        "frontend-test-worker",
+        "accessibility-worker",
+        "performance-worker",
+        "localization-worker"
+      ]
     },
     {
       "name": "ui-component-worker",
@@ -92,12 +160,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/ui-component-worker/agent.md",
-      "capabilities": ["reusable-components", "design-tokens", "wcag-aria", "component-variants"],
+      "capabilities": [
+        "reusable-components",
+        "design-tokens",
+        "wcag-aria",
+        "component-variants"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["frontend-development"],
+      "skills": [
+        "frontend-development"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -106,12 +181,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/routing-worker/agent.md",
-      "capabilities": ["client-routing", "auth-guards", "rbac-route-guards", "lazy-loading", "deep-links"],
+      "capabilities": [
+        "client-routing",
+        "auth-guards",
+        "rbac-route-guards",
+        "lazy-loading",
+        "deep-links"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["frontend-development"],
+      "skills": [
+        "frontend-development"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -120,12 +203,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/state-management-worker/agent.md",
-      "capabilities": ["global-state-stores", "auth-state", "async-state", "state-persistence", "selectors"],
+      "capabilities": [
+        "global-state-stores",
+        "auth-state",
+        "async-state",
+        "state-persistence",
+        "selectors"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["frontend-development"],
+      "skills": [
+        "frontend-development"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -134,12 +225,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/api-integration-worker/agent.md",
-      "capabilities": ["typed-api-client", "react-query-hooks", "auth-interceptors", "error-normalization"],
+      "capabilities": [
+        "typed-api-client",
+        "react-query-hooks",
+        "auth-interceptors",
+        "error-normalization"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["frontend-development"],
+      "skills": [
+        "frontend-development"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -148,12 +246,21 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/frontend-test-worker/agent.md",
-      "capabilities": ["component-unit-tests", "hook-tests", "rtl", "msw-mocking", "coverage-reporting"],
+      "capabilities": [
+        "component-unit-tests",
+        "hook-tests",
+        "rtl",
+        "msw-mocking",
+        "coverage-reporting"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["frontend-development", "testing"],
+      "skills": [
+        "frontend-development",
+        "testing"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -162,12 +269,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/accessibility-worker/agent.md",
-      "capabilities": ["wcag-audit", "aria-implementation", "keyboard-navigation", "focus-management", "contrast-check"],
+      "capabilities": [
+        "wcag-audit",
+        "aria-implementation",
+        "keyboard-navigation",
+        "focus-management",
+        "contrast-check"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["frontend-development"],
+      "skills": [
+        "frontend-development"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -176,13 +291,31 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/backend-lead/agent.md",
-      "capabilities": ["api-implementation", "auth-design", "business-logic", "backend-testing", "error-handling", "analytics"],
+      "capabilities": [
+        "api-implementation",
+        "auth-design",
+        "business-logic",
+        "backend-testing",
+        "error-handling",
+        "analytics"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["backend-development", "testing"],
-      "workers": ["api-route-worker", "auth-worker", "business-logic-worker", "data-access-worker", "backend-test-worker", "error-handling-worker", "analytics-worker"]
+      "skills": [
+        "backend-development",
+        "testing"
+      ],
+      "workers": [
+        "api-route-worker",
+        "auth-worker",
+        "business-logic-worker",
+        "data-access-worker",
+        "backend-test-worker",
+        "error-handling-worker",
+        "analytics-worker"
+      ]
     },
     {
       "name": "api-route-worker",
@@ -190,12 +323,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/api-route-worker/agent.md",
-      "capabilities": ["route-controllers", "middleware-chains", "request-validation", "response-serialization"],
+      "capabilities": [
+        "route-controllers",
+        "middleware-chains",
+        "request-validation",
+        "response-serialization"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["backend-development"],
+      "skills": [
+        "backend-development"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -204,12 +344,21 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/auth-worker/agent.md",
-      "capabilities": ["jwt", "oauth2", "rbac", "refresh-token-rotation", "password-hashing"],
+      "capabilities": [
+        "jwt",
+        "oauth2",
+        "rbac",
+        "refresh-token-rotation",
+        "password-hashing"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["backend-development", "security-review"],
+      "skills": [
+        "backend-development",
+        "security-review"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -218,12 +367,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/business-logic-worker/agent.md",
-      "capabilities": ["service-layer", "domain-rules", "workflows", "transactions", "domain-events"],
+      "capabilities": [
+        "service-layer",
+        "domain-rules",
+        "workflows",
+        "transactions",
+        "domain-events"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["backend-development"],
+      "skills": [
+        "backend-development"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -232,12 +389,21 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/data-access-worker/agent.md",
-      "capabilities": ["orm-models", "repositories", "query-optimization", "n1-prevention", "cursor-pagination"],
+      "capabilities": [
+        "orm-models",
+        "repositories",
+        "query-optimization",
+        "n1-prevention",
+        "cursor-pagination"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["backend-development", "database-engineering"],
+      "skills": [
+        "backend-development",
+        "database-engineering"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -246,12 +412,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/backend-test-worker/agent.md",
-      "capabilities": ["service-unit-tests", "api-integration-tests", "contract-tests", "coverage-reporting"],
+      "capabilities": [
+        "service-unit-tests",
+        "api-integration-tests",
+        "contract-tests",
+        "coverage-reporting"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["backend-development", "testing"],
+      "skills": [
+        "backend-development",
+        "testing"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -260,12 +434,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/error-handling-worker/agent.md",
-      "capabilities": ["error-hierarchy", "global-error-handler", "async-wrapper", "structured-logging"],
+      "capabilities": [
+        "error-hierarchy",
+        "global-error-handler",
+        "async-wrapper",
+        "structured-logging"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["backend-development"],
+      "skills": [
+        "backend-development"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -274,13 +455,25 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/data-lead/agent.md",
-      "capabilities": ["schema-architecture", "migration-strategy", "indexing", "query-performance"],
+      "capabilities": [
+        "schema-architecture",
+        "migration-strategy",
+        "indexing",
+        "query-performance"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["database-engineering", "testing"],
-      "workers": ["schema-design-worker", "migration-worker", "seed-data-worker"]
+      "skills": [
+        "database-engineering",
+        "testing"
+      ],
+      "workers": [
+        "schema-design-worker",
+        "migration-worker",
+        "seed-data-worker"
+      ]
     },
     {
       "name": "schema-design-worker",
@@ -288,12 +481,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/schema-design-worker/agent.md",
-      "capabilities": ["ddl", "normalization", "constraints", "foreign-keys", "enum-types"],
+      "capabilities": [
+        "ddl",
+        "normalization",
+        "constraints",
+        "foreign-keys",
+        "enum-types"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["database-engineering"],
+      "skills": [
+        "database-engineering"
+      ],
       "parent": "data-lead"
     },
     {
@@ -302,12 +503,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/migration-worker/agent.md",
-      "capabilities": ["versioned-migrations", "up-down-scripts", "idempotency", "concurrent-indexes"],
+      "capabilities": [
+        "versioned-migrations",
+        "up-down-scripts",
+        "idempotency",
+        "concurrent-indexes"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["database-engineering"],
+      "skills": [
+        "database-engineering"
+      ],
       "parent": "data-lead"
     },
     {
@@ -316,12 +524,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/seed-data-worker/agent.md",
-      "capabilities": ["dev-seeds", "test-fixtures", "factory-pattern", "idempotent-upserts"],
+      "capabilities": [
+        "dev-seeds",
+        "test-fixtures",
+        "factory-pattern",
+        "idempotent-upserts"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["database-engineering"],
+      "skills": [
+        "database-engineering"
+      ],
       "parent": "data-lead"
     },
     {
@@ -330,12 +545,21 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/security-lead/agent.md",
-      "capabilities": ["owasp-audit", "secret-scanning", "dependency-cve-scan", "auth-review", "security-sign-off"],
+      "capabilities": [
+        "owasp-audit",
+        "secret-scanning",
+        "dependency-cve-scan",
+        "auth-review",
+        "security-sign-off"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["security-review", "code-review"]
+      "skills": [
+        "security-review",
+        "code-review"
+      ]
     },
     {
       "name": "qa-lead",
@@ -343,13 +567,26 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/qa-lead/agent.md",
-      "capabilities": ["test-strategy", "defect-triage", "qa-sign-off", "regression-governance"],
+      "capabilities": [
+        "test-strategy",
+        "defect-triage",
+        "qa-sign-off",
+        "regression-governance"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["testing", "code-review"],
-      "workers": ["unit-test-worker", "integration-test-worker", "regression-test-worker", "browser-e2e-tester"]
+      "skills": [
+        "testing",
+        "code-review"
+      ],
+      "workers": [
+        "unit-test-worker",
+        "integration-test-worker",
+        "regression-test-worker",
+        "browser-e2e-tester"
+      ]
     },
     {
       "name": "unit-test-worker",
@@ -357,12 +594,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/unit-test-worker/agent.md",
-      "capabilities": ["unit-tests", "mocking", "edge-case-coverage", "aaa-pattern"],
+      "capabilities": [
+        "unit-tests",
+        "mocking",
+        "edge-case-coverage",
+        "aaa-pattern"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["testing"],
+      "skills": [
+        "testing"
+      ],
       "parent": "qa-lead"
     },
     {
@@ -371,12 +615,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/integration-test-worker/agent.md",
-      "capabilities": ["api-integration-tests", "contract-tests", "auth-flow-tests", "test-db-management"],
+      "capabilities": [
+        "api-integration-tests",
+        "contract-tests",
+        "auth-flow-tests",
+        "test-db-management"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["testing"],
+      "skills": [
+        "testing"
+      ],
       "parent": "qa-lead"
     },
     {
@@ -385,12 +636,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/regression-test-worker/agent.md",
-      "capabilities": ["baseline-comparison", "flaky-test-detection", "coverage-delta", "regression-report"],
+      "capabilities": [
+        "baseline-comparison",
+        "flaky-test-detection",
+        "coverage-delta",
+        "regression-report"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["testing"],
+      "skills": [
+        "testing"
+      ],
       "parent": "qa-lead"
     },
     {
@@ -399,12 +657,21 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/browser-e2e-tester/agent.md",
-      "capabilities": ["playwright-cypress", "cross-browser", "multi-viewport", "visual-regression", "user-journeys"],
+      "capabilities": [
+        "playwright-cypress",
+        "cross-browser",
+        "multi-viewport",
+        "visual-regression",
+        "user-journeys"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["testing", "frontend-development"],
+      "skills": [
+        "testing",
+        "frontend-development"
+      ],
       "parent": "qa-lead"
     },
     {
@@ -413,12 +680,21 @@
       "type": "manager",
       "scope": "workspace",
       "location": ".agents/agents/integration-manager/agent.md",
-      "capabilities": ["ownership-audit", "merge-execution", "conflict-resolution", "build-verification", "architecture-compliance"],
+      "capabilities": [
+        "ownership-audit",
+        "merge-execution",
+        "conflict-resolution",
+        "build-verification",
+        "architecture-compliance"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["git-integration", "code-review"]
+      "skills": [
+        "git-integration",
+        "code-review"
+      ]
     },
     {
       "name": "code-reviewer",
@@ -426,12 +702,21 @@
       "type": "reviewer",
       "scope": "workspace",
       "location": ".agents/agents/code-reviewer/agent.md",
-      "capabilities": ["correctness-audit", "security-review", "contract-compliance", "test-coverage-check", "severity-classification"],
+      "capabilities": [
+        "correctness-audit",
+        "security-review",
+        "contract-compliance",
+        "test-coverage-check",
+        "severity-classification"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["code-review", "security-review"]
+      "skills": [
+        "code-review",
+        "security-review"
+      ]
     },
     {
       "name": "devops-release-lead",
@@ -439,13 +724,27 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/devops-release-lead/agent.md",
-      "capabilities": ["ci-cd-design", "release-versioning", "release-gate-enforcement", "observability"],
+      "capabilities": [
+        "ci-cd-design",
+        "release-versioning",
+        "release-gate-enforcement",
+        "observability"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["git-integration", "devops-practices", "testing"],
-      "workers": ["ci-pipeline-worker", "docker-worker", "release-notes-worker", "observability-worker"]
+      "skills": [
+        "git-integration",
+        "devops-practices",
+        "testing"
+      ],
+      "workers": [
+        "ci-pipeline-worker",
+        "docker-worker",
+        "release-notes-worker",
+        "observability-worker"
+      ]
     },
     {
       "name": "ci-pipeline-worker",
@@ -453,12 +752,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/ci-pipeline-worker/agent.md",
-      "capabilities": ["github-actions", "parallel-jobs", "dependency-caching", "pr-validation", "release-workflow"],
+      "capabilities": [
+        "github-actions",
+        "parallel-jobs",
+        "dependency-caching",
+        "pr-validation",
+        "release-workflow"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["git-integration"],
+      "skills": [
+        "git-integration"
+      ],
       "parent": "devops-release-lead"
     },
     {
@@ -467,12 +774,20 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/docker-worker/agent.md",
-      "capabilities": ["multi-stage-dockerfiles", "non-root-container", "health-checks", "docker-compose", "image-optimization"],
+      "capabilities": [
+        "multi-stage-dockerfiles",
+        "non-root-container",
+        "health-checks",
+        "docker-compose",
+        "image-optimization"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["git-integration"],
+      "skills": [
+        "git-integration"
+      ],
       "parent": "devops-release-lead"
     },
     {
@@ -481,12 +796,19 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/release-notes-worker/agent.md",
-      "capabilities": ["conventional-commits", "keep-a-changelog", "migration-guides", "github-release-body"],
+      "capabilities": [
+        "conventional-commits",
+        "keep-a-changelog",
+        "migration-guides",
+        "github-release-body"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["git-integration"],
+      "skills": [
+        "git-integration"
+      ],
       "parent": "devops-release-lead"
     },
     {
@@ -495,13 +817,26 @@
       "type": "lead",
       "scope": "workspace",
       "location": ".agents/agents/mobile-lead/agent.md",
-      "capabilities": ["react-native-flutter", "offline-first", "push-notifications", "device-apis", "mobile-testing"],
+      "capabilities": [
+        "react-native-flutter",
+        "offline-first",
+        "push-notifications",
+        "device-apis",
+        "mobile-testing"
+      ],
       "model": "pro",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": true,
-      "skills": ["flutter-development", "frontend-development", "testing"],
-      "workers": ["mobile-screen-worker", "push-notification-worker"]
+      "skills": [
+        "flutter-development",
+        "frontend-development",
+        "testing"
+      ],
+      "workers": [
+        "mobile-screen-worker",
+        "push-notification-worker"
+      ]
     },
     {
       "name": "mobile-screen-worker",
@@ -509,12 +844,21 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/mobile-screen-worker/agent.md",
-      "capabilities": ["screen-implementation", "navigation-wiring", "loading-skeletons", "empty-states", "platform-conventions"],
+      "capabilities": [
+        "screen-implementation",
+        "navigation-wiring",
+        "loading-skeletons",
+        "empty-states",
+        "platform-conventions"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["flutter-development", "frontend-development"],
+      "skills": [
+        "flutter-development",
+        "frontend-development"
+      ],
       "parent": "mobile-lead"
     },
     {
@@ -523,12 +867,22 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/push-notification-worker/agent.md",
-      "capabilities": ["fcm-apns-setup", "device-token-management", "deep-link-routing", "in-app-banner", "notification-channels"],
+      "capabilities": [
+        "fcm-apns-setup",
+        "device-token-management",
+        "deep-link-routing",
+        "in-app-banner",
+        "notification-channels"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["mobile-notifications", "flutter-development", "backend-development"],
+      "skills": [
+        "mobile-notifications",
+        "flutter-development",
+        "backend-development"
+      ],
       "parent": "mobile-lead"
     },
     {
@@ -537,12 +891,23 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/performance-worker/agent.md",
-      "capabilities": ["lighthouse-audit", "core-web-vitals", "bundle-analysis", "code-splitting", "image-optimization", "virtualization"],
+      "capabilities": [
+        "lighthouse-audit",
+        "core-web-vitals",
+        "bundle-analysis",
+        "code-splitting",
+        "image-optimization",
+        "virtualization"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["performance-optimization", "frontend-development", "react-patterns"],
+      "skills": [
+        "performance-optimization",
+        "frontend-development",
+        "react-patterns"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -551,12 +916,23 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/localization-worker/agent.md",
-      "capabilities": ["i18n-setup", "string-extraction", "rtl-support", "locale-formatting", "plural-rules", "locale-switcher"],
+      "capabilities": [
+        "i18n-setup",
+        "string-extraction",
+        "rtl-support",
+        "locale-formatting",
+        "plural-rules",
+        "locale-switcher"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["localization", "frontend-development", "flutter-development"],
+      "skills": [
+        "localization",
+        "frontend-development",
+        "flutter-development"
+      ],
       "parent": "frontend-lead"
     },
     {
@@ -565,12 +941,23 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/analytics-worker/agent.md",
-      "capabilities": ["event-taxonomy", "sdk-integration", "tracking-plan", "funnel-definitions", "pii-scrubbing", "server-side-tracking"],
+      "capabilities": [
+        "event-taxonomy",
+        "sdk-integration",
+        "tracking-plan",
+        "funnel-definitions",
+        "pii-scrubbing",
+        "server-side-tracking"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
-      "skills": ["analytics-tracking", "backend-development", "frontend-development"],
+      "skills": [
+        "analytics-tracking",
+        "backend-development",
+        "frontend-development"
+      ],
       "parent": "backend-lead"
     },
     {
@@ -579,14 +966,25 @@
       "type": "worker",
       "scope": "workspace",
       "location": ".agents/agents/observability-worker/agent.md",
-      "capabilities": ["sentry-integration", "structured-logging", "health-endpoints", "metrics", "alerting", "runbook"],
+      "capabilities": [
+        "sentry-integration",
+        "structured-logging",
+        "health-endpoints",
+        "metrics",
+        "alerting",
+        "runbook"
+      ],
       "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
       "blocking": true,
       "blockingNote": "devops-release-lead MUST wait for observability-report.json PASS before releasing",
-      "skills": ["observability", "backend-development", "devops-practices"],
+      "skills": [
+        "observability",
+        "backend-development",
+        "devops-practices"
+      ],
       "parent": "devops-release-lead"
     },
     {
@@ -595,12 +993,174 @@
       "type": "documenter",
       "scope": "workspace",
       "location": ".agents/agents/documentation-agent/agent.md",
-      "capabilities": ["readme-authoring", "api-reference", "architecture-docs", "adr-log", "setup-guides"],
+      "capabilities": [
+        "readme-authoring",
+        "api-reference",
+        "architecture-docs",
+        "adr-log",
+        "setup-guides"
+      ],
       "model": "flash",
       "mainAgent": true,
       "subagent": true,
       "can_delegate": false,
       "skills": []
+    },
+    {
+      "name": "stress-test-worker",
+      "type": "worker",
+      "parent": "qa-lead",
+      "model": "flash",
+      "capabilities": [
+        "load-testing",
+        "rate-limit-validation",
+        "latency-benchmarking",
+        "bottleneck-identification"
+      ],
+      "skills": [
+        "load-testing"
+      ]
+    },
+    {
+      "name": "ai-ml-lead",
+      "type": "lead",
+      "model": "pro",
+      "mainAgent": true,
+      "subagent": true,
+      "capabilities": [
+        "llm-integration",
+        "rag-architecture",
+        "vector-db-design",
+        "prompt-engineering",
+        "ai-evaluation",
+        "agent-orchestration"
+      ],
+      "skills": [
+        "ai-ml-engineering",
+        "backend-development"
+      ],
+      "workers": [
+        "rag-pipeline-worker",
+        "llm-config-worker",
+        "vector-db-worker"
+      ]
+    },
+    {
+      "name": "rag-pipeline-worker",
+      "type": "worker",
+      "parent": "ai-ml-lead",
+      "model": "flash",
+      "capabilities": [
+        "document-ingestion",
+        "chunking",
+        "embedding-generation",
+        "retrieval-logic",
+        "reranking"
+      ],
+      "skills": [
+        "ai-ml-engineering"
+      ]
+    },
+    {
+      "name": "llm-config-worker",
+      "type": "worker",
+      "parent": "ai-ml-lead",
+      "model": "flash",
+      "capabilities": [
+        "llm-client-setup",
+        "prompt-engineering",
+        "streaming-responses",
+        "fallback-chains",
+        "semantic-caching"
+      ],
+      "skills": [
+        "ai-ml-engineering"
+      ]
+    },
+    {
+      "name": "vector-db-worker",
+      "type": "worker",
+      "parent": "ai-ml-lead",
+      "model": "flash",
+      "capabilities": [
+        "vector-db-setup",
+        "index-design",
+        "hybrid-search",
+        "multi-tenancy",
+        "migration"
+      ],
+      "skills": [
+        "ai-ml-engineering",
+        "database-engineering"
+      ]
+    },
+    {
+      "name": "automation-workflow-worker",
+      "type": "worker",
+      "parent": "backend-lead",
+      "model": "flash",
+      "capabilities": [
+        "webhook-handlers",
+        "scheduled-jobs",
+        "n8n-workflows",
+        "job-queues",
+        "workflow-monitoring"
+      ],
+      "skills": [
+        "backend-development"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "software-project",
+      "name": "Full Lifecycle Greenfield Project",
+      "phases": 6,
+      "projectTypes": [
+        "fullstack",
+        "api-only",
+        "frontend-only"
+      ]
+    },
+    {
+      "id": "codebase-update",
+      "name": "Brownfield Codebase Update",
+      "phases": 6,
+      "projectTypes": [
+        "all"
+      ]
+    },
+    {
+      "id": "parallel-feature-development",
+      "name": "Parallel Feature Development",
+      "phases": 3,
+      "projectTypes": [
+        "all"
+      ]
+    },
+    {
+      "id": "integration-and-release",
+      "name": "Integration and Release",
+      "phases": 5,
+      "projectTypes": [
+        "all"
+      ]
+    },
+    {
+      "id": "ai-rag-project",
+      "name": "AI/RAG/LLM Project",
+      "phases": 6,
+      "projectTypes": [
+        "ai-rag"
+      ]
+    },
+    {
+      "id": "automation-workflow",
+      "name": "Automation Workflow Project",
+      "phases": 4,
+      "projectTypes": [
+        "automation"
+      ]
     }
   ]
 }

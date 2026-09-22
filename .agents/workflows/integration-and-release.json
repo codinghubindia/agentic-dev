@@ -6,34 +6,39 @@
     {
       "step": 1,
       "name": "Source Tree Harmonization",
-      "owner": "integration-manager",
-      "action": "Inspect branches/changes, check ownership adherence, detect file clashes"
+      "leadAgent": "integration-manager",
+      "action": "Inspect branches/changes, check ownership adherence, detect file clashes",
+      "requiredArtifacts": []
     },
     {
       "step": 2,
       "name": "Integration Build & Unit Tests",
-      "owner": "integration-manager",
-      "action": "Execute build scripts and run core unit tests"
+      "leadAgent": "integration-manager",
+      "action": "Execute build scripts and run core unit tests",
+      "requiredArtifacts": []
     },
     {
       "step": 3,
       "name": "E2E and Regression Suite",
-      "owner": "qa-lead",
+      "leadAgent": "qa-lead",
       "delegates": ["browser-e2e-tester"],
-      "action": "Run full regression and browser end-to-end tests"
+      "action": "Run full regression and browser end-to-end tests",
+      "requiredArtifacts": []
     },
     {
       "step": 4,
       "name": "Security & Architecture Review",
-      "owner": "security-lead",
+      "leadAgent": "security-lead",
       "collaborators": ["code-reviewer", "technical-architect"],
-      "action": "Audit codebase for vulnerabilities, secrets, and architecture compliance"
+      "action": "Audit codebase for vulnerabilities, secrets, and architecture compliance",
+      "requiredArtifacts": []
     },
     {
       "step": 5,
       "name": "Release Packaging & Deployment",
-      "owner": "devops-release-lead",
-      "artifacts": ["release-report.json", "CHANGELOG.md"]
+      "leadAgent": "devops-release-lead",
+      "artifacts": ["release-report.json", "CHANGELOG.md"],
+      "requiredArtifacts": ["release-report.json", "CHANGELOG.md"]
     }
   ]
 }

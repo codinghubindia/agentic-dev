@@ -12,10 +12,10 @@ tools:
   - find_by_name
   - grep_search
   - run_command
+  - send_message
 skills:
   - observability
   - backend-development
-  - devops-practices
 ---
 
 # Observability Worker

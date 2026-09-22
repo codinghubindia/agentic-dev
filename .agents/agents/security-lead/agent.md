@@ -19,7 +19,6 @@ tools:
 skills:
   - security-review
   - code-review
-  - typescript-patterns
 ---
 
 # Security Lead
@@ -105,3 +104,18 @@ Ensure the application is resilient against real-world attacks, prevents unautho
 - **Least Privilege**: Every user, service, and agent has minimum required permissions
 - **Audit Trail**: All auth events must be logged with timestamp, user, and action
 - **Fail Secure**: On authentication error, deny access — never fail open
+
+## WORKER DELEGATION GUIDE
+Security-lead performs all auditing directly (no dedicated workers). Findings are routed to the appropriate implementation lead:
+
+| Finding Type | Route To |
+|---|---|
+| Backend injection / auth vulnerability | `backend-lead` |
+| Frontend XSS / sensitive data exposure | `frontend-lead` |
+| Architecture design flaw | `technical-architect` |
+| Secret leaked in code | `project-manager` + affected lead |
+| Dependency CVE | responsible lead + `devops-release-lead` |
+| CI/CD pipeline misconfiguration | `devops-release-lead` |
+
+> **Return Protocol**: Upon completing the security audit, send a `send_message` to `project-manager` with: (1) sign-off status (PASS/FAIL/CONDITIONAL), (2) count of findings per severity, (3) path to security audit report.
+

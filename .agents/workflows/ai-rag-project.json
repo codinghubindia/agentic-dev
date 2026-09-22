@@ -1,0 +1,56 @@
+{
+  "name": "ai-rag-project",
+  "version": "1.0",
+  "description": "Pipeline for Artificial Intelligence, LLM, and RAG (Retrieval-Augmented Generation) applications.",
+  "projectTypes": ["ai-rag"],
+  "phases": [
+    {
+      "id": "phase_1_discovery",
+      "name": "Discovery & Requirements",
+      "skipConditions": ["user_skip_discovery"],
+      "agents": ["project-manager"],
+      "requiredArtifacts": ["ai-requirements.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_2_architecture",
+      "name": "AI Architecture",
+      "skipConditions": ["user_skip_architecture"],
+      "agents": ["technical-architect", "ai-ml-lead"],
+      "requiredArtifacts": ["ai-architecture.md", "data-pipeline-spec.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_3_implementation",
+      "name": "Parallel Implementation",
+      "skipConditions": [],
+      "agents": ["ai-ml-lead", "backend-lead", "data-lead", "frontend-lead"],
+      "requiredArtifacts": ["ai_impl_complete_flag"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_4_testing",
+      "name": "AI Testing & Evaluation",
+      "skipConditions": ["user_skip_testing"],
+      "agents": ["qa-lead", "ai-ml-lead"],
+      "requiredArtifacts": ["eval-benchmarks.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_5_security",
+      "name": "Integration & Security",
+      "skipConditions": ["user_skip_security"],
+      "agents": ["security-lead"],
+      "requiredArtifacts": ["ai-security-audit.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_6_deployment",
+      "name": "Deployment",
+      "skipConditions": ["user_skip_deployment"],
+      "agents": ["devops-release-lead"],
+      "requiredArtifacts": ["deployment-success_flag"],
+      "hardGate": true
+    }
+  ]
+}

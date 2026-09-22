@@ -221,3 +221,63 @@ app.use(helmet());
 - Integration tests for every API endpoint (supertest + test DB)
 - Cover: happy path, validation rejection (400), auth failure (401/403), not-found (404)
 - Minimum coverage: 85% service layer, 70% controllers
+
+---
+
+## Rate Limiting & Caching
+
+1. **Express Rate Limiting** with Redis store:
+```javascript
+import rateLimit from 'express-rate-limit';
+import RedisStore from 'rate-limit-redis';
+import { redisClient } from './redis';
+
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: new RedisStore({ sendCommand: (...args) => redisClient.sendCommand(args) }),
+  handler: (req, res) => res.status(429).json({ error: 'Too many requests', retryAfter: res.getHeader('Retry-After') }),
+});
+
+// Tiered limiting: authenticated users get higher limits
+export const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 500, store: ... });
+```
+
+2. **Redis Caching Patterns**:
+```javascript
+// Cache-aside pattern
+async function getCachedUser(userId: string) {
+  const cached = await redis.get(`user:${userId}`);
+  if (cached) return JSON.parse(cached);
+  const user = await userRepo.findById(userId);
+  await redis.setex(`user:${userId}`, 300, JSON.stringify(user)); // 5 min TTL
+  return user;
+}
+
+// Cache invalidation on update
+async function updateUser(userId: string, data: UpdateUserDto) {
+  const updated = await userRepo.update(userId, data);
+  await redis.del(`user:${userId}`); // Invalidate
+  return updated;
+}
+```
+
+3. **HTTP Caching Headers**:
+```javascript
+// For public, cacheable resources
+res.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+// For authenticated user data
+res.set('Cache-Control', 'private, no-cache');
+// ETags for conditional requests
+res.set('ETag', generateETag(data));
+```
+
+4. **In-memory caching** (node-cache for simple cases without Redis):
+```javascript
+import NodeCache from 'node-cache';
+const cache = new NodeCache({ stdTTL: 60, checkperiod: 120 });
+```
+
+5. **Rate limiting decision guide**: when to use IP-level vs user-level vs API-key-level rate limiting

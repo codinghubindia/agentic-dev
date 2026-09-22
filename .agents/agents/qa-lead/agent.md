@@ -55,6 +55,7 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 7. **Defect Classification**: Triage all test failures as: Critical (blocks release), Major (must fix this sprint), Minor (backlog). Route each to the responsible lead.
 8. **Test Sign-Off**: Author and sign `qa-report.json`. A signed QA report is required before `devops-release-lead` can package a release.
 9. **Test Debt**: Track untested paths and escalate coverage gaps to `project-manager`.
+10. **Load & Stress Testing**: Invoke `stress-test-worker` after integration to validate performance under load and confirm rate limiting. Required for all production-grade projects.
 
 ## INPUT CONTRACT
 - Integrated build from `integration-manager`
@@ -78,13 +79,14 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
    - browser-e2e-tester → full browser user journey tests
 4. Collect results from all workers
 5. Run regression-test-worker → compare against baseline
-6. Triage all failures:
+6. Invoke stress-test-worker → load test all critical endpoints; validate rate limiting returns 429s at correct thresholds
+7. Triage all failures:
    - Critical → block release, route to lead immediately
    - Major → must fix before sign-off
    - Minor → log, continue
-7. Re-run failed test areas after fixes
-8. Write and sign qa-report.json
-9. Report to project-manager: PASS or FAIL with details
+8. Re-run failed test areas after fixes
+9. Write and sign qa-report.json
+10. Report to project-manager: PASS or FAIL with details
 ```
 
 ## QUALITY CRITERIA
@@ -106,3 +108,4 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 | Write and run API/service integration tests | `integration-test-worker` |
 | Run full browser user-journey E2E tests | `browser-e2e-tester` |
 | Run regression suite against baseline | `regression-test-worker` |
+| Write and run load/stress tests, validate rate limiting | `stress-test-worker` |

@@ -1,50 +1,65 @@
 {
-  "workflowId": "software-project",
-  "name": "Full Lifecycle Software Project Workflow",
-  "description": "Orchestrates an end-to-end software engineering cycle from requirements to architecture, parallel development, integration, QA, and release.",
+  "name": "software-project",
+  "version": "2.0",
+  "description": "Standard end-to-end software delivery lifecycle pipeline.",
+  "projectTypes": ["fullstack", "frontend-only", "mobile-app", "api-only"],
   "phases": [
     {
-      "phase": 1,
-      "name": "Discovery & Planning",
-      "leadAgent": "project-manager",
-      "artifacts": ["project-plan.json", "milestones.json"]
+      "id": "phase_1_requirements",
+      "name": "Requirements & Architecture",
+      "skipConditions": ["user_skip_requirements", "has_existing_architecture"],
+      "agents": ["technical-architect"],
+      "requiredArtifacts": ["architecture-blueprint.md", "api-contract.json"],
+      "hardGate": true
     },
     {
-      "phase": 2,
-      "name": "Architecture & Contracts",
-      "leadAgent": "technical-architect",
-      "artifacts": ["architecture.json", "api-contract.json", "ownership-map.json"]
+      "id": "phase_2_database",
+      "name": "Data Modeling",
+      "skipConditions": ["no_database", "api-only_no_db", "frontend-only"],
+      "agents": ["data-lead"],
+      "requiredArtifacts": ["schema-design.md", "migrations.sql"],
+      "hardGate": true
     },
     {
-      "phase": 3,
-      "name": "Parallel Implementation",
-      "agents": [
-        "backend-lead",
-        "frontend-lead",
-        "data-lead",
-        "security-lead",
-        "uiux-lead"
-      ],
-      "executionMode": "PARALLEL",
-      "artifacts": ["backend/", "frontend/", "database/"]
+      "id": "phase_3_design",
+      "name": "UI/UX Design",
+      "skipConditions": ["api-only", "no_frontend", "user_skip_design"],
+      "agents": ["uiux-lead"],
+      "requiredArtifacts": ["design-system.md", "component-specs.md"],
+      "hardGate": true
     },
     {
-      "phase": 4,
-      "name": "Integration & Conflict Resolution",
-      "leadAgent": "integration-manager",
-      "artifacts": ["integration-report.json"]
+      "id": "phase_4_implementation",
+      "name": "Core Implementation",
+      "skipConditions": [],
+      "agents": ["backend-lead", "frontend-lead", "mobile-lead"],
+      "requiredArtifacts": ["implementation_complete_flag"],
+      "hardGate": true,
+      "dependsOn": ["phase_3_design"]
     },
     {
-      "phase": 5,
-      "name": "Verification & Code Review",
-      "agents": ["code-reviewer", "qa-lead", "browser-e2e-tester", "security-lead"],
-      "artifacts": ["qa-report.json", "code-review.json"]
+      "id": "phase_5_qa",
+      "name": "Quality Assurance",
+      "skipConditions": ["user_skip_testing"],
+      "agents": ["qa-lead", "security-lead"],
+      "requiredArtifacts": ["test-report.md", "security-signoff.md"],
+      "hardGate": true
     },
     {
-      "phase": 6,
-      "name": "Documentation & Release",
-      "agents": ["documentation-agent", "devops-release-lead"],
-      "artifacts": ["README.md", "release-report.json"]
+      "id": "phase_5_5_stress_testing",
+      "name": "Performance & Stress Testing",
+      "skipConditions": ["user_skip_stress_testing", "low_traffic_app"],
+      "agents": ["performance-worker", "qa-lead"],
+      "requiredArtifacts": ["performance-report.md"],
+      "hardGate": false
+    },
+    {
+      "id": "phase_6_deployment",
+      "name": "Release & Deployment",
+      "skipConditions": ["user_skip_deployment", "local_only"],
+      "agents": ["devops-release-lead", "documentation-agent"],
+      "requiredArtifacts": ["release-notes.md", "deployment-success_flag"],
+      "hardGate": true
     }
   ]
 }

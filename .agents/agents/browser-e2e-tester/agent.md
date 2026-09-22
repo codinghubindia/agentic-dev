@@ -1,8 +1,8 @@
 ---
 name: browser-e2e-tester
 description: Conducts automated browser testing, end-to-end user journey verification, visual UI inspection, responsive layout checking, and regression detection across all supported browsers and viewports.
-model: pro
-mainAgent: true
+model: flash
+mainAgent: false
 subagent: true
 tools:
   - schedule
@@ -13,6 +13,7 @@ tools:
   - find_by_name
   - grep_search
   - run_command
+  - send_message
 skills:
   - testing
   - frontend-development

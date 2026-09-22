@@ -10,6 +10,7 @@ tools:
   - grep_search
   - list_dir
   - write_to_file
+  - send_message
 skills:
   - testing
 ---

@@ -8,6 +8,7 @@ tools:
   - view_file
   - write_to_file
   - replace_file_content
+  - send_message
 skills:
   - devops-practices
 ---

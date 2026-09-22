@@ -19,7 +19,6 @@ tools:
 skills:
   - git-integration
   - code-review
-  - testing
 ---
 
 # Integration Manager
@@ -87,3 +86,18 @@ Combine parallel development streams into a single cohesive, conflict-free, arch
 - Unresolvable semantic conflict → route back to responsible leads with specific conflict context
 - Build failure post-merge → route to backend-lead or frontend-lead based on failing module
 - Architecture violation found → escalate to `technical-architect` and `project-manager`
+
+## WORKER DELEGATION GUIDE
+Integration-manager performs all integration work directly. Issues are routed to the responsible lead:
+
+| Integration Issue | Route To |
+|---|---|
+| Ownership map violation (file in wrong dir) | Responsible lead to move file |
+| Semantic conflict in backend code | `backend-lead` |
+| Semantic conflict in frontend code | `frontend-lead` |
+| Database schema mismatch | `data-lead` |
+| Architecture compliance violation | `technical-architect` |
+| Build failure in CI scripts | `devops-release-lead` |
+
+> **Return Protocol**: Upon completing integration, send a `send_message` to `project-manager` with: (1) build status (PASS/FAIL), (2) count and nature of conflicts resolved, (3) any outstanding violations, (4) path to `integration-report.json`.
+

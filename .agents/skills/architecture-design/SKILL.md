@@ -186,3 +186,51 @@ Document these decisions in `architecture.json`:
 - **Job queues**: Bull/BullMQ for async tasks (emails, notifications, exports)
 - **CDN**: Static assets served from CDN (S3 + CloudFront / Cloudflare)
 - **Rate limiting**: At API gateway level for distributed rate limiting
+
+---
+
+## Scalability, Caching, and Rate Limiting Architecture
+
+1. **Caching Layers**:
+   - L1: In-process memory (fastest, per-instance, limited size)
+   - L2: Redis (shared across instances, sub-ms, TTL support)
+   - L3: CDN (edge caching for static + cacheable API responses)
+   - DB query cache (PostgreSQL's query planner cache, read replicas)
+
+2. **Rate Limiting Architecture Levels**:
+   - API Gateway level (Nginx, AWS API Gateway, Cloudflare)
+   - Application level (express-rate-limit)
+   - Database level (connection pooling, query timeouts)
+
+3. **Horizontal Scaling Checklist**:
+   - [ ] All services are stateless (no in-memory sessions)
+   - [ ] Session/auth state stored in Redis
+   - [ ] File uploads go to S3/object storage (not local disk)
+   - [ ] Scheduled jobs use a distributed lock (Redlock)
+   - [ ] WebSocket connections use Redis pub/sub for cross-instance messaging
+
+4. **`architecture.json` scalability fields** example:
+```json
+{
+  "rateLimiting": {
+    "strategy": "redis-sliding-window",
+    "tiers": [
+      {"name": "anonymous", "requestsPerWindow": 20, "windowMs": 60000},
+      {"name": "authenticated", "requestsPerWindow": 200, "windowMs": 60000},
+      {"name": "premium", "requestsPerWindow": 1000, "windowMs": 60000}
+    ]
+  },
+  "cachingStrategy": {
+    "l1": {"enabled": false},
+    "l2": {"enabled": true, "provider": "redis", "defaultTTL": 300},
+    "l3": {"enabled": true, "provider": "cloudflare", "staticAssetMaxAge": 86400}
+  },
+  "scalingPlan": {
+    "strategy": "horizontal",
+    "minInstances": 2,
+    "maxInstances": 10,
+    "scaleOnCPU": 70,
+    "stateStorage": "redis"
+  }
+}
+```

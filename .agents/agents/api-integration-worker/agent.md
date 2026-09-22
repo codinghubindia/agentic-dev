@@ -9,6 +9,7 @@ tools:
   - write_to_file
   - replace_file_content
   - grep_search
+  - send_message
 skills:
   - frontend-development
   - react-patterns

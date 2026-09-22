@@ -2,39 +2,34 @@
   "workflowId": "parallel-feature-development",
   "name": "Parallel Feature Development Workflow",
   "description": "Guides parallel execution across backend, frontend, database, and security streams based on defined contracts and ownership boundaries.",
-  "prerequisites": [
-    "architecture.json",
-    "api-contract.json",
-    "ownership-map.json"
-  ],
-  "streams": [
+  "prerequisites": ["architecture.json", "api-contract.json", "ownership-map.json"],
+  "phases": [
     {
-      "stream": "backend",
-      "owner": "backend-lead",
-      "scope": ["backend/", "server/"],
-      "contract": "api-contract.json"
+      "phase": 1,
+      "name": "Parallel Implementation Streams",
+      "executionMode": "PARALLEL",
+      "agents": ["backend-lead", "frontend-lead", "data-lead", "security-lead"],
+      "streams": [
+        {"name": "backend", "owner": "backend-lead", "scope": ["backend/", "server/"], "contract": "api-contract.json"},
+        {"name": "frontend", "owner": "frontend-lead", "scope": ["frontend/", "src/", "public/"], "contract": "api-contract.json"},
+        {"name": "database", "owner": "data-lead", "scope": ["database/", "migrations/", "models/"], "contract": "architecture.json"},
+        {"name": "security", "owner": "security-lead", "scope": ["security/", "auth/"], "contract": "architecture.json"}
+      ],
+      "requiredArtifacts": ["backend-handoff-report.json", "frontend-handoff-report.json"]
     },
     {
-      "stream": "frontend",
-      "owner": "frontend-lead",
-      "scope": ["frontend/", "src/", "public/"],
-      "contract": "api-contract.json"
+      "phase": 2,
+      "name": "Integration & Synchronization",
+      "executionMode": "SEQUENTIAL",
+      "leadAgent": "integration-manager",
+      "requiredArtifacts": ["integration-report.json"]
     },
     {
-      "stream": "database",
-      "owner": "data-lead",
-      "scope": ["database/", "migrations/", "models/"],
-      "contract": "architecture.json"
-    },
-    {
-      "stream": "security",
-      "owner": "security-lead",
-      "scope": ["security/", "auth/"],
-      "contract": "architecture.json"
+      "phase": 3,
+      "name": "Validation",
+      "executionMode": "SEQUENTIAL",
+      "leadAgent": "qa-lead",
+      "requiredArtifacts": ["qa-report.json"]
     }
-  ],
-  "synchronizationPoint": {
-    "coordinator": "integration-manager",
-    "action": "merge and run automated test suite"
-  }
+  ]
 }

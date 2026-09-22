@@ -9,6 +9,7 @@ tools:
   - replace_file_content
   - grep_search
   - list_dir
+  - send_message
 skills:
   - frontend-development
   - react-patterns

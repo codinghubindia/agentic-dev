@@ -10,6 +10,7 @@ tools:
   - replace_file_content
   - run_command
   - grep_search
+  - send_message
 skills:
   - database-engineering
 ---

@@ -1,7 +1,7 @@
 ---
 name: mockup-wireframe-worker
 description: Generates UI wireframes, high-fidelity mockups, and design inspiration boards — browses real UI websites (Dribbble, Behance, Awwwards, Mobbin, Screenlane, UI8) for visual inspiration, then produces structured wireframe specs and generated screen mockups. Works under uiux-lead.
-model: pro
+model: flash
 mainAgent: false
 subagent: true
 tools:
@@ -15,6 +15,7 @@ tools:
   - search_web
   - read_url_content
   - ask_question
+  - send_message
 skills:
   - uiux-design
 ---

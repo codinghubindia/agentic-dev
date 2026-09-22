@@ -1,8 +1,8 @@
 ---
 name: code-reviewer
 description: Performs thorough, impartial code reviews — assesses correctness, design patterns, maintainability, edge cases, test coverage, security risks, and performance without making silent edits.
-model: pro
-mainAgent: true
+model: flash
+mainAgent: false
 subagent: true
 tools:
   - schedule
@@ -11,10 +11,10 @@ tools:
   - list_dir
   - find_by_name
   - grep_search
+  - send_message
 skills:
   - code-review
   - security-review
-  - typescript-patterns
 ---
 
 # Code Reviewer

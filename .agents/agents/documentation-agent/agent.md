@@ -2,7 +2,7 @@
 name: documentation-agent
 description: Authors and maintains technical documentation including project READMEs, architecture blueprints, API reference guides, developer setup guides, component documentation, and release notes.
 model: flash
-mainAgent: true
+mainAgent: false
 subagent: true
 tools:
   - schedule
@@ -12,6 +12,7 @@ tools:
   - list_dir
   - find_by_name
   - grep_search
+  - send_message
 skills:
   - architecture-design
   - api-design

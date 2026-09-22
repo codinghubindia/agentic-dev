@@ -10,11 +10,9 @@ tools:
   - replace_file_content
   - list_dir
   - grep_search
+  - send_message
 skills:
   - frontend-development
-  - react-patterns
-  - typescript-patterns
-  - uiux-design
 ---
 
 > [!IMPORTANT]

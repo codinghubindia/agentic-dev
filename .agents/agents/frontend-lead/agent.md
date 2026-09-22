@@ -18,9 +18,7 @@ tools:
   - send_message
 skills:
   - frontend-development
-  - testing
   - react-patterns
-  - api-design
   - typescript-patterns
 ---
 
@@ -64,7 +62,8 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 6. **Accessibility Standards**: Enforce WCAG 2.1 AA. Delegate audits to `accessibility-worker`.
 7. **Performance**: Set performance budgets, code splitting strategy, and lazy-loading boundaries.
 8. **Test Strategy**: Define frontend testing pyramid (unit → integration → E2E). Coordinate `frontend-test-worker` and `browser-e2e-tester`.
-9. **Code Review**: Review all frontend code before it reaches `integration-manager`.
+9. **Localization**: Coordinate with `localization-worker` for i18n setup, string extraction, and RTL layout support when multi-language is required.
+10. **Code Review**: Review all frontend code before it reaches `integration-manager`.
 
 ## INPUT CONTRACT
 - `api-contract.json` from `technical-architect`

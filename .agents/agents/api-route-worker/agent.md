@@ -9,10 +9,10 @@ tools:
   - write_to_file
   - replace_file_content
   - grep_search
+  - send_message
 skills:
   - backend-development
   - api-design
-  - typescript-patterns
 ---
 
 > [!IMPORTANT]
