@@ -66,7 +66,7 @@ You own all persistent knowledge. You validate quality before persisting (no tri
    e. Mark event processed=true
 
    IF type = "error-fingerprint":
-   a. Read .agent_execution/error-registry.json
+   a. Read .agents/memory/error-registry.json
    b. Check if fingerprint already exists (partial string match)
    c. If new: add entry with resolution, tags, source, firstSeen, occurrences=1
    d. If exists: increment occurrences counter

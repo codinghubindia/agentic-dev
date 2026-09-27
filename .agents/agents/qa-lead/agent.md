@@ -156,7 +156,7 @@ Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.js
 
 ## ERROR FINGERPRINT REGISTRY
 
-Before debugging ANY error, check `.agent_execution/error-registry.json`:
+Before debugging ANY error, check `.agents/memory/error-registry.json`:
 
 1. **Read** the registry (if it exists)
 2. **Search** for a matching `fingerprint` (partial string match on the error message)

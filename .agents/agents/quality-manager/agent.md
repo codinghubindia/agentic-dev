@@ -75,7 +75,7 @@ Run all quality gates simultaneously, aggregate results, route defects to respon
    - Include: specific file, issue description, expected fix
 
 5. UPDATE AGENT REPUTATION:
-   - Read .agent_execution/agent-reputation.json (create if missing)
+   - Read .agents/memory/agent-reputation.json (create if missing)
    - For each agent that produced output:
      → If output passed all gates first try: increment firstPassCount
      → If required retry: increment retryCount
