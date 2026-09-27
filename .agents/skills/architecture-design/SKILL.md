@@ -2,7 +2,7 @@
 name: architecture-design
 description: Comprehensive guide for designing scalable software architectures — API-first design, system boundary definition, technology selection, ownership mapping, 12-factor app principles, and architecture decision records.
 refreshMode: protected
-lastResearched: 2026-09-27
+lastResearched: 2026-09-28
 ---
 
 # Architecture Design Skill

@@ -2,7 +2,7 @@
 name: database-engineering
 description: Comprehensive guide for database schema design, normalization, migration management, indexing strategy, query optimization, N+1 prevention, seed data, and ORM best practices for PostgreSQL and MongoDB.
 refreshMode: sections
-lastResearched: 2026-09-27
+lastResearched: 2026-09-28
 refreshableSections:
   - "ORM patterns"
   - "Migration tooling"

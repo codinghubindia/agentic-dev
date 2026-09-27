@@ -2,7 +2,7 @@
 name: code-review
 description: Systematic code audit guide covering correctness, contract compliance, security vulnerabilities, performance anti-patterns, test coverage gaps, naming quality, and maintainability — with severity classification for each finding.
 refreshMode: protected
-lastResearched: 2026-09-27
+lastResearched: 2026-09-28
 ---
 
 # Code Review Skill

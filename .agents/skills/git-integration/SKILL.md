@@ -2,7 +2,7 @@
 name: git-integration
 description: Comprehensive guide for Git branching strategies, worktree isolation for parallel agent execution, merge conflict resolution, conventional commits, semantic versioning, CI gate enforcement, and safe integration protocols.
 refreshMode: sections
-lastResearched: 2026-09-27
+lastResearched: 2026-09-28
 refreshableSections:
   - "Tooling"
 protectedSections:

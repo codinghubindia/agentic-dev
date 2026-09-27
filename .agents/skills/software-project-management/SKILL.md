@@ -2,7 +2,7 @@
 name: software-project-management
 description: Comprehensive guide for multi-agent software project management — requirements ingestion, task decomposition using schema, parallel stream identification, milestone tracking, blocker management, and sprint retrospectives.
 refreshMode: protected
-lastResearched: 2026-09-27
+lastResearched: 2026-09-28
 ---
 
 # Software Project Management Skill

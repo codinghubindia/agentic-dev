@@ -2,7 +2,7 @@
 name: mobile-notifications
 description: Mobile push notification guide covering FCM (Firebase Cloud Messaging) and APNs (Apple Push Notification service) setup, flutter_firebase_messaging and flutter_local_notifications configuration, device token registration and refresh lifecycle, foreground/background/cold-start handling, notification payload design, deep-link routing from notifications, Android notification channels with importance levels, iOS notification categories, in-app notification banners, permission request UX patterns, server-side notification dispatch with stale token cleanup, and notification testing checklist.
 refreshMode: full
-lastResearched: 2024-01-01
+lastResearched: 2026-09-28
 ---
 
 # Mobile Notifications Skill

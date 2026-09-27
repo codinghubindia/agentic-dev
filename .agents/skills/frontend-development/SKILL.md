@@ -1,81 +1,175 @@
 ---
 name: frontend-development
-description: Comprehensive guide for building modern React frontends — component architecture, TypeScript patterns, state management, API integration with React Query, accessibility (WCAG 2.1 AA), performance optimization, and testing with React Testing Library.
+description: Comprehensive guide for building modern React frontends — component architecture, TypeScript patterns, state management (TanStack Query v5, Zustand v5), Vite 6, Tailwind CSS (v4 & v3), accessibility (WCAG 2.1 AA), and testing with Vitest and MSW v2.
 refreshMode: full
-lastResearched: 2024-01-01
+lastResearched: 2026-09-28
+sources:
+  - https://react.dev/blog/2024/12/05/react-19
+  - https://react.dev/reference/react/useActionState
+  - https://react.dev/learn/you-might-not-need-an-effect
+  - https://vite.dev/guide/
+  - https://tailwindcss.com/docs/installation/framework-guides/vite
+  - https://tanstack.com/query/v5/docs/react/overview
+  - https://zustand.docs.pmnd.rs/
+  - https://testing-library.com/docs/react-testing-library/intro/
+  - https://mswjs.io/docs/
 ---
 
-# Frontend Development Skill
+## Overview
+This skill provides standards, architectural patterns, and production-tested practices for building robust React web frontends. It covers project bootstrapping with Vite and strict TypeScript, styling with Tailwind CSS (v4 and v3), declarative state management separating client state (Zustand v5) and server state (TanStack Query v5), asynchronous transitions, accessibility (WCAG 2.1 AA), and behavioral testing with Vitest, React Testing Library, and Mock Service Worker (MSW v2).
 
-Standards and procedures for building production-grade React web frontends in a multi-agent software company.
+## Key Patterns
 
----
+### Pattern 1: Project Setup with Vite & Tailwind CSS (v4 & v3)
+Bootstrap modern React applications using Vite with strict TypeScript and proper path resolution.
 
-## 1. Project Structure
-
+```bash
+# Initialize React + TypeScript application
+npm create vite@latest frontend -- --template react-ts
+cd frontend
+npm install
+npm install -D @types/node
 ```
-frontend/
-├── src/
-│   ├── api/                  # typed API client functions (one file per domain)
-│   ├── components/
-│   │   ├── ui/               # base design-system components (Button, Input, Modal...)
-│   │   └── features/         # feature-specific composed components
-│   ├── hooks/                # custom React hooks (useAuth, useUsers, usePagination)
-│   ├── pages/                # route-level page components
-│   ├── routes/               # route config, auth guards, lazy loading
-│   ├── store/                # global state (Zustand / Redux slices)
-│   ├── styles/               # global CSS, design tokens, theme
-│   ├── types/                # shared TypeScript interfaces/types
-│   └── utils/                # pure utility functions
-├── public/
-├── index.html
-└── vite.config.ts
+
+**Tailwind CSS Setup (Tailwind v4 — Recommended Default):**
+```bash
+npm install tailwindcss @tailwindcss/vite
 ```
 
----
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
 
-## 2. TypeScript — Strict Mode
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@tanstack') || id.includes('zustand')) return 'state';
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) return 'framework';
+          }
+        },
+      },
+    },
+  },
+});
+```
 
-Always enable strict TypeScript:
+```css
+/* src/index.css (Tailwind v4) */
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #2563eb;
+  --color-brand-secondary: #475569;
+}
+```
+
 ```json
 // tsconfig.json
-{ "compilerOptions": { "strict": true, "noUncheckedIndexedAccess": true } }
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src"]
+}
 ```
-- Never use `any` — use `unknown` + narrowing when the type is genuinely unknown
-- All component props must have explicit TypeScript interfaces
-- API response types derived from `api-contract.json` — use a shared types package or generated types
+
+*Note for Tailwind CSS v3 Projects:* If working with an existing Tailwind v3 project, install `tailwindcss postcss autoprefixer`, initialize with `npx tailwindcss init -p` to guarantee both `tailwind.config.js` and `postcss.config.js` are created, configure the `content` array for `./src/**/*.{ts,tsx}`, and use `@tailwind base; @tailwind components; @tailwind utilities;` in `src/index.css`.
 
 ---
 
-## 3. Component Architecture
+### Pattern 2: Component Architecture & React 19/18 Conventions
+Maintain strict separation of concerns across directory boundaries:
+- `components/ui/`: Dumb presentational primitives with explicit prop types and no data fetching.
+- `components/features/`: Composed domain features wiring UI components with state hooks.
+- `pages/`: Route-level orchestrators managing layout and page-level metadata.
 
-**Separation of concerns:**
-- `ui/` components: purely presentational, no data fetching, no business logic, only props
-- `features/` components: composed from `ui/` + hooks, may call API hooks
-- `pages/` components: orchestrate features for a route, handle page-level layout
-
-**Component file structure:**
 ```typescript
-// components/ui/Button/Button.tsx
-interface ButtonProps {
-  variant: 'primary' | 'secondary' | 'danger';
+// src/utils/cn.ts
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
+```
+
+```tsx
+// src/components/ui/Button.tsx
+import React from 'react';
+import { cn } from '@/utils/cn';
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
   loading?: boolean;
-  onClick?: () => void;
-  children: React.ReactNode;
-  'aria-label'?: string;
 }
 
-export function Button({ variant, size = 'md', disabled, loading, children, ...props }: ButtonProps) {
+// In React 19, ref is accepted directly as a standard prop (no forwardRef needed)
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled,
+  className,
+  children,
+  ref,
+  ...props
+}: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+  
+  const variants = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500',
+    secondary: 'bg-slate-200 text-slate-900 hover:bg-slate-300 focus-visible:ring-slate-400',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500',
+    ghost: 'hover:bg-slate-100 text-slate-700 focus-visible:ring-slate-400',
+  };
+
+  const sizes = {
+    sm: 'h-8 px-3 text-xs',
+    md: 'h-10 px-4 text-sm',
+    lg: 'h-12 px-6 text-base',
+  };
+
   return (
     <button
-      className={cn(styles.button, styles[variant], styles[size])}
+      ref={ref}
+      className={cn(baseStyles, variants[variant], sizes[size], className)}
       disabled={disabled || loading}
       aria-disabled={disabled || loading}
       {...props}
     >
-      {loading ? <Spinner size="sm" aria-hidden /> : children}
+      {loading ? (
+        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+      ) : null}
+      {children}
     </button>
   );
 }
@@ -83,155 +177,427 @@ export function Button({ variant, size = 'md', disabled, loading, children, ...p
 
 ---
 
-## 4. API Integration — React Query
-
-Use React Query (TanStack Query) for all server state:
+### Pattern 3: Server State Management with TanStack Query v5
+Server state is asynchronous, cached, and owned remotely. Define queries using `queryOptions` factories for full type inference and testability.
 
 ```typescript
-// hooks/useUsers.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getUsers, createUser } from '@/api/users';
+// src/api/users.ts
+import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useUsers = (page: number) =>
-  useQuery({
-    queryKey: ['users', page],
-    queryFn: () => getUsers({ page }),
-    staleTime: 1000 * 60 * 5,    // 5 minutes
-    placeholderData: (prev) => prev,  // keep previous page while loading
-  });
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'member';
+}
 
-export const useCreateUser = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: createUser,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['users'] }),
-  });
+export const userQueries = {
+  all: () => ['users'] as const,
+  list: (page: number) =>
+    queryOptions({
+      queryKey: [...userQueries.all(), 'list', page],
+      queryFn: async (): Promise<{ users: User[]; totalPages: number }> => {
+        const res = await fetch(`/api/users?page=${page}`);
+        if (!res.ok) throw new Error('Failed to fetch users');
+        return res.json();
+      },
+      staleTime: 1000 * 60 * 5, // 5 minutes fresh
+    }),
+  detail: (id: string) =>
+    queryOptions({
+      queryKey: [...userQueries.all(), 'detail', id],
+      queryFn: async (): Promise<User> => {
+        const res = await fetch(`/api/users/${id}`);
+        if (!res.ok) throw new Error(`Failed to fetch user ${id}`);
+        return res.json();
+      },
+      staleTime: 1000 * 60 * 10,
+    }),
 };
+
+export function useCreateUserMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newUser: Omit<User, 'id'>): Promise<User> => {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser),
+      });
+      if (!res.ok) throw new Error('Failed to create user');
+      return res.json();
+    },
+    // Optimistic cache invalidation
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userQueries.all() });
+    },
+  });
+}
 ```
 
-- Always handle: `isLoading`, `isError`, `error`, `data` states in the component
-- Use `staleTime` to prevent unnecessary refetches
-- Invalidate queries after mutations — never manually update cache
+```tsx
+// src/components/features/UserList.tsx
+import { useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { userQueries } from '@/api/users';
+import { Button } from '@/components/ui/Button';
+
+export function UserList() {
+  const [page, setPage] = useState(1);
+  const { data, isPending, isError, error, isPlaceholderData } = useQuery({
+    ...userQueries.list(page),
+    placeholderData: keepPreviousData, // Replaces keepPreviousData: true in v5
+  });
+
+  if (isPending) return <div role="status">Loading users...</div>;
+  if (isError) return <div role="alert" className="text-red-600">{error.message}</div>;
+
+  return (
+    <section aria-labelledby="users-heading" className="space-y-4">
+      <h2 id="users-heading" className="text-xl font-bold">User Directory</h2>
+      <ul className="divide-y divide-slate-200">
+        {data.users.map((user) => (
+          <li key={user.id} className="py-2 flex justify-between">
+            <span>{user.name}</span>
+            <span className="text-slate-500">{user.email}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={page === 1}
+          onClick={() => setPage((old) => Math.max(old - 1, 1))}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={isPlaceholderData || page >= data.totalPages}
+          onClick={() => setPage((old) => old + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </section>
+  );
+}
+```
 
 ---
 
-## 5. State Management (Zustand)
-
-For global client state (auth, UI preferences, cart, etc.):
+### Pattern 4: Client State Management with Zustand v5
+Use Zustand exclusively for true client-side global state (authentication session, UI preferences, drafts). Use `useShallow` from `zustand/react/shallow` to prevent unnecessary re-renders when selecting multiple state properties.
 
 ```typescript
-// store/authStore.ts
+// src/store/authStore.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { useShallow } from 'zustand/react/shallow';
+
+interface UserSession {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+}
 
 interface AuthState {
-  user: User | null;
-  token: string | null;
-  login: (user: User, token: string) => void;
+  session: UserSession | null;
+  theme: 'light' | 'dark' | 'system';
+  setSession: (session: UserSession) => void;
   logout: () => void;
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      user: null,
-      token: null,
-      login: (user, token) => set({ user, token }),
-      logout: () => set({ user: null, token: null }),
+      session: null,
+      theme: 'system',
+      setSession: (session) => set({ session }),
+      logout: () => set({ session: null }),
+      setTheme: (theme) => set({ theme }),
     }),
-    { name: 'auth-storage' }
+    {
+      name: 'app-auth-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ session: state.session, theme: state.theme }),
+    }
   )
 );
-```
 
-- Only put **client-only** state in Zustand (server state belongs in React Query)
-- Persist auth token to localStorage via `persist` middleware
-- On logout: clear ALL persisted state — no stale user data
-
----
-
-## 6. Routing with Protected Routes
-
-```typescript
-// routes/ProtectedRoute.tsx
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '@/store/authStore';
-
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = useAuthStore(s => s.token);
-  const location = useLocation();
-
-  if (!token) {
-    // Preserve the intended destination for post-login redirect
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-  return <>{children}</>;
+// Selector hook with useShallow optimization
+export function useCurrentUser() {
+  return useAuthStore(
+    useShallow((state) => ({
+      isAuthenticated: Boolean(state.session?.token),
+      user: state.session,
+      logout: state.logout,
+    }))
+  );
 }
 ```
 
-- All routes behind auth must use `ProtectedRoute`
-- No flash of protected content — check auth BEFORE rendering
-- Use `React.lazy` + `Suspense` for code-splitting every route
-
 ---
 
-## 7. Error Boundaries
+### Pattern 5: React Actions & Responsive Transitions (`useActionState`, `useTransition`)
+Modern React forms and async triggers leverage Actions and Transitions to avoid uncoordinated loading spinners and UI freezes.
 
-Wrap feature sections with error boundaries to prevent full-page crashes:
+```tsx
+// src/components/features/UpdateProfileForm.tsx
+import { useActionState, useTransition } from 'react';
+import { Button } from '@/components/ui/Button';
 
-```typescript
-// In page-level components:
-<ErrorBoundary fallback={<ErrorFallback />}>
-  <UsersList />
-</ErrorBoundary>
+interface ActionResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+async function updateProfile(previousState: ActionResponse, formData: FormData): Promise<ActionResponse> {
+  const username = formData.get('username') as string;
+  try {
+    const res = await fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    });
+    if (!res.ok) throw new Error('Profile update failed');
+    return { success: true, message: 'Profile updated successfully' };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export function UpdateProfileForm({ initialName }: { initialName: string }) {
+  const [state, formAction, isPending] = useActionState(updateProfile, { success: false });
+
+  return (
+    <form action={formAction} className="space-y-4 max-w-md">
+      <div>
+        <label htmlFor="username" className="block text-sm font-medium text-slate-700">
+          Username
+        </label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          defaultValue={initialName}
+          required
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
+
+      {state.error ? (
+        <p role="alert" className="text-sm text-red-600">{state.error}</p>
+      ) : null}
+      {state.success ? (
+        <p role="status" className="text-sm text-green-600">{state.message}</p>
+      ) : null}
+
+      <Button type="submit" loading={isPending} disabled={isPending}>
+        {isPending ? 'Saving...' : 'Save Profile'}
+      </Button>
+    </form>
+  );
+}
 ```
 
-- Use `react-error-boundary` library
-- Every route page must have an error boundary
-- Error boundary fallback must provide a "retry" or "go home" action
+---
+
+### Pattern 6: Protected Routing with React Router Data APIs
+Use React Router Data Routers (`createBrowserRouter`) with auth guards and code splitting via `React.lazy`.
+
+```tsx
+// src/routes/ProtectedRoute.tsx
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
+
+export function ProtectedRoute() {
+  const token = useAuthStore((s) => s.session?.token);
+  const location = useLocation();
+
+  if (!token) {
+    // Preserve requested route for post-login redirect
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
+}
+```
+
+```tsx
+// src/routes/index.tsx
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { ProtectedRoute } from './ProtectedRoute';
+
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+
+const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginPage />
+      </Suspense>
+    ),
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <Suspense fallback={<div>Loading dashboard...</div>}>
+            <DashboardPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+]);
+
+export function AppRouter() {
+  return <RouterProvider router={router} />;
+}
+```
 
 ---
 
-## 8. Accessibility (WCAG 2.1 AA)
+### Pattern 7: Accessibility (WCAG 2.1 AA Compliance)
+Every user interface must be accessible out of the box without requiring mouse navigation.
 
-Non-negotiable standards:
-- **Color contrast**: text ≥ 4.5:1, large text ≥ 3:1
-- **Focus management**: every interactive element must have a visible focus ring (never `outline: none` without a custom replacement)
-- **ARIA**: all icon buttons need `aria-label`, all form inputs need `<label>`, all modals need `role="dialog"` + `aria-labelledby`
-- **Keyboard navigation**: Tab through all interactive elements, Enter/Space activate buttons/links, Escape closes modals
-- **Screen reader**: use semantic HTML first; `aria-*` only when semantics are insufficient
-- **Motion**: respect `prefers-reduced-motion`:
-  ```css
-  @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; } }
-  ```
+1. **Semantic Structure & Headings**: Ensure logical heading hierarchies (`h1` -> `h2` -> `h3`).
+2. **Keyboard Navigation & Visible Focus**: Never remove outlines without providing a high-contrast replacement (`focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none`).
+3. **Screen Reader Landmarks & Labels**:
+   - Every `<button>` containing only an icon must have an `aria-label`.
+   - Every input field must have an associated `<label htmlFor="id">`.
+   - Modals and dialogs must implement `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and focus trap (use `@radix-ui/react-dialog` or native `<dialog>`).
+4. **Contrast & Reduced Motion**:
+   - Ensure text contrast is at least 4.5:1 against background colors.
+   - Respect motion preferences:
+   ```css
+   @media (prefers-reduced-motion: reduce) {
+     *, ::before, ::after {
+       animation-duration: 0.01ms !important;
+       animation-iteration-count: 1 !important;
+       transition-duration: 0.01ms !important;
+     }
+   }
+   ```
 
 ---
 
-## 9. Performance
+### Pattern 8: Behavioral Testing with Vitest, React Testing Library & MSW v2
+Mock network traffic at the protocol level using MSW v2 and test user behavior rather than implementation details.
 
-- Bundle size: lazy-load all routes and heavy libraries (charts, rich text editors)
-- Images: use `loading="lazy"` and `width`/`height` attributes to prevent layout shift
-- Lists: virtualize long lists (> 100 items) with `@tanstack/virtual`
-- Memoization: use `React.memo`, `useMemo`, `useCallback` only when profiling shows a problem — not preemptively
+```typescript
+// src/mocks/handlers.ts
+import { http, HttpResponse } from 'msw';
 
----
+export const handlers = [
+  http.get('/api/users', () => {
+    return HttpResponse.json({
+      users: [
+        { id: '1', name: 'Alice Smith', email: 'alice@example.com', role: 'admin' },
+      ],
+      totalPages: 1,
+    });
+  }),
+];
+```
 
-## 10. Testing Standards
+```typescript
+// src/mocks/server.ts
+import { setupServer } from 'msw/node';
+import { handlers } from './handlers';
 
-- Use React Testing Library — query by `role`, `label`, `text` — never by `testId` for logic
-- Test behavior, not implementation: "user clicks login, sees dashboard" not "useState was called"
-- Mock API with `msw` (Mock Service Worker) — never mock fetch/axios directly
-- Coverage target: ≥ 80% for components and hooks
+export const server = setupServer(...handlers);
+```
 
+```typescript
+// src/test/setup.ts
+import '@testing-library/jest-dom/vitest';
+import { beforeAll, afterEach, afterAll } from 'vitest';
+import { server } from '@/mocks/server';
 
-## ⚠️ PACKAGE INSTALLATION & VITE + TAILWIND CSS
-ALWAYS check skills first before searching the web for package installation steps.
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
 
-**Strict Vite + Tailwind + PostCSS Setup:**
-If initializing a React project with Vite and Tailwind CSS, you MUST follow these exact steps to prevent PostCSS initialization errors:
-1. `npm create vite@latest frontend -- --template react-ts`
-2. `cd frontend`
-3. `npm install`
-4. `npm install -D tailwindcss postcss autoprefixer`
-5. `npx tailwindcss init -p` (The `-p` flag is CRITICAL as it creates both tailwind.config.js AND postcss.config.js)
-6. Add the Tailwind directives (`@tailwind base; @tailwind components; @tailwind utilities;`) to `src/index.css`.
+```tsx
+// src/components/features/UserList.test.tsx
+import { render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { describe, it, expect } from 'vitest';
+import { UserList } from './UserList';
+
+function renderWithClient(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+  );
+}
+
+describe('UserList', () => {
+  it('renders users fetched from API', async () => {
+    renderWithClient(<UserList />);
+
+    expect(screen.getByRole('status')).toHaveTextContent(/loading users/i);
+    expect(await screen.findByText('Alice Smith')).toBeInTheDocument();
+    expect(screen.getByText('alice@example.com')).toBeInTheDocument();
+  });
+});
+```
+
+## Common Pitfalls
+
+- **Mixing server state in Zustand or Redux stores**: Duplicating API data in global stores leads to out-of-sync caches and manual refetch orchestration.
+  *Fix*: Keep all API cache in TanStack Query; keep only client-only UI state (modals open, active filters, auth token) in Zustand.
+- **Overusing `useEffect` for derived data**: Recalculating state inside `useEffect` causes redundant render passes and flickering.
+  *Fix*: Compute derived values directly in the render function body, or wrap with `useMemo` if computationally expensive.
+- **Tailwind v4 PostCSS errors or v3 missing configs**: Installing Tailwind v4 with obsolete `postcss.config.js` or installing v3 without generating PostCSS configuration causes build failure.
+  *Fix*: For Tailwind v4, use `@tailwindcss/vite` and `@import "tailwindcss";` without PostCSS config. For Tailwind v3, always run `npx tailwindcss init -p` to generate both `tailwind.config.js` and `postcss.config.js`.
+- **Zustand selector re-render cascades**: Extracting multiple store values using non-primitive selectors without `useShallow` triggers re-renders on every state mutation.
+  *Fix*: Wrap multi-property selector objects in `useShallow` from `zustand/react/shallow`.
+- **Breaking TanStack Query tracked properties**: Using object rest destructuring (e.g. `const { ...result } = useQuery(...)`) subscribes the component to every state property and disables render optimization.
+  *Fix*: Explicitly destructure only the specific properties used: `const { data, isPending, error } = useQuery(...)`.
+- **Accessibility regressions on interactive elements**: Creating clickable `<div>` or `<span>` elements without keyboard handlers, roles, or focus rings.
+  *Fix*: Always use `<button type="button">`, or provide `role="button"`, `tabIndex={0}`, and `onKeyDown` handlers for Space and Enter keys.
+- **Testing implementation details**: Asserting internal hook state (`expect(useState).toHaveBeenCalled()`) or querying elements by test IDs (`getByTestId`).
+  *Fix*: Query by accessible roles and text (`getByRole('button', { name: /save/i })`) using `@testing-library/react`.
+
+## Quick Reference
+
+| Area | Best Practice Standard | Rule / Command |
+|---|---|---|
+| **Bundler & Tooling** | Vite 6 + `@vitejs/plugin-react` | Strict TS paths mapped in both `tsconfig.json` and `vite.config.ts` |
+| **Styling (v4)** | Tailwind v4 via `@tailwindcss/vite` | Add plugin in `vite.config.ts`, import `@import "tailwindcss";` in CSS |
+| **Styling (v3)** | Tailwind v3 via PostCSS | `npx tailwindcss init -p`, configure `content` glob in `tailwind.config.js` |
+| **Server State** | TanStack Query v5 | Use `queryOptions`, `isPending`, and `placeholderData: keepPreviousData` |
+| **Client State** | Zustand v5 | Atomic slices, domain-specific stores, `useShallow` for multi-value selectors |
+| **Actions & Transitions** | React 19/18 Concurrent APIs | Use `useActionState` for form states, `useTransition` for non-urgent updates |
+| **Component Refs** | Direct `ref` prop (React 19) | Pass `ref` directly as a component prop; avoid `forwardRef` boilerplate |
+| **Class Merging** | `cn()` utility | Combine `clsx` and `tailwind-merge` for conflict-free dynamic classes |
+| **Accessibility** | WCAG 2.1 AA | Color contrast ≥ 4.5:1, visible `focus-visible` rings, semantic landmarks |
+| **Testing** | Vitest + React Testing Library + MSW v2 | Intercept requests via `http.*` handlers in Node setup; test roles and labels |
+
+## Resources
+
+- [React Official Documentation](https://react.dev/) — Authoritative guide for React 19, Actions, hooks, and component lifecycle.
+- [Vite Documentation](https://vite.dev/guide/) — Next-generation frontend build tooling and configuration reference.
+- [Tailwind CSS Vite Installation Guide](https://tailwindcss.com/docs/installation/framework-guides/vite) — Official integration instructions for Tailwind v4 and Vite.
+- [TanStack Query v5 Documentation](https://tanstack.com/query/v5/docs/react/overview) — Server state management, queryOptions, caching, and mutation lifecycles.
+- [Zustand Documentation](https://zustand.docs.pmnd.rs/) — State management principles, selectors, slices pattern, and v5 migration.
+- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) — User-centric testing best practices and API references.
+- [Mock Service Worker (MSW) Documentation](https://mswjs.io/docs/) — Protocol-level API mocking with modern `http` handlers.
+- [W3C WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) — Authoritative patterns for accessible web components.

@@ -2,7 +2,7 @@
 name: ai-ml-engineering
 description: AI/ML engineering guide covering LLM provider selection (OpenAI/Anthropic/Gemini/local Ollama), RAG pipeline design (chunking, embedding, retrieval, reranking), vector database selection (Pinecone/Weaviate/Chroma/pgvector), prompt engineering patterns, AI cost optimization, evaluation frameworks, LangChain/LlamaIndex patterns, and agent orchestration (CrewAI/AutoGen).
 refreshMode: full
-lastResearched: 2024-01-01
+lastResearched: 2026-09-28
 ---
 
 # AI/ML Engineering

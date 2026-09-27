@@ -2,7 +2,7 @@
 name: performance-optimization
 description: Web performance optimization guide covering Core Web Vitals measurement (LCP, CLS, INP, FCP, TTFB), Lighthouse auditing, JavaScript bundle analysis and reduction, React rendering optimization, image optimization, caching strategies, resource hints, virtualization of long lists, and performance budget enforcement.
 refreshMode: full
-lastResearched: 2024-01-01
+lastResearched: 2026-09-28
 ---
 
 # Performance Optimization Skill

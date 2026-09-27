@@ -2,7 +2,7 @@
 name: devops-practices
 description: DevOps guide covering Docker multi-stage builds, GitHub Actions CI/CD pipelines, environment management, health checks, structured logging, container security, semantic versioning, and release automation.
 refreshMode: full
-lastResearched: 2024-01-01
+lastResearched: 2026-09-28
 ---
 
 # DevOps Practices Skill
