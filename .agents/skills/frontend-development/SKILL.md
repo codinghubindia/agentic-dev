@@ -222,3 +222,16 @@ Non-negotiable standards:
 - Test behavior, not implementation: "user clicks login, sees dashboard" not "useState was called"
 - Mock API with `msw` (Mock Service Worker) — never mock fetch/axios directly
 - Coverage target: ≥ 80% for components and hooks
+
+
+## ⚠️ PACKAGE INSTALLATION & VITE + TAILWIND CSS
+ALWAYS check skills first before searching the web for package installation steps.
+
+**Strict Vite + Tailwind + PostCSS Setup:**
+If initializing a React project with Vite and Tailwind CSS, you MUST follow these exact steps to prevent PostCSS initialization errors:
+1. `npm create vite@latest frontend -- --template react-ts`
+2. `cd frontend`
+3. `npm install`
+4. `npm install -D tailwindcss postcss autoprefixer`
+5. `npx tailwindcss init -p` (The `-p` flag is CRITICAL as it creates both tailwind.config.js AND postcss.config.js)
+6. Add the Tailwind directives (`@tailwind base; @tailwind components; @tailwind utilities;`) to `src/index.css`.

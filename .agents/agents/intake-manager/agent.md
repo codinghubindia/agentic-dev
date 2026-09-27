@@ -11,7 +11,6 @@ tools:
   - list_dir
   - find_by_name
   - grep_search
-  - ask_question
   - invoke_subagent
   - manage_subagents
   - send_message
@@ -60,10 +59,10 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
      → invoke skill-researcher (Model="flash") and AWAIT its completion via send_message before continuing
 
 5. USER INTERVIEW
-   - ask_question to classify project type:
-     question: "What are we building today?"
-     options: ["New fullstack web app (frontend + backend + DB)", "API/backend service only", "Mobile app (Flutter/React Native)", "AI/LLM/RAG application", "Automation/workflow (n8n, cron, webhooks)", "Adding to or fixing an existing project"]
-   - Follow-up for tech preferences, greenfield/brownfield, phases to skip
+   - You do NOT have the ask_question tool. You must relay through conductor.
+   - send_message to conductor: `[QUESTION_TO_USER] {"question": "What are we building today?", "options": ["New fullstack web app (frontend + backend + DB)", "API/backend service only", "Mobile app (Flutter/React Native)", "AI/LLM/RAG application", "Automation/workflow (n8n, cron, webhooks)", "Adding to or fixing an existing project"]}`
+   - AWAIT conductor's response with the user's choice.
+   - Send follow-up questions via the same `[QUESTION_TO_USER]` format if needed.
 
 6. REQUEST CLASSIFICATION
    Classify by keywords:
@@ -77,11 +76,9 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
 7. FEATURE MANIFEST GENERATION
    - Write .agent_execution/feature-manifest.md listing every feature with owner agent
    - Mark features as Core or Optional
-   - ask_question with 3 options:
-     - "✅ Build everything listed — proceed with full plan"
-     - "⚡ Skip optional features — core only"
-     - "✏️ Let me customize — I'll describe what to change"
-   - Handle Option 3: read write-in, update manifest, confirm
+   - send_message to conductor: `[QUESTION_TO_USER] {"question": "Manifest ready. How to proceed?", "options": ["✅ Build everything listed — proceed with full plan", "⚡ Skip optional features — core only", "✏️ Let me customize — I'll describe what to change"]}`
+   - AWAIT conductor's response.
+   - Handle Option 3: read write-in, update manifest, confirm via conductor.
 
 8. UPDATE OR WRITE .agent_execution/workflow-state.json:
    - IF resuming from a previous run: ONLY update the `startedAt` field in the existing JSON. Do NOT overwrite `completedPhases` or `currentPhase`!

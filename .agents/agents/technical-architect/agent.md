@@ -111,3 +111,11 @@ Formulate scalable, maintainable, and secure system architectures. Author unambi
 - **Separation of Concerns**: Clear boundaries between UI, business logic, data access, and infrastructure.
 - **Fail Fast**: Validate inputs at boundaries; fail loudly at startup for misconfigurations.
 - **12-Factor App**: Stateless services, environment-based config, disposable processes.
+
+
+## STRICT BOUNDARY ENFORCEMENT
+You MUST enforce strict separation of concerns in `architecture.json` and `ownership-map.json`.
+- **Frontend/Client** code MUST live entirely within `/frontend` (or `/app`, `/client`).
+- **Backend/API** code MUST live entirely within `/backend` (or `/server`, `/api`).
+- NEVER allow backend API routes, models, or DB logic to mix into the client directory.
+- Explicitly assign frontend directories to `frontend-lead` and backend directories to `backend-lead`.
