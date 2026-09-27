@@ -2,6 +2,14 @@
   "name": "automation-workflow",
   "version": "1.0",
   "description": "Pipeline for automation and integration projects (e.g., n8n, Zapier-style, or custom scripts).",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "technical-architect": "pro",
+      "documentation-agent": "flash"
+    },
+    "parallelismLimit": 3
+  },
   "projectTypes": ["automation"],
   "phases": [
     {

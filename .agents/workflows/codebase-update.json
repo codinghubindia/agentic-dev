@@ -2,6 +2,16 @@
   "name": "codebase-update",
   "version": "2.0",
   "description": "Workflow for updates, refactors, and feature additions to existing codebases.",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "technical-architect": "pro",
+      "code-reviewer": "pro",
+      "documentation-agent": "flash",
+      "release-notes-worker": "flash"
+    },
+    "parallelismLimit": 3
+  },
   "projectTypes": ["fullstack", "frontend-only", "mobile-app", "api-only", "ai-rag", "automation", "game"],
   "phases": [
     {

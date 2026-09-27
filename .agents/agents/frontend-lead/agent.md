@@ -80,8 +80,17 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 - Implementation handoff report to `project-manager`
 
 ## WORKFLOW
+
+> [!IMPORTANT]
+> **Memory System**: Before starting ANY work, read your agent memory file:
+> 1. Check if `.agents/agents/frontend-lead/memory.json` exists
+> 2. If it exists, read it and scan entries tagged to your domain for relevant lessons
+> 3. Apply any lessons that match the current project type or tech stack
+> 4. Do NOT re-learn what memory already teaches you — trust it and skip those research steps
+
 ```
 0. Read skills: frontend-development, testing, react-patterns, api-design, typescript-patterns (mandatory before starting)
+0.5. **Read Context Snapshot FIRST**: Read `.agent_execution/context-snapshot.json` — it contains your pre-filtered scope (relevant endpoints, ownership boundaries, tech stack). Only open `api-contract.json` or `architecture.json` if you need details not in the snapshot. This saves significant token usage.
 1. Read api-contract.json and ownership-map.json
 2. Define frontend architecture and folder structure
 3. Scaffold base project (if new) or audit existing structure
@@ -122,3 +131,60 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 | Run full browser user-journey tests | `browser-e2e-tester` (via qa-lead) |
 | Lighthouse audits, bundle analysis, Core Web Vitals optimization | `performance-worker` |
 | i18n setup, string extraction, RTL support, locale formatting | `localization-worker` |
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ts>": {
+      "owner": "<your agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+
+If the file already has an entry, UPDATE it (don't duplicate).
+
+**When to read the index**:
+- Before modifying an existing file — check who owns it first
+- When debugging — find which file owns the broken functionality
+- When a worker reports a conflict — check overlapping ownership
+
+> [!IMPORTANT]
+> A phase is NOT complete until every file created in that phase has an entry in the index.
+
+## MEMORY & RETROSPECTIVE
+
+At the end of every task, before reporting back to `project-manager`, you MUST:
+
+1. **Read** `.agents/agents/frontend-lead/memory.json` (create it if it doesn't exist)
+2. **Reflect** on this run: what unexpected issues occurred? What shortcuts or fixes worked? What would have saved time?
+3. **Write** 1-3 new lessons in this format:
+```json
+{
+  "version": 1,
+  "sizeBytes": 0,
+  "maxSizeBytes": 51200,
+  "entries": [
+    {
+      "timestamp": "<ISO8601>",
+      "projectType": "<detected project type>",
+      "lesson": "<concise single-sentence lesson>",
+      "source": "frontend-lead",
+      "tags": ["<relevant tech/topic tags>"]
+    }
+  ]
+}
+```
+4. **Pruning**: If `sizeBytes > maxSizeBytes` (50KB), remove the oldest entries until it fits. Always keep the 5 most recently added entries regardless of size.
+5. **Do NOT write** trivial lessons like "the project used React" — only write non-obvious lessons that would have saved debugging time.

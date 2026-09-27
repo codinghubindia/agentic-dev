@@ -2,6 +2,15 @@
   "workflowId": "integration-and-release",
   "name": "Integration and Release Workflow",
   "description": "Standard operating procedure for merging parallel code streams, resolving conflicts, validating builds, running comprehensive test suites, and signing off on release.",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "security-lead": "pro",
+      "integration-manager": "pro",
+      "release-notes-worker": "flash"
+    },
+    "parallelismLimit": 2
+  },
   "steps": [
     {
       "step": 1,

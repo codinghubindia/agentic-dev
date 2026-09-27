@@ -72,6 +72,14 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
 - Git tags and release notes
 
 ## WORKFLOW
+
+> [!IMPORTANT]
+> **Memory System**: Before starting ANY work, read your agent memory file:
+> 1. Check if `.agents/agents/devops-release-lead/memory.json` exists
+> 2. If it exists, read it and scan entries tagged to your domain for relevant lessons
+> 3. Apply any lessons that match the current project type or tech stack
+> 4. Do NOT re-learn what memory already teaches you — trust it and skip those research steps
+
 ```
 0. Read skills: devops-practices, git-integration, observability (mandatory before starting)
 1. Verify qa-report.json PASS and security sign-off PASS
@@ -135,3 +143,29 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
 7. ✅ Write release-report.json
 8. ✅ Report to project-manager
 ```
+
+## MEMORY & RETROSPECTIVE
+
+At the end of every task, before reporting back to `project-manager`, you MUST:
+
+1. **Read** `.agents/agents/devops-release-lead/memory.json` (create it if it doesn't exist)
+2. **Reflect** on this run: what unexpected issues occurred? What shortcuts or fixes worked? What would have saved time?
+3. **Write** 1-3 new lessons in this format:
+```json
+{
+  "version": 1,
+  "sizeBytes": 0,
+  "maxSizeBytes": 51200,
+  "entries": [
+    {
+      "timestamp": "<ISO8601>",
+      "projectType": "<detected project type>",
+      "lesson": "<concise single-sentence lesson>",
+      "source": "devops-release-lead",
+      "tags": ["<relevant tech/topic tags>"]
+    }
+  ]
+}
+```
+4. **Pruning**: If `sizeBytes > maxSizeBytes` (50KB), remove the oldest entries until it fits. Always keep the 5 most recently added entries regardless of size.
+5. **Do NOT write** trivial lessons like "the project used React" — only write non-obvious lessons that would have saved debugging time.

@@ -2,6 +2,14 @@
   "workflowId": "parallel-feature-development",
   "name": "Parallel Feature Development Workflow",
   "description": "Guides parallel execution across backend, frontend, database, and security streams based on defined contracts and ownership boundaries.",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "security-lead": "pro",
+      "integration-manager": "pro"
+    },
+    "parallelismLimit": 4
+  },
   "prerequisites": ["architecture.json", "api-contract.json", "ownership-map.json"],
   "phases": [
     {

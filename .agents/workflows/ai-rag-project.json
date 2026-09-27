@@ -2,6 +2,16 @@
   "name": "ai-rag-project",
   "version": "1.0",
   "description": "Pipeline for Artificial Intelligence, LLM, and RAG (Retrieval-Augmented Generation) applications.",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "technical-architect": "pro",
+      "ai-ml-lead": "pro",
+      "security-lead": "pro",
+      "documentation-agent": "flash"
+    },
+    "parallelismLimit": 3
+  },
   "projectTypes": ["ai-rag"],
   "phases": [
     {

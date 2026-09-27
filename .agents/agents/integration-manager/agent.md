@@ -101,3 +101,34 @@ Integration-manager performs all integration work directly. Issues are routed to
 
 > **Return Protocol**: Upon completing integration, send a `send_message` to `project-manager` with: (1) build status (PASS/FAIL), (2) count and nature of conflicts resolved, (3) any outstanding violations, (4) path to `integration-report.json`.
 
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ts>": {
+      "owner": "<your agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+
+If the file already has an entry, UPDATE it (don't duplicate).
+
+**When to read the index**:
+- Before modifying an existing file — check who owns it first
+- When debugging — find which file owns the broken functionality
+- When a worker reports a conflict — check overlapping ownership
+
+> [!IMPORTANT]
+> A phase is NOT complete until every file created in that phase has an entry in the index.

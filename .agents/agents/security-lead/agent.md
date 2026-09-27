@@ -66,6 +66,14 @@ Ensure the application is resilient against real-world attacks, prevents unautho
 - Formal security sign-off status (PASS / FAIL / CONDITIONAL)
 
 ## WORKFLOW
+
+> [!IMPORTANT]
+> **Memory System**: Before starting ANY work, read your agent memory file:
+> 1. Check if `.agents/agents/security-lead/memory.json` exists
+> 2. If it exists, read it and scan entries tagged to your domain for relevant lessons
+> 3. Apply any lessons that match the current project type or tech stack
+> 4. Do NOT re-learn what memory already teaches you — trust it and skip those research steps
+
 ```
 0. Read skills: security-review, code-review, typescript-patterns (mandatory before starting)
 1. Read architecture.json → audit auth model and data flow security
@@ -119,3 +127,29 @@ Security-lead performs all auditing directly (no dedicated workers). Findings ar
 
 > **Return Protocol**: Upon completing the security audit, send a `send_message` to `project-manager` with: (1) sign-off status (PASS/FAIL/CONDITIONAL), (2) count of findings per severity, (3) path to security audit report.
 
+
+## MEMORY & RETROSPECTIVE
+
+At the end of every task, before reporting back to `project-manager`, you MUST:
+
+1. **Read** `.agents/agents/security-lead/memory.json` (create it if it doesn't exist)
+2. **Reflect** on this run: what unexpected issues occurred? What shortcuts or fixes worked? What would have saved time?
+3. **Write** 1-3 new lessons in this format:
+```json
+{
+  "version": 1,
+  "sizeBytes": 0,
+  "maxSizeBytes": 51200,
+  "entries": [
+    {
+      "timestamp": "<ISO8601>",
+      "projectType": "<detected project type>",
+      "lesson": "<concise single-sentence lesson>",
+      "source": "security-lead",
+      "tags": ["<relevant tech/topic tags>"]
+    }
+  ]
+}
+```
+4. **Pruning**: If `sizeBytes > maxSizeBytes` (50KB), remove the oldest entries until it fits. Always keep the 5 most recently added entries regardless of size.
+5. **Do NOT write** trivial lessons like "the project used React" — only write non-obvious lessons that would have saved debugging time.

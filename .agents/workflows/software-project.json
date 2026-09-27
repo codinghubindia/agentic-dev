@@ -2,6 +2,17 @@
   "name": "software-project",
   "version": "2.0",
   "description": "Standard end-to-end software delivery lifecycle pipeline.",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "technical-architect": "pro",
+      "security-lead": "pro",
+      "documentation-agent": "flash",
+      "release-notes-worker": "flash",
+      "seed-data-worker": "flash"
+    },
+    "parallelismLimit": 4
+  },
   "projectTypes": ["fullstack", "frontend-only", "mobile-app", "api-only"],
   "phases": [
     {

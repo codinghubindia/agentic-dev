@@ -84,3 +84,41 @@ Ensure every error in the backend produces a consistent, safe, and informative r
 
 ## FAILURE HANDLING
 - If error class conflicts with an existing module → coordinate with backend-lead to establish the correct hierarchy before proceeding
+
+## ERROR FINGERPRINT REGISTRY
+
+Before debugging ANY error, check `.agent_execution/error-registry.json`:
+
+1. **Read** the registry (if it exists)
+2. **Search** for a matching `fingerprint` (partial string match on the error message)
+3. **If found**: Apply the `resolution` directly — do NOT spend tokens re-diagnosing a known error
+4. **If not found**: Diagnose normally, then APPEND the error and its resolution to the registry:
+
+```json
+{
+  "fingerprints": [
+    {
+      "fingerprint": "<key phrase from the error message>",
+      "resolvedBy": "error-handling-worker",
+      "resolution": "<exact fix applied, one clear sentence>",
+      "tags": ["<tech stack tags>"],
+      "firstSeen": "<ISO8601 timestamp>",
+      "occurrences": 1
+    }
+  ]
+}
+```
+
+If the fingerprint already exists, increment its `occurrences` counter.
+
+> [!TIP]
+> Common fingerprints to watch for: "Cannot find module", "ECONNREFUSED", "relation does not exist", "JWT expired", "CORS error", "port already in use"
+
+## FILE RESPONSIBILITY INDEX — DEBUGGING GUIDE
+
+When an error or bug is reported:
+1. Read `.agent_execution/file-responsibility-index.json`
+2. Search `responsibilities` for the failing endpoint/function
+3. Identify the `owner` of that file
+4. Route the bug to that owner before attempting a fix yourself
+5. If you fix it yourself, update the index entry's `lastModifiedBy` and `notes` fields
