@@ -100,7 +100,8 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    - If FAIL: route defects per quality-manager, re-run affected agents, re-invoke quality-manager
    - If PASS: proceed to deployment phases
 
-6. REPORT to conductor via send_message:
+6. CLEANUP & REPORT to conductor via send_message:
+   - send_message to context-manager and resource-manager: "Workflow complete, you may terminate."
    - Final status: success or failure
    - completedPhases list
    - Any unresolved blockers

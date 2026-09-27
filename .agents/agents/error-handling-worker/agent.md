@@ -92,22 +92,13 @@ Before debugging ANY error, check `.agent_execution/error-registry.json`:
 1. **Read** the registry (if it exists)
 2. **Search** for a matching `fingerprint` (partial string match on the error message)
 3. **If found**: Apply the `resolution` directly — do NOT spend tokens re-diagnosing a known error
-4. **If not found**: Diagnose normally, then APPEND the error and its resolution to the registry:
+4. **If not found**: Diagnose normally, then APPEND the error as a JSONL event to `.agent_execution/event-queue.jsonl` (as a SINGLE line):
 
-```json
-{
-  "fingerprints": [
-    {
-      "fingerprint": "<key phrase from the error message>",
-      "resolvedBy": "error-handling-worker",
-      "resolution": "<exact fix applied, one clear sentence>",
-      "tags": ["<tech stack tags>"],
-      "firstSeen": "<ISO8601 timestamp>",
-      "occurrences": 1
-    }
-  ]
-}
+```jsonl
+{"id": "evt_<timestamp>", "type": "error-fingerprint", "source": "error-handling-worker", "timestamp": "<ISO8601>", "processed": false, "payload": {"fingerprint": "<key phrase from the error message>", "resolution": "<exact fix applied, one clear sentence>", "tags": ["<tech stack tags>"]}}
 ```
+> [!NOTE]
+> `memory-manager` will automatically process this queue and update `error-registry.json` for you.
 
 If the fingerprint already exists, increment its `occurrences` counter.
 

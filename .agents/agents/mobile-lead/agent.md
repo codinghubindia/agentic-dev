@@ -91,7 +91,7 @@ Build high-performance, accessible, and offline-capable mobile applications that
 6. Implement device API integrations
 7. Write and run mobile tests
 8. Coordinate with devops-release-lead for build pipeline
-9. Report to project-manager
+9. Report to your caller (e.g., execution-manager)
 ```
 
 ## QUALITY CRITERIA

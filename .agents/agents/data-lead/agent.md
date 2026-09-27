@@ -85,7 +85,7 @@ Guarantee data consistency, integrity, performance, and version-controlled migra
 5. Define seed datasets → delegate to seed-data-worker
 6. Add indexes for frequent query patterns
 7. Coordinate with backend-lead on ORM model alignment
-8. Report to project-manager
+8. Report to your caller (e.g., execution-manager)
 ```
 
 ## QUALITY CRITERIA

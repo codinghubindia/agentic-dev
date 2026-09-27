@@ -141,7 +141,7 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
 5. ✅ Apply semantic version bump
 6. ✅ Tag git commit
 7. ✅ Write release-report.json
-8. ✅ Report to project-manager
+8. ✅ Report to your caller (e.g., execution-manager)
 ```
 
 ## MEMORY & RETROSPECTIVE

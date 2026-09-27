@@ -103,7 +103,7 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 5. Once features are implemented:
    - frontend-test-worker → write unit + integration tests
 6. Perform lead-level code review across all delivered work
-7. Report to project-manager with completion status
+7. Report to your caller (e.g., execution-manager) with completion status
 ```
 
 ## QUALITY CRITERIA

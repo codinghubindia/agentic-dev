@@ -57,7 +57,7 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
    - For each skill in .agents/skills/, read its SKILL.md frontmatter
    - If refreshMode = "protected" → skip
    - If lastResearched is missing OR older than 90 days AND refreshMode != "protected":
-     → invoke skill-researcher (Model="flash") — fire and forget (non-blocking)
+     → invoke skill-researcher (Model="flash") and AWAIT its completion via send_message before continuing
 
 5. USER INTERVIEW
    - ask_question to classify project type:

@@ -73,4 +73,4 @@ Design, evaluate, and orchestrate robust and cost-effective AI pipelines that de
 - Retrieval accuracy below threshold: revisit chunking strategy and embedding model choice
 - Vector DB connection failure: fallback to keyword search (BM25); alert devops-release-lead
 - Cost overrun detected: immediately invoke token optimization (smaller model, caching, batching)
-- Worker failure: reassign task directly or handle, report to project-manager
+- Worker failure: reassign task directly or handle, report to your caller

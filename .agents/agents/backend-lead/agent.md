@@ -106,7 +106,7 @@ Build reliable, secure, and high-performance backend services that strictly impl
    - backend-test-worker → write unit + integration tests for all services
 6. Run integration smoke tests locally
 7. Review all delivered code against api-contract.json
-8. Report to project-manager
+8. Report to your caller (e.g., execution-manager)
 ```
 
 ## QUALITY CRITERIA

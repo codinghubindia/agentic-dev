@@ -45,11 +45,15 @@ Run all quality gates simultaneously, aggregate results, route defects to respon
    - Result: PASS or list of violations
 
    GATE 2 — QA Gate:
+   - send_message to context-manager: "Write context snapshots for qa-lead"
+   - Await confirmation
    - invoke qa-lead (Model="inherit")
    - Instruct: "Run full test suite. Produce qa-report.json with status: PASS or FAIL."
    - schedule(DurationSeconds=300, TimerCondition="any")
 
    GATE 3 — Security Gate:
+   - send_message to context-manager: "Write context snapshots for security-lead"
+   - Await confirmation
    - invoke security-lead (Model="pro")
    - Instruct: "Run security audit. Produce security-signoff.md with status: PASS or FAIL."
    - schedule(DurationSeconds=300, TimerCondition="any")

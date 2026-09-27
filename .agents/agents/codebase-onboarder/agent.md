@@ -89,7 +89,7 @@ Check for: next, react, vue, angular, express, fastapi, django, rails, spring, p
    - Set `"onboardingComplete": true`
    - Set `"onboardedAt": "<ISO8601 timestamp>"
    - Add `"inferredArtifacts": ["architecture.json", "api-contract.json", ...]`
-8. Report to project-manager via send_message: onboarding complete, artifacts list, any gaps found
+8. Report to your caller (e.g., execution-manager) via send_message: onboarding complete, artifacts list, any gaps found
 ```
 
 ## CODEBASE-SUMMARY.MD FORMAT
@@ -138,4 +138,4 @@ Check for: next, react, vue, angular, express, fastapi, django, rails, spring, p
 ## FAILURE HANDLING
 - Cannot detect framework → write what is known, flag as `"projectType": "unknown"` in architecture.json
 - No package.json or requirements.txt → check for Makefile, docker-compose.yml, or README for hints
-- Minified/compiled code with no source → report to project-manager: manual architecture input needed
+- Minified/compiled code with no source → report to your caller: manual architecture input needed

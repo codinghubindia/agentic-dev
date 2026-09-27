@@ -12,6 +12,7 @@ tools:
   - find_by_name
   - grep_search
   - send_message
+  - schedule
 ---
 
 # Memory Manager
@@ -33,6 +34,10 @@ You own all persistent knowledge. You validate quality before persisting (no tri
 ## WORKFLOW — Process Event Queue
 
 ```
+0. SET WAKEUP TIMER:
+   - At the start of your run, immediately call `schedule(CronExpression="* * * * *", Prompt="Check event-queue.jsonl for new items", IsDaemon=true)`
+   - When the timer wakes you up, proceed to Step 1.
+
 1. READ .agent_execution/event-queue.jsonl
 2. For each event where processed = false:
 

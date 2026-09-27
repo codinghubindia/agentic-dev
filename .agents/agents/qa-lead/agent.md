@@ -95,7 +95,7 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
    - Minor → log, continue
 8. Re-run failed test areas after fixes
 9. Write and sign qa-report.json
-10. Report to project-manager: PASS or FAIL with details
+10. Report to your caller (e.g., execution-manager): PASS or FAIL with details
 ```
 
 ## QUALITY CRITERIA
