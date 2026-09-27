@@ -1,19 +1,19 @@
 # 🏢 AgenticDev: Autonomous AI Software Company Framework
 
 > An **SEO-optimized, production-ready autonomous multi-agent software engineering company** built for [Google Antigravity (AGY)](https://antigravity.dev).
-> Drop this .agents/ folder into any workspace to instantly deploy **49 specialized AI software engineers**, **22 rich skill guides**, and **6 automated workflows**. Build, test, and release real software with an autonomous AI developer team.
+> Drop this .agents/ folder into any workspace to instantly deploy **58 specialized AI software engineers**, **23 rich skill guides**, and **6 automated workflows**. Build, test, and release real software with an autonomous AI developer team.
 
-[![Agents](https://img.shields.io/badge/Agents-49-6366f1?style=flat-square)](#-agent-roster)
-[![Skills](https://img.shields.io/badge/Skills-22-10b981?style=flat-square)](#-skills-library)
+[![Agents](https://img.shields.io/badge/Agents-58-6366f1?style=flat-square)](#-agent-roster)
+[![Skills](https://img.shields.io/badge/Skills-23-10b981?style=flat-square)](#-skills-library)
 [![Workflows](https://img.shields.io/badge/Workflows-6-f59e0b?style=flat-square)](#-workflows)
-[![Registry](https://img.shields.io/badge/Registry-v3.0.0-8b5cf6?style=flat-square)](.agents/registry/agent-registry.json)
+[![Architecture](https://img.shields.io/badge/Architecture-Neural_Orchestra-8b5cf6?style=flat-square)](#-architecture-overview)
 [![License](https://img.shields.io/badge/License-MIT-gray?style=flat-square)](./LICENSE)
 
 ---
 
 ## 📋 Table of Contents
 
-- [What's New in v3.0.0](#-whats-new-in-v300)
+- [What's New: Neural Orchestra](#-whats-new-neural-orchestra)
 - [Architecture Overview](#-architecture-overview)
 - [Project Type Routing](#-project-type-routing)
 - [Phase Gate System](#-phase-gate-system)
@@ -27,87 +27,69 @@
 
 ---
 
-## 🎉 What's New in v3.0.0
+## 🎉 What's New: Neural Orchestra
 
-- **Merged `project-manager`**: Now the single smart orchestrator that auto-detects project type.
-- **`technical-architect`**: Now interviews the user before designing architecture to gather comprehensive requirements.
-- **UX Gate**: `uiux-lead` is now a hard prerequisite gate before any frontend implementation begins.
-- **New AI/ML Department**: `ai-ml-lead` + 3 specialized workers (`rag-pipeline-worker`, `llm-config-worker`, `vector-db-worker`) for AI/RAG projects.
-- **New Testing Gate**: `stress-test-worker` for production load testing and rate limit validation.
-- **New Automation Capability**: `automation-workflow-worker` for n8n/automation projects.
-- **2 New Workflows**: `ai-rag-project`, `automation-workflow`.
-- **2 New Skills**: `load-testing`, `ai-ml-engineering`.
-- **Performance Built-in**: Rate limiting + caching are now built directly into the architecture and backend skill guides.
+The monolithic `project-manager` has been completely replaced by the **Neural Orchestra** — a distributed, brain-like management layer that radically improves token efficiency, parallel execution, and quality control.
+
+- **The Conductor (`conductor`)**: The ultra-thin user-facing entry point. It receives requests, classifies them, routes to specialized managers, and surfaces the final results.
+- **6 Specialized Managers**:
+  - `intake-manager`: Handles user interviews, project classification, and feature manifests.
+  - `execution-manager`: Runs workflow phases, enforces gates, and handles rollbacks.
+  - `quality-manager`: Runs 4 quality gates in parallel (Compliance, QA, Security, UI) and tracks agent reputation.
+  - `context-manager`: Generates targeted, per-agent context snapshots to save tokens.
+  - `memory-manager`: Runs as a background daemon, processing the `event-queue.jsonl` to validate, deduplicate, and cross-share lessons across agents.
+  - `resource-manager`: Optimizes model usage (`pro`/`flash`/`flash_lite`) and tracks token budgets.
+- **Dynamic Workflows (`workflow-compiler`)**: For simple bug fixes or single features, it compiles a minimal custom workflow, avoiding the overhead of the full 6-phase pipeline.
+- **Conflict Resolver (`conflict-resolver`)**: Auto-detects schema, endpoint, and naming conflicts between parallel agent streams.
+- **Codebase Onboarding (`codebase-onboarder`)**: Quickly reverse-engineers external codebases using signature-only scanning (grep) to save tokens.
+- **Auto-Refreshing Skills (`skill-researcher`)**: Skills now have a `refreshMode` (`protected`, `full`, `sections`). Stale skills are automatically researched and updated from the web.
+- **Professional UI Craft (`professional-ui-craft`)**: New protected skill enforcing color psychology, cognitive design laws, and an anti-vibe-code blacklist.
 
 ---
 
 ## 🏛️ Architecture Overview
 
-The multi-agent system structure mirrors a real company.
+The multi-agent system structure mirrors a real company with a distributed management layer.
 
 ```mermaid
 flowchart TD
-    PM[project-manager] --> TA[technical-architect]
-    PM --> UI[uiux-lead]
-    PM --> FE[frontend-lead]
-    PM --> BE[backend-lead]
-    PM --> DL[data-lead]
-    PM --> ML[mobile-lead]
-    PM --> AI[ai-ml-lead]
-    PM --> SEC[security-lead]
-    PM --> QA[qa-lead]
-    PM --> DEV[devops-release-lead]
-    PM --> IM[integration-manager]
-    PM --> DOC[documentation-agent]
-
-    UI --> U1[mockup-wireframe-worker]
+    USER((User)) <--> C[conductor\nSupreme Director]
     
-    FE --> F1[ui-component-worker]
-    FE --> F2[routing-worker]
-    FE --> F3[state-management-worker]
-    FE --> F4[api-integration-worker]
-    FE --> F5[frontend-test-worker]
-    FE --> F6[accessibility-worker]
-    FE --> F7[performance-worker]
-    FE --> F8[localization-worker]
+    C --> IN[intake-manager]
+    C --> EM[execution-manager]
+    C --> QM[quality-manager]
+    
+    EM -.- CX[context-manager]
+    EM -.- RM[resource-manager]
+    EM -.- CR[conflict-resolver]
+    
+    IN -.- WC[workflow-compiler]
+    IN -.- CO[codebase-onboarder]
+    IN -.- SR[skill-researcher]
 
-    BE --> B1[api-route-worker]
-    BE --> B2[auth-worker]
-    BE --> B3[business-logic-worker]
-    BE --> B4[data-access-worker]
-    BE --> B5[backend-test-worker]
-    BE --> B6[error-handling-worker]
-    BE --> B7[analytics-worker]
-    BE --> B8[automation-workflow-worker]
+    C -.- MM[memory-manager\nBackground Daemon]
+    
+    EM ==> TA[technical-architect]
+    EM ==> UI[uiux-lead]
+    EM ==> FE[frontend-lead]
+    EM ==> BE[backend-lead]
+    EM ==> DL[data-lead]
+    EM ==> ML[mobile-lead]
+    EM ==> AI[ai-ml-lead]
+    
+    QM ==> SEC[security-lead]
+    QM ==> QA[qa-lead]
+    QM ==> DEV[devops-release-lead]
+    QM ==> IM[integration-manager]
 
-    DL --> D1[schema-design-worker]
-    DL --> D2[migration-worker]
-    DL --> D3[seed-data-worker]
-
-    AI --> A1[rag-pipeline-worker]
-    AI --> A2[llm-config-worker]
-    AI --> A3[vector-db-worker]
-
-    QA --> Q1[unit-test-worker]
-    QA --> Q2[integration-test-worker]
-    QA --> Q3[regression-test-worker]
-    QA --> Q4[browser-e2e-tester]
-    QA --> Q5[stress-test-worker]
-
-    DEV --> O1[ci-pipeline-worker]
-    DEV --> O2[docker-worker]
-    DEV --> O3[release-notes-worker]
-    DEV --> O4[observability-worker\nBLOCKING]
-
-    ML --> M1[mobile-screen-worker]
-    ML --> M2[push-notification-worker]
+    %% Workers omitted for brevity, but they sit below their respective leads
 ```
 
 ---
 
 ## 🔀 Project Type Routing
 
-The `project-manager` auto-detects the project type and activates the correct teams:
+The `intake-manager` auto-detects the project type and activates the correct workflow:
 
 | Project Type | Activated Departments | Omitted / Reduced |
 |---|---|---|
@@ -116,21 +98,22 @@ The `project-manager` auto-detects the project type and activates the correct te
 | **Mobile** | `mobile-lead` + core backend | `frontend-lead` (omitted) |
 | **Automation** | `automation-workflow-worker` + BE | `frontend-lead` (omitted) |
 | **API-Only** | BE, Data, QA | `frontend-lead`, `uiux-lead` |
+| **Targeted Fix/Feature** | Dynamically compiled by `workflow-compiler` | All unused departments |
 
 ---
 
 ## 🚦 Phase Gate System
 
-Agents cannot advance to the next phase without producing required artifacts.
+Agents cannot advance to the next phase without producing required artifacts, enforced by the `execution-manager` and `quality-manager`.
 
 1. **Planning Gate**: `project-plan.json`
 2. **Architecture Gate**: `architecture.json` + `api-contract.json`
-3. **UX Gate (NEW)**: Hard prerequisite before frontend implementation starts.
+3. **UX Gate**: Hard prerequisite before frontend implementation starts.
 4. **Implementation Gate**: Hand-off reports from all active leads.
 5. **Integration Gate**: `integration-report.json` (build PASS).
-6. **Stress Testing Gate (NEW)**: QA load test and rate-limit validation.
+6. **Stress Testing Gate**: QA load test and rate-limit validation.
 7. **Observability Gate (BLOCKING)**: `observability-report.json` (PASS).
-8. **Release Gate**: Git tag + release notes.
+8. **Quality Gate (Unified)**: Compliance, QA, Security, and UI gates must all PASS.
 
 ---
 
@@ -147,17 +130,30 @@ If a project is purely backend, frontend phases are pruned entirely.
 Performance and resilience are treated as first-class citizens:
 - **Architecture**: Rate limiting and caching strategies are mandated in the initial design.
 - **Backend**: Skill guides enforce Redis caching patterns and token bucket rate limits.
-- **Stress Testing**: The new `stress-test-worker` validates these boundaries under load using `k6`/`Locust` before release.
+- **Stress Testing**: The `stress-test-worker` validates these boundaries under load using `k6`/`Locust` before release.
 
 ---
 
 ## 👥 Agent Roster
 
-The system comprises 49 agents across 8 departments.
+The system comprises 58 agents across 9 departments.
 
-**Orchestration**
-- `project-manager`: Smart orchestrator (auto-detects project type, routes, tracks)
-- `workflow-manager`: Executes structured delivery pipelines
+**The Neural Orchestra (Management)**
+- `conductor`: Supreme Director (main entry point)
+- `intake-manager`: Project intake, interviews, classification
+- `execution-manager`: Workflow runner, phase gates, rollback
+- `quality-manager`: Parallel quality gatekeeper
+- `context-manager`: Tailored context snapshots
+- `memory-manager`: Event queue processing & knowledge sharing
+- `resource-manager`: Token budget & model tier assignments
+- `workflow-compiler`: Dynamic workflow generation
+- `conflict-resolver`: Parallel stream conflict detection
+- `skill-researcher`: Auto-refreshes skill files
+- `codebase-onboarder`: Token-efficient external codebase scanning
+- `project-manager`: *(Deprecated - use conductor)*
+- `workflow-manager`: *(Deprecated - use execution-manager)*
+
+**Architecture & Integration**
 - `technical-architect`: Interviews user & designs architecture
 - `integration-manager`: Handles merge conflicts & build verification
 
@@ -189,9 +185,9 @@ The system comprises 49 agents across 8 departments.
 
 ## 📚 Skills Library
 
-Agents pull from 22 specialized skill guides located in `.agents/skills/`:
+Agents pull from 23 specialized skill guides located in `.agents/skills/` (now with `refreshMode` auto-updating):
 1. `agy-customizations`
-2. `ai-ml-engineering` (NEW)
+2. `ai-ml-engineering` 
 3. `analytics-tracking`
 4. `antigravity-guide`
 5. `api-design`
@@ -203,27 +199,29 @@ Agents pull from 22 specialized skill guides located in `.agents/skills/`:
 11. `flutter-development`
 12. `frontend-development`
 13. `git-integration`
-14. `load-testing` (NEW)
+14. `load-testing` 
 15. `localization`
 16. `mobile-notifications`
 17. `observability`
 18. `performance-optimization`
-19. `react-patterns`
-20. `security-review`
-21. `software-project-management`
-22. `testing`
+19. `professional-ui-craft` (NEW)
+20. `react-patterns`
+21. `security-review`
+22. `software-project-management`
+23. `testing`
 
 ---
 
 ## 📋 Workflows
 
-6 robust pipelines configured in `.agents/registry/agent-registry.json`:
+6 robust pipelines configured in `.agents/registry/agent-registry.json` (plus dynamic generation):
 1. **Full Lifecycle Greenfield Project** (6 phases, fullstack/api-only/frontend-only)
 2. **Brownfield Codebase Update** (6 phases, all project types)
 3. **Parallel Feature Development** (3 phases, all project types)
 4. **Integration and Release** (5 phases, all project types)
-5. **AI/RAG/LLM Project** (NEW, 6 phases, ai-rag projects)
-6. **Automation Workflow Project** (NEW, 4 phases, automation projects)
+5. **AI/RAG/LLM Project** (6 phases, ai-rag projects)
+6. **Automation Workflow Project** (4 phases, automation projects)
+*Note: Targeted bug fixes and small features bypass these in favor of a dynamically compiled workflow.*
 
 ---
 
@@ -238,8 +236,8 @@ Agents pull from 22 specialized skill guides located in `.agents/skills/`:
    ```bash
    agy
    ```
-3. **Engage the PM**
-   Ping `project-manager` and describe your goal:
+3. **Engage the Conductor**
+   Ping `conductor` and describe your goal:
    > "Build an AI-powered semantic search tool with RAG, backend APIs, and a Next.js frontend."
 
 ---
