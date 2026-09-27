@@ -150,7 +150,7 @@ At the end of every task, before reporting back, you MUST:
 
 1. **Reflect**: What unexpected issues occurred? What shortcuts worked? What would have saved time?
 2. **Write 1-3 non-trivial lessons** — specific, actionable, non-obvious
-3. **Submit to event queue** — append to `.agent_execution/event-queue.json`:
+3. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
 
 ```json
 {
@@ -167,7 +167,7 @@ At the end of every task, before reporting back, you MUST:
 }
 ```
 
-Append your lesson events to the `events` array in event-queue.json (create the file with `{"version": 1, "events": []}` if it doesn't exist).
+Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.jsonl. Do NOT use an array wrapper.
 
 > [!IMPORTANT]
 > Do NOT write to memory.json directly. `memory-manager` processes the event queue and handles persistence, deduplication, LRU pruning, and cross-agent sharing automatically.

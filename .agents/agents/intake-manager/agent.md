@@ -50,7 +50,8 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
 3. EXTERNAL CODEBASE ONBOARDING (only if projectOrigin = "external")
    - Check if .agent_execution/codebase-summary.md exists
    - If NOT: invoke codebase-onboarder (Model="flash")
-   - schedule(DurationSeconds=300, TimerCondition="any") and wait for completion
+   - schedule(DurationSeconds=300, TimerCondition="any")
+   - AWAIT send_message confirmation from codebase-onboarder before proceeding!
 
 4. SKILL FRESHNESS CHECK
    - For each skill in .agents/skills/, read its SKILL.md frontmatter
@@ -82,7 +83,9 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
      - "✏️ Let me customize — I'll describe what to change"
    - Handle Option 3: read write-in, update manifest, confirm
 
-8. WRITE .agent_execution/workflow-state.json:
+8. UPDATE OR WRITE .agent_execution/workflow-state.json:
+   - IF resuming from a previous run: ONLY update the `startedAt` field in the existing JSON. Do NOT overwrite `completedPhases` or `currentPhase`!
+   - IF starting fresh, write this new JSON:
 {
   "projectType": "<detected>",
   "requestType": "<type>",

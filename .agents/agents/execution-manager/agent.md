@@ -40,7 +40,12 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    - .agent_execution/intake-report.json
    - .agent_execution/workflow-state.json
 
-2. READ workflow JSON — load all phases, agents, skip conditions, hardGate flags
+2. INVOKE HELPER MANAGERS:
+   - invoke_subagent(TypeName="resource-manager", Model="flash_lite")
+   - invoke_subagent(TypeName="context-manager", Model="flash")
+   - Save their conversationIds so you can send them messages later.
+
+2.5. READ workflow JSON — load all phases, agents, skip conditions, hardGate flags
 
 3. READ intake-report.json — get skipConditions, projectType, techStack, requestType
 

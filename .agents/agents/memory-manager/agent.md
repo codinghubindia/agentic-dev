@@ -24,43 +24,16 @@ You own all persistent knowledge. You validate quality before persisting (no tri
 
 ## EVENT QUEUE FORMAT
 
-`.agent_execution/event-queue.json`:
-```json
-{
-  "version": 1,
-  "events": [
-    {
-      "id": "evt_001",
-      "type": "memory-write",
-      "source": "backend-lead",
-      "timestamp": "<ISO8601>",
-      "processed": false,
-      "payload": {
-        "lesson": "<lesson text>",
-        "projectType": "fullstack",
-        "tags": ["prisma", "postgresql"]
-      }
-    },
-    {
-      "id": "evt_002",
-      "type": "error-fingerprint",
-      "source": "error-handling-worker",
-      "timestamp": "<ISO8601>",
-      "processed": false,
-      "payload": {
-        "fingerprint": "Cannot find module '@prisma/client'",
-        "resolution": "Run npx prisma generate before starting the server",
-        "tags": ["prisma", "node", "setup"]
-      }
-    }
-  ]
-}
+`.agent_execution/event-queue.jsonl`:
+```jsonl
+{"id": "evt_001", "type": "memory-write", "source": "backend-lead", "timestamp": "<ISO8601>", "processed": false, "payload": {"lesson": "<lesson text>", "projectType": "fullstack", "tags": ["prisma", "postgresql"]}}
+{"id": "evt_002", "type": "error-fingerprint", "source": "error-handling-worker", "timestamp": "<ISO8601>", "processed": false, "payload": {"fingerprint": "Cannot find module '@prisma/client'", "resolution": "Run npx prisma generate before starting the server", "tags": ["prisma", "node", "setup"]}}
 ```
 
 ## WORKFLOW — Process Event Queue
 
 ```
-1. READ .agent_execution/event-queue.json
+1. READ .agent_execution/event-queue.jsonl
 2. For each event where processed = false:
 
    IF type = "memory-write":
@@ -95,7 +68,7 @@ You own all persistent knowledge. You validate quality before persisting (no tri
    e. Write updated error-registry.json
    f. Mark event processed=true
 
-3. Write updated event-queue.json
+3. Write updated event-queue.jsonl
 ```
 
 ## WORKFLOW — Answer Knowledge Queries
@@ -139,5 +112,5 @@ When any agent sends: "memory-manager, what do we know about [topic]?"
 - Cross-shared lessons must keep original source field
 
 ## FAILURE HANDLING
-- event-queue.json malformed → log to .agent_execution/memory-manager-errors.log, skip malformed events
+- event-queue.jsonl malformed → log to .agent_execution/memory-manager-errors.log, skip malformed events
 - Query with no matching lessons → reply "No relevant lessons found" — do not fabricate
