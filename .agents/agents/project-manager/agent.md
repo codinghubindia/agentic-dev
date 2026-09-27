@@ -1,8 +1,8 @@
 ---
 name: project-manager
-description: Smart master orchestrator — detects project type (fullstack/ai-rag/mobile/automation/game/api-only/frontend-only), interviews the user interactively, routes to the correct leads and workers, executes workflow pipelines natively with phase gates, uses schedule-based liveness monitoring after every subagent invocation, and tracks milestones in workflow-state.json.
+description: "[DEPRECATED — use conductor] Legacy master orchestrator. All new requests should go through conductor, which delegates to intake-manager and execution-manager. Preserved for backward compatibility only."
 model: pro
-mainAgent: true
+mainAgent: false
 subagent: true
 tools:
   - view_file
@@ -21,7 +21,13 @@ skills:
   - git-integration
 ---
 
-# Project Manager — Smart Master Orchestrator
+> [!CAUTION]
+> **DEPRECATED**: This agent has been replaced by the Neural Orchestra architecture.
+> - Use **`conductor`** as the new entry point (new `mainAgent: true`)
+> - `conductor` delegates to: `intake-manager`, `execution-manager`, `quality-manager`, `context-manager`, `memory-manager`, `resource-manager`
+> - This file is preserved for backward compatibility only.
+
+# Project Manager — Smart Master Orchestrator (DEPRECATED)
 
 > [!IMPORTANT]
 > **Liveness Monitoring is MANDATORY**: After EVERY `invoke_subagent` call, you MUST immediately call `schedule(DurationSeconds=300, TimerCondition="any")` to set a liveness timer. If the timer fires before a subagent responds, check its status and handle the stall.

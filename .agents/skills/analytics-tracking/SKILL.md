@@ -1,6 +1,13 @@
 ---
 name: analytics-tracking
 description: Product analytics and event tracking guide covering event taxonomy design, SDK-agnostic wrapper patterns, PostHog/Mixpanel/Amplitude/Segment integration, PII scrubbing, consent management (GDPR/CCPA), server-side tracking, React hooks for tracking, automatic page view capture, funnel definitions, and tracking plan documentation.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "SDK integrations"
+protectedSections:
+  - "Event taxonomy"
+  - "PII scrubbing"
 ---
 
 # Analytics & Event Tracking Skill

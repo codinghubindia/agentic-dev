@@ -1,6 +1,14 @@
 ---
 name: testing
 description: Comprehensive testing guide covering unit tests (Jest/Vitest), integration tests (Supertest), React Testing Library, MSW API mocking, E2E with Playwright, coverage thresholds, and test database management.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "E2E tooling"
+  - "Coverage tools"
+protectedSections:
+  - "Test pyramid"
+  - "Testing philosophy"
 ---
 
 # Testing Skill

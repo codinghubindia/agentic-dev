@@ -1,6 +1,15 @@
 ---
 name: uiux-design
 description: Comprehensive UI/UX design guide covering user research, information architecture, wireframing, design systems, visual hierarchy, color theory, typography, component specs, accessibility, interaction design, and design-to-dev handoff.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "## 13. CSS Framework Selection Guide"
+protectedSections:
+  - "## 1. Design Process"
+  - "## 2. User Research"
+  - "## 3. Information Architecture"
+  - "## 10. Interaction Design"
 ---
 
 # UI/UX Design Skill

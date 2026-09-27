@@ -1,6 +1,14 @@
 ---
 name: typescript-patterns
 description: TypeScript best practices — strict mode, utility types, discriminated unions, generics, type guards, Zod runtime validation, avoiding type assertions, and proper typing for async functions and error handling.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "Utility types"
+  - "New TypeScript features"
+protectedSections:
+  - "Strict mode"
+  - "Type guards"
 ---
 
 # TypeScript Patterns Skill

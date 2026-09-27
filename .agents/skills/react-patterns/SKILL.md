@@ -1,6 +1,8 @@
 ---
 name: react-patterns
 description: Advanced React patterns — compound components, render props, custom hooks design, context optimization, performance memoization, portal usage, and avoiding common pitfalls like stale closures and infinite re-renders.
+refreshMode: full
+lastResearched: 2024-01-01
 ---
 
 # React Patterns Skill

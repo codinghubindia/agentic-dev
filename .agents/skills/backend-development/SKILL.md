@@ -1,6 +1,8 @@
 ---
 name: backend-development
 description: Comprehensive guide for designing, implementing, securing, and testing backend services — covering Express/Node.js patterns, REST API design, CORS, middleware, modular architecture, environment config, error handling, rate limiting, and validation.
+refreshMode: full
+lastResearched: 2024-01-01
 ---
 
 # Backend Development Skill

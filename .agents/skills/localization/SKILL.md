@@ -1,6 +1,13 @@
 ---
 name: localization
 description: Internationalization (i18n) and localization (l10n) guide covering i18next and react-i18next setup, Flutter Intl and ARB files, translation namespace design, string extraction patterns, plural rules, interpolation, Trans component for rich text, locale-aware Intl formatting (dates, numbers, currencies), locale switching with direction toggling (LTR/RTL), logical CSS properties for RTL layout, and localization quality checklist.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "Library-specific setup"
+protectedSections:
+  - "Plural rules"
+  - "RTL layout"
 ---
 
 # Localization (i18n / l10n) Skill

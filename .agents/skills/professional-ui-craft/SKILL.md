@@ -1,6 +1,7 @@
 ---
 name: professional-ui-craft
 description: Advanced visual craft guide covering color psychology, cognitive design principles, purposeful animation choreography, custom data visualization standards, fast UI perception patterns, and a hard anti-vibe-code blacklist. Mandatory reading for uiux-lead and ui-component-worker before any UI work.
+refreshMode: protected
 lastResearched: 2026-09-27
 sources:
   - https://www.interaction-design.org/literature/topics/gestalt-principles

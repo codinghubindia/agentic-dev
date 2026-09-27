@@ -1,6 +1,13 @@
 ---
 name: api-design
 description: REST API design guide covering resource naming, HTTP method semantics, status codes, pagination strategies, versioning, error response formats, idempotency, filtering, sorting, and OpenAPI documentation.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "OpenAPI tooling sections"
+protectedSections:
+  - "REST naming conventions"
+  - "HTTP status code semantics"
 ---
 
 # API Design Skill

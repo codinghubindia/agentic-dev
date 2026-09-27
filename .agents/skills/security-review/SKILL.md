@@ -1,6 +1,8 @@
 ---
 name: security-review
 description: Comprehensive security auditing guide covering OWASP Top 10, JWT/auth security, secret scanning, dependency CVE auditing, input sanitization, SQL injection prevention, XSS defense, CSRF protection, rate limiting, and security headers.
+refreshMode: full
+lastResearched: 2024-01-01
 ---
 
 # Security Review Skill

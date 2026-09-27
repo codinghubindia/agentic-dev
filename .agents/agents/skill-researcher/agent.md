@@ -37,6 +37,12 @@ Produce accurate, current, actionable SKILL.md files by researching official doc
 
 ## WORKFLOW
 ```
+0. **CHECK refreshMode FIRST** — read the skill file's YAML frontmatter:
+   - If `refreshMode: protected` → STOP immediately. Send message back to caller:
+     "Skill [name] is protected from auto-refresh (refreshMode: protected). This skill contains human-curated opinionated guidelines. Manual update only. No changes made."
+   - If `refreshMode: full` → proceed with full skill refresh (replace entire content after frontmatter)
+   - If `refreshMode: sections` → read `refreshableSections` list. Research and update ONLY those sections. Leave `protectedSections` completely unchanged (copy verbatim).
+   - If `refreshMode` is missing → treat as `full` (default behavior)
 1. Receive topic/skill name and target skill file path from caller
 2. Check if skill file already exists — if yes, read it to understand current content
 3. Identify the 3-5 most important subtopics to research for this skill
@@ -99,3 +105,25 @@ sources:
 - If a topic has insufficient reliable sources → write what you found and flag it with `> [!WARNING] Limited sources found for this section`
 - If the official docs are behind a login wall → skip and use the next best source
 - Report any source-quality concerns to the caller
+
+## SECTION-SPECIFIC REFRESH WORKFLOW
+
+When `refreshMode: sections`:
+
+```
+1. Read the current skill file in full
+2. Identify each section listed in `refreshableSections`
+3. For each refreshable section:
+   a. search_web for current best practices on that specific topic
+   b. read_url_content on the top 2-3 relevant URLs
+   c. Write an updated version of ONLY that section
+4. Reconstruct the full skill file:
+   - Copy ALL protectedSections verbatim (character-for-character — do NOT change them)
+   - Replace only the refreshableSections with new researched content
+   - Keep all other sections unchanged
+5. Update `lastResearched` date in frontmatter to today
+6. Write the reconstructed skill file
+```
+
+> [!CAUTION]
+> When doing section-specific refresh, NEVER modify a protectedSection. The protected sections contain deliberate opinionated choices. If you modify them, you corrupt the framework's design principles.

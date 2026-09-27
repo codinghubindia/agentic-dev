@@ -121,29 +121,38 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 
 ## MEMORY & RETROSPECTIVE
 
-At the end of every task, before reporting back to `project-manager`, you MUST:
+At the end of every task, before reporting back, you MUST:
 
-1. **Read** `.agents/agents/qa-lead/memory.json` (create it if it doesn't exist)
-2. **Reflect** on this run: what unexpected issues occurred? What shortcuts or fixes worked? What would have saved time?
-3. **Write** 1-3 new lessons in this format:
+1. **Reflect**: What unexpected issues occurred? What shortcuts worked? What would have saved time?
+2. **Write 1-3 non-trivial lessons** — specific, actionable, non-obvious
+3. **Submit to event queue** — append to `.agent_execution/event-queue.json`:
+
 ```json
 {
-  "version": 1,
-  "sizeBytes": 0,
-  "maxSizeBytes": 51200,
-  "entries": [
-    {
-      "timestamp": "<ISO8601>",
-      "projectType": "<detected project type>",
-      "lesson": "<concise single-sentence lesson>",
-      "source": "qa-lead",
-      "tags": ["<relevant tech/topic tags>"]
-    }
-  ]
+  "id": "evt_<timestamp_ms>",
+  "type": "memory-write",
+  "source": "qa-lead",
+  "timestamp": "<ISO8601>",
+  "processed": false,
+  "payload": {
+    "lesson": "<concise single-sentence lesson>",
+    "projectType": "<detected project type>",
+    "tags": ["<relevant tech/topic tags>"]
+  }
 }
 ```
-4. **Pruning**: If `sizeBytes > maxSizeBytes` (50KB), remove the oldest entries until it fits. Always keep the 5 most recently added entries regardless of size.
-5. **Do NOT write** trivial lessons like "the project used React" — only write non-obvious lessons that would have saved debugging time.
+
+Append your lesson events to the `events` array in event-queue.json (create the file with `{"version": 1, "events": []}` if it doesn't exist).
+
+> [!IMPORTANT]
+> Do NOT write to memory.json directly. `memory-manager` processes the event queue and handles persistence, deduplication, LRU pruning, and cross-agent sharing automatically.
+
+**Good lesson examples**:
+- ✅ "Stripe webhook signature verification requires raw body — use express.raw() middleware, not express.json()"
+- ✅ "Prisma generate must run before prisma migrate dev or migrations fail silently"
+- ❌ "The project used React" (trivial — don't submit)
+- ❌ "Always write tests" (obvious — don't submit)
+
 
 ## ERROR FINGERPRINT REGISTRY
 

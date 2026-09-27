@@ -1,6 +1,8 @@
 ---
 name: flutter-development
 description: Comprehensive Flutter/Dart guide covering project structure, widget architecture, state management (Riverpod/Bloc), navigation (GoRouter), API integration, platform channels, offline storage, animations, accessibility, testing, and app store release.
+refreshMode: full
+lastResearched: 2024-01-01
 ---
 
 # Flutter Development Skill

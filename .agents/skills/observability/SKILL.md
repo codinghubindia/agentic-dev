@@ -1,6 +1,13 @@
 ---
 name: observability
 description: Production observability guide covering the three pillars (logs, metrics, traces), Sentry error tracking for frontend and backend, Pino structured JSON logging with PII redaction, /health and /readiness endpoint design, Prometheus metrics with prom-client, request ID tracing middleware, alerting rules (critical vs warning), on-call runbook writing, and the observability-report.json sign-off format required before release.
+refreshMode: sections
+lastResearched: 2026-09-27
+refreshableSections:
+  - "Tool integrations"
+protectedSections:
+  - "Three pillars"
+  - "Alert rules"
 ---
 
 # Observability Skill

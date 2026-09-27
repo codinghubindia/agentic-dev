@@ -1,6 +1,8 @@
 ---
 name: frontend-development
 description: Comprehensive guide for building modern React frontends — component architecture, TypeScript patterns, state management, API integration with React Query, accessibility (WCAG 2.1 AA), performance optimization, and testing with React Testing Library.
+refreshMode: full
+lastResearched: 2024-01-01
 ---
 
 # Frontend Development Skill
