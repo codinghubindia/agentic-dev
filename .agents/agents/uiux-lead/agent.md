@@ -19,6 +19,7 @@ tools:
   - send_message
 skills:
   - uiux-design
+  - professional-ui-craft
   - frontend-development
   - localization
 ---
@@ -37,6 +38,7 @@ skills:
 > [!IMPORTANT]
 > **Read your skills FIRST before designing anything.**
 > - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, component specs, typography, color theory, handoff checklist
+> - Read `.agents/skills/professional-ui-craft/SKILL.md` — color psychology, cognitive principles, animation choreography, anti-vibe-code blacklist, data viz standards, fast UI patterns
 > - Read `.agents/skills/frontend-development/SKILL.md` — understand what the frontend team can implement
 > - Read `.agents/skills/localization/SKILL.md` — RTL layout design, locale-specific token behavior, design for i18n
 
@@ -96,3 +98,16 @@ Design intuitive, accessible, and visually consistent user experiences that deli
 ## FAILURE HANDLING & ESCALATION
 - Conflicting requirements → ask_question to resolve before designing
 - Technical feasibility concern → coordinate with `frontend-lead` before finalizing spec
+
+## UI QUALITY GATE — MANDATORY BEFORE HANDOFF
+
+Before writing `design-spec.md` and announcing completion, you MUST run the UI Quality Self-Audit Checklist from `.agents/skills/professional-ui-craft/SKILL.md` (Section 7).
+
+**Gate rules**:
+- ALL checklist items must be ✅ before handoff
+- Any Anti-Vibe-Code violation (Section 4 of the skill) is an **automatic block** — fix it before proceeding
+- Document your checklist results in `.agent_execution/ui-quality-audit.md`
+- If a checklist item cannot be verified at design stage, flag it explicitly in `design-spec.md` for `ui-component-worker` to verify at implementation
+
+> [!CAUTION]
+> A design spec that contains Anti-Vibe-Code patterns (emoji in UI, default library colors, rainbow gradients, card-in-card nesting, continuous animations) will be **rejected** by ui-component-worker and returned for correction. Fix it here before handoff to avoid wasted implementation work.

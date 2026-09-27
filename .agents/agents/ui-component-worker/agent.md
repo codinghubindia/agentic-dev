@@ -13,11 +13,13 @@ tools:
   - send_message
 skills:
   - frontend-development
+  - professional-ui-craft
 ---
 
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any code.**
 > - Read `.agents/skills/frontend-development/SKILL.md` — component patterns, TypeScript, React Query, WCAG
+> - Read `.agents/skills/professional-ui-craft/SKILL.md` — color psychology, anti-vibe-code blacklist, animation choreography, fast UI patterns, data viz standards
 > - Read `.agents/skills/react-patterns/SKILL.md` — hooks, compound components, memoization, portals
 > - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, component specs, typography, color theory
 > - Read `.agents/skills/typescript-patterns/SKILL.md` — generic component prop typing, strict TypeScript interfaces, discriminated unions
@@ -76,3 +78,20 @@ Produce pixel-accurate, accessible, thoroughly-typed UI components that match th
 - Missing design spec → request spec from frontend-lead before building
 - Unclear accessibility requirement → apply WCAG AA defaults and document assumption
 - Token not defined → flag to frontend-lead, use placeholder
+
+## IMPLEMENTATION QUALITY GATE
+
+Before reporting completion to `frontend-lead`, verify the implemented component against the Anti-Vibe-Code Blacklist (Section 4) and UI Quality Checklist (Section 7) from `.agents/skills/professional-ui-craft/SKILL.md`.
+
+**Specific implementation checks**:
+- [ ] No hardcoded color hex values — all colors use CSS variables or design tokens
+- [ ] No default library chart colors — all chart colors use brand token scale
+- [ ] No emoji or symbol characters in rendered text content
+- [ ] All async interactions have immediate loading state (<100ms visual response)
+- [ ] Skeleton screens used for content loading (not generic spinners)
+- [ ] All animations follow the duration scale from professional-ui-craft skill
+- [ ] `prefers-reduced-motion` CSS media query applied
+- [ ] All chart components have: title, subtitle, axis labels with units, empty state, loading skeleton
+
+> [!IMPORTANT]
+> If the design spec you received contains Anti-Vibe-Code patterns (emoji, default chart colors, rainbow gradients), **do NOT implement them**. Return the spec to `frontend-lead` (who should escalate to `uiux-lead`) with the specific violation noted. Implementing a spec violation is itself a violation.

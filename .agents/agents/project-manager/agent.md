@@ -92,6 +92,9 @@ Before doing ANYTHING else:
   "completedPhases": [],
   "featureManifestPath": ".agent_execution/feature-manifest.md",
   "resumable": true,
+  "projectOrigin": "self-built",
+  "onboardingComplete": false,
+  "codebaseSummaryPath": ".agent_execution/codebase-summary.md",
   "phases": []
 }
 ```
@@ -101,6 +104,12 @@ Before doing ANYTHING else:
    - If `lastResearched` is older than 90 days OR missing → invoke `skill-researcher` to refresh it before the relevant agent runs
    - Pass the skill file path and topic name to `skill-researcher`
    - Use `Model="flash"` for skill research (it's a lightweight research task)
+
+5. **Detect Project Origin**: Determine if this is a self-built or external codebase:
+   - If `.agent_execution/workflow-state.json` exists with `"projectOrigin": "self-built"` → skip onboarding, all artifacts are trusted
+   - If the workspace has existing source files BUT no `.agent_execution/` artifacts → set `"projectOrigin": "external"` in workflow-state.json and invoke `codebase-onboarder` (Model="flash") BEFORE any other phase
+   - If brand new empty project → set `"projectOrigin": "self-built"` and proceed normally
+   - Ask the user if ambiguous: "Is this an existing codebase you want me to work on, or are we building from scratch?"
 
 ---
 
@@ -146,6 +155,31 @@ After the interview is complete but BEFORE selecting a workflow, you MUST:
 
 > [!IMPORTANT]
 > NEVER skip this step. The feature manifest is mandatory for ALL project types. It is the user's last chance to correct scope before any token-expensive agents are invoked.
+
+---
+
+---
+
+## STEP 1.8: REQUEST CLASSIFICATION & CONTEXT STRATEGY
+
+Before selecting a workflow, classify the user's request to determine the minimum context needed:
+
+| Request Type | Keywords | Context Strategy | Token Budget |
+|---|---|---|---|
+| **Bug Fix / Error** | "fix", "error", "bug", "broken", "crash", "not working" | Load only: erroring file + direct imports + error-registry.json | Minimal |
+| **Add Feature** | "add", "new feature", "implement", "build", "create" | Load: codebase-summary.md + relevant module files | Medium |
+| **Optimization** | "optimize", "slow", "performance", "speed up", "improve" | Load: performance-report.md + identified hotspot files | Medium |
+| **Refactor** | "refactor", "restructure", "clean up", "rewrite" | Load: architecture.json + ownership-map.json + affected files | High |
+| **New Project** | No existing code detected | Full workflow from STEP 1 | Full |
+
+**How to apply**:
+1. Classify the request using keyword matching
+2. Write the classification to `workflow-state.json` as `"requestType": "bug-fix | add-feature | optimization | refactor | new-project"`
+3. When invoking agents, pass ONLY the context relevant to their task (via context-snapshot.json)
+4. Instruct agents: "Your request type is [X]. Load only what the context snapshot provides. Do NOT scan the full codebase."
+
+> [!TIP]
+> For bug fixes, the context snapshot should contain: the error message, the file path, its direct imports, and the relevant section of file-responsibility-index.json. This is often under 200 lines total — far cheaper than full project context.
 
 ---
 
@@ -286,6 +320,7 @@ For each phase in the workflow:
 | Merge + integration | `integration-manager` | (no workers) |
 | Code review | `code-reviewer` | (no workers) |
 | Skill research + refresh | `skill-researcher` | (no workers) |
+| External codebase onboarding | `codebase-onboarder` | (no workers) |
 
 ### For Small Changes / Bug Fixes → BYPASS leads, invoke workers DIRECTLY
 - UI bug → `ui-component-worker` directly
@@ -362,6 +397,7 @@ Update after EVERY phase completion.
 1. **Never print dead-end conversational text** while awaiting subagents — this yields the turn and pauses the pipeline.
 2. **CRITICAL**: When invoking any subagent, explicitly instruct it to call `send_message` back to this conversation upon completion with: (1) status (success/failure), (2) list of artifact paths produced, (3) any blockers encountered.
    2.5. **Context Snapshot First**: Always instruct subagents to read `.agent_execution/context-snapshot.json` before reading any full contract files. The snapshot is pre-filtered for their scope. Full files are fallback-only.
+   2.6. **Codebase Summary as Root**: For any project that has been onboarded (external) or has run at least one phase (self-built), always include the `codebase-summary.md` path in the agent's prompt instruction: "Read `.agent_execution/codebase-summary.md` first for a compressed project overview before reading any raw source files."
 3. **After every `invoke_subagent`**: call `schedule(DurationSeconds=300, TimerCondition="any")`
 4. **If liveness timer fires**: check subagent status via `manage_subagents(Action="list")`, review logs, kill+restart if stuck
 5. **Subagent return**: verify artifacts against acceptance criteria, update `project-plan.json`, proceed immediately
