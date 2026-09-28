@@ -34,7 +34,7 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
 1. RESUMABILITY CHECK
    - Check if `.agent_execution/workflow-state.json` exists
    - If it exists AND has completedPhases[] with entries:
-     → ask_question: "Previous run found. Completed phases: [X, Y]. Resume or start fresh?"
+     → send_message to conductor: `[QUESTION_TO_USER] {\"question\": \"Previous run found. Completed phases: [X, Y]. Resume or start fresh?"
        options: ["▶️ Resume from last incomplete phase", "🔄 Start fresh"]
      → If resume: read existing workflow-state.json, skip steps 2-7, go to step 8
      → If fresh: rename old workflow-state.json to workflow-state.archived.json

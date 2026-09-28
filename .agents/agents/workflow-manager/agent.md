@@ -14,7 +14,6 @@ tools:
   - invoke_subagent
   - manage_subagents
   - send_message
-  - ask_question
   - schedule
 ---
 

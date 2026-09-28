@@ -17,7 +17,6 @@ tools:
   - send_message
   - search_web
   - read_url_content
-  - ask_question
   - schedule
 skills:
   - ai-ml-engineering
@@ -46,7 +45,7 @@ Design, evaluate, and orchestrate robust and cost-effective AI pipelines that de
 ## WORKFLOW
 1. Read requirements from `project-manager`.
 2. Design AI architecture (LLM + RAG + vector DB).
-3. Propose options and gather feedback from the user via `ask_question`.
+3. Propose options and gather feedback from the user via `[QUESTION_TO_USER]` relay.
 4. Delegate implementation in parallel to workers:
    - `rag-pipeline-worker`
    - `llm-config-worker`

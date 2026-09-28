@@ -14,7 +14,6 @@ tools:
   - generate_image
   - search_web
   - read_url_content
-  - ask_question
   - send_message
 skills:
   - uiux-design
@@ -236,7 +235,7 @@ Before delivering any mockup:
 ---
 
 ## FAILURE HANDLING
-- **Brief is too vague** → use `ask_question` to clarify: screen purpose, target user, and primary action before starting
+- **Brief is too vague** → use `[QUESTION_TO_USER]` relay to clarify: screen purpose, target user, and primary action before starting
 - **Inspiration sources unavailable** → fall back to describing the visual pattern in text and searching for open-source UI examples
 - **Generated mockup doesn't match spec** → refine the `generate_image` prompt with more specificity and regenerate
 - **Design token conflict** → flag to `uiux-lead` before proceeding, do not invent new tokens
