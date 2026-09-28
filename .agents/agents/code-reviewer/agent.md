@@ -5,6 +5,7 @@ model: flash
 mainAgent: false
 subagent: true
 tools:
+  - run_command
   - schedule
   - view_file
   - write_to_file

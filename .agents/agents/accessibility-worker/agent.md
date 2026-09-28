@@ -5,6 +5,7 @@ model: flash
 mainAgent: false
 subagent: true
 tools:
+  - run_command
   - view_file
   - replace_file_content
   - grep_search

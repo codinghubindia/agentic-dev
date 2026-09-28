@@ -5,6 +5,7 @@ model: pro
 mainAgent: false
 subagent: true
 tools:
+  - run_command
   - view_file
   - write_to_file
   - list_dir
