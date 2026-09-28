@@ -71,3 +71,10 @@ Deliver a complete, validated, and correctly authorized set of route handlers th
 ## FAILURE HANDLING
 - Ambiguous endpoint spec → ask backend-lead before implementing
 - Missing service function → flag to backend-lead, create a stub with TODO comment
+
+## LOCAL VERIFICATION (SHIFT-LEFT TESTING)
+After writing your code and BEFORE reporting "done" to your lead, you MUST perform a local syntax check to prevent broken builds:
+1. Read the `localVerificationCommand` from the context snapshot (or architecture.json).
+2. Run this exact command in the terminal (e.g., `npm run build`, `npx tsc --noEmit`, or `flutter analyze`).
+3. If it throws an error, you must fix your code.
+4. **MAXIMUM RETRY LIMIT**: If the command fails 3 times in a row, STOP. Revert your last change and escalate the exact error to your lead. Do NOT get stuck in an infinite debugging loop.

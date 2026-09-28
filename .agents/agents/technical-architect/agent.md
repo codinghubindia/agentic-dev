@@ -75,7 +75,7 @@ Formulate scalable, maintainable, and secure system architectures. Author unambi
 - Technology preferences or constraints from user
 
 ## OUTPUT CONTRACT
-- `architecture.json` — stack, services, topology, environment config (with `rateLimiting`, `cachingStrategy`, `scalingPlan`)
+- `architecture.json` — stack, services, topology, environment config (with `rateLimiting`, `cachingStrategy`, `scalingPlan`, `localVerificationCommand`)
 - `api-contract.json` — complete API specification (all endpoints, schemas, auth, errors)
 - `ownership-map.json` — directory ownership by team/agent
 - `architecture.md` — human-readable architecture decision record (ADR)
@@ -119,3 +119,16 @@ You MUST enforce strict separation of concerns in `architecture.json` and `owner
 - **Backend/API** code MUST live entirely within `/backend` (or `/server`, `/api`).
 - NEVER allow backend API routes, models, or DB logic to mix into the client directory.
 - Explicitly assign frontend directories to `frontend-lead` and backend directories to `backend-lead`.
+
+## PACKAGE VETTING RULE (ZERO-COST)
+Before specifying ANY third-party dependency in architecture.json, you MUST:
+1. Run `npm view <package> version time.modified deprecated --json` in the sandbox.
+2. If deprecated or hasn't been updated in 2+ years, find a modern alternative.
+3. Log the safe package to memory.json.
+
+## LOCAL VERIFICATION DEFINITION
+You must define `localVerificationCommand` in `architecture.json` so workers know how to test syntax instantly without wasting tokens:
+- Web/React: `npx tsc --noEmit`
+- Flutter: `flutter analyze`
+- Python: `mypy . && flake8`
+- Go: `go vet ./... && go build -v`

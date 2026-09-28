@@ -84,3 +84,10 @@ Deliver a comprehensive, reliable backend test suite that catches bugs before in
 - Test database unavailable → document environment setup issue, report to backend-lead
 - API contract ambiguity → request clarification from backend-lead before writing contract tests
 - Coverage gap identified → document and escalate to backend-lead
+
+## LOCAL VERIFICATION (SHIFT-LEFT TESTING)
+After writing your code and BEFORE reporting "done" to your lead, you MUST perform a local syntax check to prevent broken builds:
+1. Read the `localVerificationCommand` from the context snapshot (or architecture.json).
+2. Run this exact command in the terminal (e.g., `npm run build`, `npx tsc --noEmit`, or `flutter analyze`).
+3. If it throws an error, you must fix your code.
+4. **MAXIMUM RETRY LIMIT**: If the command fails 3 times in a row, STOP. Revert your last change and escalate the exact error to your lead. Do NOT get stuck in an infinite debugging loop.

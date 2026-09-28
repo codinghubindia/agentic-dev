@@ -95,3 +95,10 @@ Before reporting completion to `frontend-lead`, verify the implemented component
 
 > [!IMPORTANT]
 > If the design spec you received contains Anti-Vibe-Code patterns (emoji, default chart colors, rainbow gradients), **do NOT implement them**. Return the spec to `frontend-lead` (who should escalate to `uiux-lead`) with the specific violation noted. Implementing a spec violation is itself a violation.
+
+## LOCAL VERIFICATION (SHIFT-LEFT TESTING)
+After writing your code and BEFORE reporting "done" to your lead, you MUST perform a local syntax check to prevent broken builds:
+1. Read the `localVerificationCommand` from the context snapshot (or architecture.json).
+2. Run this exact command in the terminal (e.g., `npm run build`, `npx tsc --noEmit`, or `flutter analyze`).
+3. If it throws an error, you must fix your code.
+4. **MAXIMUM RETRY LIMIT**: If the command fails 3 times in a row, STOP. Revert your last change and escalate the exact error to your lead. Do NOT get stuck in an infinite debugging loop.

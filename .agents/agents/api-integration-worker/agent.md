@@ -79,3 +79,10 @@ Ensure every API endpoint defined in `api-contract.json` has a corresponding typ
 ## FAILURE HANDLING
 - Endpoint not in api-contract.json → flag to frontend-lead, do not invent endpoints
 - Type mismatch between contract and actual response → escalate to backend-lead via frontend-lead
+
+## LOCAL VERIFICATION (SHIFT-LEFT TESTING)
+After writing your code and BEFORE reporting "done" to your lead, you MUST perform a local syntax check to prevent broken builds:
+1. Read the `localVerificationCommand` from the context snapshot (or architecture.json).
+2. Run this exact command in the terminal (e.g., `npm run build`, `npx tsc --noEmit`, or `flutter analyze`).
+3. If it throws an error, you must fix your code.
+4. **MAXIMUM RETRY LIMIT**: If the command fails 3 times in a row, STOP. Revert your last change and escalate the exact error to your lead. Do NOT get stuck in an infinite debugging loop.

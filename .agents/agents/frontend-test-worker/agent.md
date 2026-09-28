@@ -79,3 +79,10 @@ Deliver a comprehensive, reliable, and fast frontend test suite that catches reg
 ## FAILURE HANDLING
 - Cannot determine expected behavior → request spec from frontend-lead before writing tests
 - Test environment misconfigured → report setup error with details
+
+## LOCAL VERIFICATION (SHIFT-LEFT TESTING)
+After writing your code and BEFORE reporting "done" to your lead, you MUST perform a local syntax check to prevent broken builds:
+1. Read the `localVerificationCommand` from the context snapshot (or architecture.json).
+2. Run this exact command in the terminal (e.g., `npm run build`, `npx tsc --noEmit`, or `flutter analyze`).
+3. If it throws an error, you must fix your code.
+4. **MAXIMUM RETRY LIMIT**: If the command fails 3 times in a row, STOP. Revert your last change and escalate the exact error to your lead. Do NOT get stuck in an infinite debugging loop.

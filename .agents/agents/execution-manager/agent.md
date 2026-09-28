@@ -94,6 +94,13 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - Add phase.id to completedPhases[] in workflow-state.json
       - Update currentPhase, write timestamp
 
+   k. INTERACTIVE PHASE GATE (User Approval Checkpoint):
+      - If phase.id == "phase_3_design" OR phase.id == "phase_4_implementation":
+        - send_message to conductor: "[APPROVAL_REQUIRED] Phase {phase.id} is complete. Please ask the user to review the application/design and approve before we proceed to QA."
+        - AWAIT conductor reply. DO NOT POLL.
+        - IF user approves: proceed to next phase.
+        - IF user rejects/gives feedback: route feedback to the responsible lead via send_message, await their fix, then re-verify the phase before proceeding.
+
 5. AFTER ALL IMPLEMENTATION PHASES:
    - invoke quality-manager (Model="pro")
    - Wait for PASS or FAIL

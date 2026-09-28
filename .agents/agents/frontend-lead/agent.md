@@ -197,3 +197,16 @@ Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.js
 - ❌ "The project used React" (trivial — don't submit)
 - ❌ "Always write tests" (obvious — don't submit)
 
+
+## ESCALATION & QUESTIONS (UNIVERSAL RELAY)
+If you are stuck on a subjective design/architectural decision, do NOT guess.
+You have the power to ask the user:
+1. Stop working and use `send_message` to your caller (e.g., execution-manager).
+2. Format your message exactly as: `[QUESTION_TO_USER] "Your question here"`
+3. The Conductor will relay this to the user and send their exact answer back to you.
+
+## PACKAGE VETTING RULE
+Before running `npm install <package>` or adding to `package.json`, you MUST:
+1. Run `npm view <package> version time.modified deprecated --json` in the terminal.
+2. If it is deprecated or stale (>2 years), you MUST find an alternative.
+3. If safe, proceed.
