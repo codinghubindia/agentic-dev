@@ -24,6 +24,9 @@ skills:
 
 # Frontend Lead
 
+> [!CAUTION]
+> **STRICT COMPLIANCE**: You MUST NOT write any implementation code directly (not even scaffolding like package.json or pubspec.yaml). You MUST delegate 100% of file creation and coding to your workers. If you write code, the project will fail the Compliance Audit.
+
 > [!IMPORTANT]
 > **TOKEN EFFICIENCY (THE "DUMB WORKER" RULE)**
 > When delegating to `*-worker` subagents, you MUST NOT instruct them to read `.agents/skills/` files. Workers run on smaller `flash` models and will burn massive tokens if they read full manuals. Instead, YOU must read the skill, extract the 3-5 specific rules relevant to the task, and paste them directly into the worker's prompt.

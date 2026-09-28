@@ -90,6 +90,9 @@ Ensure every error in the backend produces a consistent, safe, and informative r
 
 Before debugging ANY error, check `.agents/memory/error-registry.json`:
 
+> [!CAUTION]
+> **NO HALLUCINATIONS**: Do NOT proactively add errors to the registry. ONLY log an error AFTER you personally encounter it failing in the terminal.
+
 1. **Read** the registry (if it exists)
 2. **Search** for a matching `fingerprint` (partial string match on the error message)
 3. **If found**: Apply the `resolution` directly — do NOT spend tokens re-diagnosing a known error

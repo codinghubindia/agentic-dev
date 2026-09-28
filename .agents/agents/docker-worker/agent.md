@@ -80,3 +80,26 @@ Deliver production-grade container configurations that are small, fast to build,
 ## FAILURE HANDLING
 - Unknown runtime → ask devops-release-lead for clarification before writing
 - Health endpoint not defined → use `/health` as default and flag to devops-release-lead
+
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ext>": {
+      "owner": "<your exact agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your exact agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+If the file already has an entry, UPDATE it (don't duplicate). Do this BEFORE reporting back to your lead.

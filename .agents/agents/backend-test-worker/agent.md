@@ -91,3 +91,26 @@ After writing your code and BEFORE reporting "done" to your lead, you MUST perfo
 2. Run this exact command in the terminal (e.g., `npm run build`, `npx tsc --noEmit`, or `flutter analyze`).
 3. If it throws an error, you must fix your code.
 4. **MAXIMUM RETRY LIMIT**: If the command fails 3 times in a row, STOP. Revert your last change and escalate the exact error to your lead. Do NOT get stuck in an infinite debugging loop.
+
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ext>": {
+      "owner": "<your exact agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your exact agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+If the file already has an entry, UPDATE it (don't duplicate). Do this BEFORE reporting back to your lead.

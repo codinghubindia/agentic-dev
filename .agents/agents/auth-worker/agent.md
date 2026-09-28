@@ -83,3 +83,26 @@ Deliver a secure, complete authentication and authorization system that protects
 - Unclear role model → request role definition from backend-lead before implementing RBAC
 - OAuth2 provider config missing → flag to backend-lead, stub with clear TODO
 - Security concern discovered → escalate to security-lead immediately
+
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ext>": {
+      "owner": "<your exact agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your exact agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+If the file already has an entry, UPDATE it (don't duplicate). Do this BEFORE reporting back to your lead.

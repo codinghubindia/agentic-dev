@@ -123,6 +123,7 @@ You MUST enforce strict separation of concerns in `architecture.json` and `owner
 - **Backend/API** code MUST live entirely within `/backend` (or `/server`, `/api`).
 - NEVER allow backend API routes, models, or DB logic to mix into the client directory.
 - Explicitly assign frontend directories to `frontend-lead` and backend directories to `backend-lead`.
+- **BaaS Rule (Supabase/Firebase)**: If using a Backend-as-a-Service, the `data-lead` owns the database schema and RLS. The `frontend-lead` or `mobile-lead` owns the client-side SDK integration. DO NOT assign client-side code to `backend-lead`. `backend-lead` is ONLY for custom Node/Python/Go servers.
 
 ## PACKAGE VETTING RULE (ZERO-COST)
 Before specifying ANY third-party dependency in architecture.json, you MUST:

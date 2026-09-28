@@ -72,3 +72,26 @@ Ensure that new code changes have not broken any previously-working functionalit
 - Baseline not available → run suite, establish baseline, report to qa-lead that this is the first run
 - Test environment failure (server won't start) → report environment issue to qa-lead, do not classify as regression
 - Test suite configuration error → report to qa-lead with exact error
+
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ext>": {
+      "owner": "<your exact agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your exact agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+If the file already has an entry, UPDATE it (don't duplicate). Do this BEFORE reporting back to your lead.

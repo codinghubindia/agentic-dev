@@ -240,3 +240,26 @@ Before delivering any mockup:
 - **Inspiration sources unavailable** → fall back to describing the visual pattern in text and searching for open-source UI examples
 - **Generated mockup doesn't match spec** → refine the `generate_image` prompt with more specificity and regenerate
 - **Design token conflict** → flag to `uiux-lead` before proceeding, do not invent new tokens
+
+
+## FILE RESPONSIBILITY INDEX
+
+As you create or modify files, you MUST maintain `.agent_execution/file-responsibility-index.json`.
+
+For every file you create or significantly modify, append an entry:
+
+```json
+{
+  "files": {
+    "<relative/path/to/file.ext>": {
+      "owner": "<your exact agent name>",
+      "responsibilities": ["<function or endpoint this file handles>"],
+      "dependsOn": ["<other relative file paths this file imports from>"],
+      "lastModifiedBy": "<your exact agent name>",
+      "phase": "<current workflow phase id>",
+      "notes": "<optional: any non-obvious implementation notes>"
+    }
+  }
+}
+```
+If the file already has an entry, UPDATE it (don't duplicate). Do this BEFORE reporting back to your lead.
