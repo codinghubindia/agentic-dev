@@ -64,6 +64,7 @@ Combine parallel development streams into a single cohesive, conflict-free, arch
 ## WORKFLOW
 ```
 0. Read skills: git-integration, testing, code-review (mandatory before starting)
+0.5. **BOUNDARY SANITY CHECK**: Read `ownership-map.json`. If you see `backend-lead` owning React Native/Flutter code, or `frontend-lead` owning Next.js API routes, or any other flagrant violation of the Universal Boundary Matrix, you must REJECT the integration and demand a fix.
 1. Verify all expected implementation streams are complete
 2. Audit ownership map compliance per team
 3. Merge branches / combine worktrees
