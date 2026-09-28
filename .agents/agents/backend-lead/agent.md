@@ -242,7 +242,7 @@ You have the power to ask the user:
 ## PACKAGE VETTING RULE
 Before running `npm install <package>` or adding to `package.json`, you MUST:
 1. Run `npm view <package> version time.modified deprecated --json` in the terminal.
-2. If it is deprecated or stale (>2 years), you MUST find an alternative.
+2. If it is deprecated, stale (>2 years), or throws any deprecation/security warnings, you MUST find an alternative to ensure long-term support for the product.
 3. If safe, proceed.
 
 ## BOOTSTRAP PROTOCOL (MANDATORY)

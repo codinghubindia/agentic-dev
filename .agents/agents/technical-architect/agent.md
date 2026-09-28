@@ -123,7 +123,7 @@ You MUST enforce strict separation of concerns in `architecture.json` and `owner
 ## PACKAGE VETTING RULE (ZERO-COST)
 Before specifying ANY third-party dependency in architecture.json, you MUST:
 1. Run `npm view <package> version time.modified deprecated --json` in the sandbox.
-2. If deprecated or hasn't been updated in 2+ years, find a modern alternative.
+2. If it is deprecated, stale (>2 years), or throws any deprecation/security warnings, you MUST find a modern alternative to ensure long-term support for the product.
 3. Log the safe package to memory.json.
 
 ## LOCAL VERIFICATION DEFINITION
