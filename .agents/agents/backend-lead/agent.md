@@ -244,3 +244,8 @@ Before running `npm install <package>` or adding to `package.json`, you MUST:
 1. Run `npm view <package> version time.modified deprecated --json` in the terminal.
 2. If it is deprecated or stale (>2 years), you MUST find an alternative.
 3. If safe, proceed.
+
+## BOOTSTRAP PROTOCOL (MANDATORY)
+Before delegating ANY tasks to your workers, you MUST prepare the local sandbox environment:
+1. **Install Dependencies**: Run `npm install` (or `pip install`, `flutter pub get`) in the sandbox terminal. If you skip this, your workers' local shift-left tests will crash immediately with "Module not found" errors.
+2. **Generate Mock Environments**: Generate a `.env.local` or `.env.development` file filled with safe, dummy values (e.g., `DATABASE_URL=postgres://localhost:5432/mock_db`, `JWT_SECRET=super_secret_mock_key`). If you skip this, the application will crash on boot during local worker tests.

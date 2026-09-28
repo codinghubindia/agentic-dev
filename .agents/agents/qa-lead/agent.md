@@ -213,3 +213,11 @@ If the file already has an entry, UPDATE it (don't duplicate).
 
 > [!IMPORTANT]
 > A phase is NOT complete until every file created in that phase has an entry in the index.
+
+## DIRECT BUG ROUTING (SELF-HEALING)
+If a test fails, do NOT immediately fail the entire phase. Use direct worker routing:
+1. Read `.agent_execution/file-responsibility-index.json`.
+2. Find the `owner` (worker agent name) of the failing file.
+3. Use `send_message` to send the exact error log DIRECTLY to that worker. Example: "Your file X is failing this test: [log]. Please fix it."
+4. Await their fix before re-running the test. 
+This bypasses management and mirrors how real engineering teams operate, saving time and tokens.

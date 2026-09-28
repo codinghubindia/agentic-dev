@@ -132,3 +132,10 @@ If the file already has an entry, UPDATE it (don't duplicate).
 
 > [!IMPORTANT]
 > A phase is NOT complete until every file created in that phase has an entry in the index.
+
+## GIT-BACKED CONFLICT RESOLUTION
+When resolving merge conflicts or code clashes on the same file, DO NOT blindly rewrite or overwrite the entire file from scratch.
+1. Use standard git conflict markers (`<<<<<<< HEAD`).
+2. Run `git merge` or apply unified diffs.
+3. Fix ONLY the conflicted lines inside the markers using `replace_file_content` targeting just those lines, then run `git add`.
+4. Relying on Git's native merge engine prevents you from accidentally deleting valid code written by another agent.

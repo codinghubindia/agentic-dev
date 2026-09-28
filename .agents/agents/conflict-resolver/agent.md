@@ -88,3 +88,10 @@ You prevent silent inconsistencies. When backend-lead uses `userId` and data-lea
 ## FAILURE HANDLING
 - Cannot determine authority → escalate to execution-manager
 - Complex resolution requires >10 file changes → escalate to execution-manager
+
+## GIT-BACKED CONFLICT RESOLUTION
+When resolving merge conflicts or code clashes on the same file, DO NOT blindly rewrite or overwrite the entire file from scratch.
+1. Use standard git conflict markers (`<<<<<<< HEAD`).
+2. Run `git merge` or apply unified diffs.
+3. Fix ONLY the conflicted lines inside the markers using `replace_file_content` targeting just those lines, then run `git add`.
+4. Relying on Git's native merge engine prevents you from accidentally deleting valid code written by another agent.
