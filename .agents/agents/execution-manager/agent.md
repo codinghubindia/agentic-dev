@@ -92,11 +92,13 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - If artifact missing AND hardGate=true: REJECT, notify agent, demand deliverable
       - If artifact missing AND hardGate=false: log warning, continue
 
-   i. ROLLBACK PROTOCOL (if phase fails after 2 retries):
-      - At the START of every phase, run `git rev-parse HEAD` and save it to workflow-state.json as `phaseStartSha`.
-      - If the phase fails, DO NOT just checkout files. Run `git reset --hard <phaseStartSha>` and `git clean -fd` in the terminal to completely wipe all commits and untracked files made during the failed phase.
+   i. ROLLBACK PROTOCOL (Targeted Sniper Revert):
+      - If a phase fails, DO NOT use `git reset --hard` (it destroys parallel work).
+      - Read `.agent_execution/file-responsibility-index.json`.
+      - Find all files modified during the current phase.
+      - For each file: run `git checkout HEAD -- <filepath>` (if pre-existing) or delete the file (if it was newly created).
       - Update workflow-state.json: phase status = "rolled-back"
-      - Report to conductor: "Phase [X] rolled back via git reset. Workspace restored."
+      - Report to conductor: "Phase [X] rolled back via targeted file checkout. Parallel work preserved."
 
    j. LOG completion:
       - Add phase.id to completedPhases[] in workflow-state.json

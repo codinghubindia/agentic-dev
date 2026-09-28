@@ -26,6 +26,10 @@ skills:
 # Mobile Lead
 
 > [!IMPORTANT]
+> **TOKEN EFFICIENCY (THE "DUMB WORKER" RULE)**
+> When delegating to `*-worker` subagents, you MUST NOT instruct them to read `.agents/skills/` files. Workers run on smaller `flash` models and will burn massive tokens if they read full manuals. Instead, YOU must read the skill, extract the 3-5 specific rules relevant to the task, and paste them directly into the worker's prompt.
+
+> [!IMPORTANT]
 > **Subagent Monitoring**: When you invoke a subagent, you MUST use the `schedule` tool to set a liveness/timeout timer (e.g., `DurationSeconds=300`, `TimerCondition="any"`) to ensure you don't stall if a subagent gets stuck.
 
 > [!NOTE]

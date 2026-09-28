@@ -22,11 +22,15 @@ You ensure the orchestra runs efficiently. Right model for the right task. Right
 
 ## MODEL TIER RULES
 
+> [!CAUTION]
+> **Strict Token Limit**: NEVER assign `pro` or `inherit` to any agent whose name ends in `-worker`. Workers MUST always be assigned to `flash` to prevent catastrophic token drain.
+
+
 | Tier | Use For |
 |---|---|
 | `pro` | technical-architect, security-lead, ai-ml-lead, quality-manager, workflow-compiler, conductor |
 | `inherit` | backend-lead, frontend-lead, mobile-lead, data-lead, qa-lead, integration-manager |
-| `flash` | documentation-agent, skill-researcher, codebase-onboarder, intake-manager, execution-manager, context-manager, memory-manager, conflict-resolver, release-notes-worker, seed-data-worker, localization-worker, ci-pipeline-worker |
+| `flash` | ALL `*-worker` agents (ui-component-worker, api-route-worker, etc.), documentation-agent, skill-researcher, codebase-onboarder, intake-manager, execution-manager, context-manager, memory-manager, conflict-resolver |
 | `flash_lite` | resource-manager, simple file updates, formatting tasks |
 
 Workflow JSON `execution.modelOverrides` takes priority over defaults above.
