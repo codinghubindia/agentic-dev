@@ -13,7 +13,8 @@
 
 ## 📋 Table of Contents
 
-- [What's New: Neural Orchestra](#-whats-new-neural-orchestra)
+- [What's New: Neural Orchestra v4](#-whats-new-neural-orchestra-v4)
+- [Enterprise Resilience (Day-2 Ops)](#-enterprise-resilience-day-2-ops)
 - [Architecture Overview](#-architecture-overview)
 - [Project Type Routing](#-project-type-routing)
 - [Phase Gate System](#-phase-gate-system)
@@ -27,23 +28,36 @@
 
 ---
 
-## 🎉 What's New: Neural Orchestra
+## 🎉 What's New: Neural Orchestra v4
 
 The monolithic `project-manager` has been completely replaced by the **Neural Orchestra** — a distributed, brain-like management layer that radically improves token efficiency, parallel execution, and quality control.
 
 - **The Conductor (`conductor`)**: The ultra-thin user-facing entry point. It receives requests, classifies them, routes to specialized managers, and surfaces the final results.
 - **6 Specialized Managers**:
   - `intake-manager`: Handles user interviews, project classification, and feature manifests.
-  - `execution-manager`: Runs workflow phases, enforces gates, and handles rollbacks.
+  - `execution-manager`: Runs workflow phases, enforces gates, and handles rollbacks via deep `git reset --hard`.
   - `quality-manager`: Runs 4 quality gates in parallel (Compliance, QA, Security, UI) and tracks agent reputation.
   - `context-manager`: Generates targeted, per-agent context snapshots to save tokens.
-  - `memory-manager`: Runs as a background daemon, processing the `event-queue.jsonl` to validate, deduplicate, and cross-share lessons across agents.
+  - `memory-manager`: Runs as a background daemon processing the `event-queue.jsonl` to validate, deduplicate, and cross-share lessons across agents.
   - `resource-manager`: Optimizes model usage (`pro`/`flash`/`flash_lite`) and tracks token budgets.
 - **Dynamic Workflows (`workflow-compiler`)**: For simple bug fixes or single features, it compiles a minimal custom workflow, avoiding the overhead of the full 6-phase pipeline.
-- **Conflict Resolver (`conflict-resolver`)**: Auto-detects schema, endpoint, and naming conflicts between parallel agent streams.
 - **Codebase Onboarding (`codebase-onboarder`)**: Quickly reverse-engineers external codebases using signature-only scanning (grep) to save tokens.
-- **Auto-Refreshing Skills (`skill-researcher`)**: Skills now have a `refreshMode` (`protected`, `full`, `sections`). Stale skills are automatically researched and updated from the web.
+- **Auto-Refreshing Skills (`skill-researcher`)**: Skills now have a `refreshMode`. Stale skills are sequentially researched and updated from the web to avoid API rate limits.
 - **Professional UI Craft (`professional-ui-craft`)**: New protected skill enforcing color psychology, cognitive design laws, and an anti-vibe-code blacklist.
+
+---
+
+## 🛡️ Enterprise Resilience (Day-2 Ops)
+
+v4.0.0 introduces massive "Day 2" operational stability upgrades to ensure the AI agents act like a real engineering team and never get stuck in infinite token-burning loops:
+
+- **Universal UX Relay**: Any worker agent can send a `[QUESTION_TO_USER]` or hit an `[APPROVAL_REQUIRED]` checkpoint. The Conductor will pause the entire pipeline, safely suspend liveness timers, and ask you directly via a UI prompt before proceeding.
+- **Shift-Left Local Testing**: Agents are now mathematically blocked from infinite debugging loops. The Architect generates a `localVerificationCommand` (e.g., `tsc --noEmit` or `flutter analyze`). Workers **must** run this locally and are hard-capped at 3 retries before they are forced to escalate to their Lead.
+- **Mandatory Bootstrapping**: Leads are strictly required to run `npm install` and auto-generate safe `.env.local` files with mock data *before* delegating tasks, ensuring that local shift-left tests actually boot instead of crashing instantly.
+- **Self-Healing QA Routing**: When tests fail, the QA Lead no longer fails the entire phase. Instead, it scans the `file-responsibility-index.json`, finds the exact worker who wrote the broken file, and routes the error log directly to them via `send_message`.
+- **Zero-Cost Package Vetting**: Before adding any dependencies to `package.json`, Leads must execute `npm view <package> deprecated time.modified --json` in the sandbox to verify the package is actively maintained, preventing the integration of dead/deprecated libraries.
+- **Git-Backed Conflict Resolution**: The `conflict-resolver` and `integration-manager` no longer blindly overwrite files using LLM context. They now strictly rely on standard git markers (`<<<<<<< HEAD`) and unified diffs to fix conflicts cleanly.
+- **Strict Memory Anti-Bloat**: The `memory-manager` enforces hard item limits (`error-registry.json` capped at 20 fingerprints; individual agent `memory.json` capped at 15) to prevent the "Global Brain" from consuming massive token budgets over months of use.
 
 ---
 
@@ -81,8 +95,6 @@ flowchart TD
     QM ==> QA[qa-lead]
     QM ==> DEV[devops-release-lead]
     QM ==> IM[integration-manager]
-
-    %% Workers omitted for brevity, but they sit below their respective leads
 ```
 
 ---
@@ -109,19 +121,11 @@ Agents cannot advance to the next phase without producing required artifacts, en
 1. **Planning Gate**: `project-plan.json`
 2. **Architecture Gate**: `architecture.json` + `api-contract.json`
 3. **UX Gate**: Hard prerequisite before frontend implementation starts.
-4. **Implementation Gate**: Hand-off reports from all active leads.
+4. **Implementation Gate**: Hand-off reports from all active leads. (Features Interactive Approval Gate).
 5. **Integration Gate**: `integration-report.json` (build PASS).
 6. **Stress Testing Gate**: QA load test and rate-limit validation.
 7. **Observability Gate (BLOCKING)**: `observability-report.json` (PASS).
 8. **Quality Gate (Unified)**: Compliance, QA, Security, and UI gates must all PASS.
-
----
-
-## 🛠️ Adaptable Pipeline
-
-Workflows are built to be modular. Based on your project needs, the orchestrator can skip unnecessary phases. 
-For instance, if you don't need a DevOps release pipeline immediately, the orchestrator skips the `devops-release-lead` step.
-If a project is purely backend, frontend phases are pruned entirely.
 
 ---
 
@@ -214,7 +218,7 @@ Agents pull from 23 specialized skill guides located in `.agents/skills/` (now w
 
 ## 📋 Workflows
 
-6 robust pipelines configured in `.agents/registry/agent-registry.json` (plus dynamic generation):
+6 robust pipelines configured in `.agents/workflows/` (plus dynamic generation):
 1. **Full Lifecycle Greenfield Project** (6 phases, fullstack/api-only/frontend-only)
 2. **Brownfield Codebase Update** (6 phases, all project types)
 3. **Parallel Feature Development** (3 phases, all project types)
@@ -229,7 +233,7 @@ Agents pull from 23 specialized skill guides located in `.agents/skills/` (now w
 
 1. **Clone the Framework**
    ```bash
-   git clone https://github.com/codinghubindia/agenticdev-autonomous-ai-software-company.git my-project
+   git clone https://github.com/codinghubindia/agentic-dev.git my-project
    cd my-project
    ```
 2. **Open in Antigravity**
