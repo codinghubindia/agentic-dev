@@ -56,7 +56,8 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
    - For each skill in .agents/skills/, read its SKILL.md frontmatter
    - If refreshMode = "protected" → skip
    - If lastResearched is missing OR older than 90 days AND refreshMode != "protected":
-     → invoke skill-researcher (Model="flash") and AWAIT its completion via send_message before continuing
+     → invoke skill-researcher (Model="flash").
+     → ⚠️ **RATE LIMIT RULE**: You MUST `AWAIT` completion via send_message BEFORE invoking the next skill-researcher. Do NOT spawn multiple skill-researchers simultaneously, or you will trigger a 403 API Rate Limit crash. Process them strictly sequentially (one by one).
 
 5. USER INTERVIEW
    - You do NOT have the ask_question tool. You must relay through conductor.

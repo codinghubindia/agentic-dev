@@ -119,3 +119,9 @@ When any agent sends: "memory-manager, what do we know about [topic]?"
 ## FAILURE HANDLING
 - event-queue.jsonl malformed → log to .agent_execution/memory-manager-errors.log, skip malformed events
 - Query with no matching lessons → reply "No relevant lessons found" — do not fabricate
+
+## STRICT PRUNING RULES (PREVENTING BLOAT)
+To prevent token exhaustion across the orchestra, you MUST enforce strict item limits on memory files, ignoring byte sizes:
+1. `error-registry.json` MUST never exceed **20 fingerprints**. If adding a new fingerprint makes it 21, you MUST delete the oldest or least-referenced fingerprint.
+2. Each agent's `memory.json` MUST never exceed **15 lessons**. If adding a new lesson pushes it to 16, delete the oldest lesson.
+3. NEVER summarize or compress old items to save space — just delete the oldest ones. Fast retrieval of recent memory is more important than exhaustive history.

@@ -72,23 +72,25 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    f. AWAIT responses — DO NOT poll. Wait for send_message from each agent.
 
    g. IF liveness timer fires:
-      - manage_subagents(Action="list") to check status
-      - Kill + restart once if stuck
-      - If fails again: report to conductor for escalation
+      - CHECK the agent's last communication.
+      - IF the agent is waiting on a `[QUESTION_TO_USER]` or `[APPROVAL_REQUIRED]`, DO NOT KILL IT. The user is just taking time to reply. Wait patiently and reset the timer.
+      - OTHERWISE, manage_subagents(Action="list") to check status.
+      - Kill + restart once if stuck. If fails again: report to conductor for escalation.
 
    h. AFTER ALL AGENTS IN PHASE COMPLETE:
       - If 2+ parallel agents: invoke conflict-resolver (Model="flash")
         Pass: list of files written this phase from file-responsibility-index.json
         Wait for conflict resolution before gate check
+      - 🔄 **SNAPSHOT REFRESH**: After conflict resolution or QA bug fixing, the codebase has changed. You MUST use send_message to `context-manager` to REFRESH the `context-snapshot.json` so subsequent agents don't read stale context.
       - Verify ALL requiredArtifacts[] exist on disk
       - If artifact missing AND hardGate=true: REJECT, notify agent, demand deliverable
       - If artifact missing AND hardGate=false: log warning, continue
 
    i. ROLLBACK PROTOCOL (if phase fails after 2 retries):
-      - Read file-responsibility-index.json for files written this phase
-      - For each: git checkout HEAD -- <file> (if pre-existing) or delete (if new)
+      - At the START of every phase, run `git rev-parse HEAD` and save it to workflow-state.json as `phaseStartSha`.
+      - If the phase fails, DO NOT just checkout files. Run `git reset --hard <phaseStartSha>` and `git clean -fd` in the terminal to completely wipe all commits and untracked files made during the failed phase.
       - Update workflow-state.json: phase status = "rolled-back"
-      - Report to conductor: "Phase [X] rolled back. Workspace restored."
+      - Report to conductor: "Phase [X] rolled back via git reset. Workspace restored."
 
    j. LOG completion:
       - Add phase.id to completedPhases[] in workflow-state.json
