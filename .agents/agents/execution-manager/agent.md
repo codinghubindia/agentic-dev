@@ -70,6 +70,12 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - After ALL invocations: schedule(DurationSeconds=300, TimerCondition="any")
 
    f. AWAIT responses — DO NOT poll. Wait for send_message from each agent.
+      - ⚠️ **UX RELAY INTERCEPTION**: IF any agent sends a message starting with `[QUESTION_TO_USER]`:
+        1. DO NOT mark that agent as finished!
+        2. Immediately forward the `[QUESTION_TO_USER] <question_text>` message to `conductor`.
+        3. AWAIT the answer from `conductor`.
+        4. Send the user's answer back to the agent via `send_message`.
+        5. Continue waiting for the agent to finish its actual work.
 
    g. IF liveness timer fires:
       - CHECK the agent's last communication.
@@ -97,11 +103,15 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - Update currentPhase, write timestamp
 
    k. INTERACTIVE PHASE GATE (User Approval Checkpoint):
-      - If phase.id == "phase_3_design" OR phase.id == "phase_4_implementation":
-        - send_message to conductor: "[APPROVAL_REQUIRED] Phase {phase.id} is complete. Please ask the user to review the application/design and approve before we proceed to QA."
+      - If phase.id == "phase_4_implementation":
+        - 🔄 **APPROVAL LOOP START**:
+        - send_message to conductor: "[APPROVAL_REQUIRED] Phase {phase.id} is complete. Please ask the user to review the application in the browser and approve before we proceed to QA."
         - AWAIT conductor reply. DO NOT POLL.
-        - IF user approves: proceed to next phase.
-        - IF user rejects/gives feedback: route feedback to the responsible lead via send_message, await their fix, then re-verify the phase before proceeding.
+        - IF user approves: break loop, proceed to next phase.
+        - IF user rejects/gives feedback: 
+          1. Route feedback to the responsible lead via send_message.
+          2. AWAIT their fix completion.
+          3. REPEAT the APPROVAL LOOP from the start (You MUST send [APPROVAL_REQUIRED] to conductor again). DO NOT proceed until explicitly approved.
 
 5. AFTER ALL IMPLEMENTATION PHASES:
    - invoke quality-manager (Model="pro")
