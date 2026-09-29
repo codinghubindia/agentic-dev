@@ -135,11 +135,17 @@ Run every phase of the workflow reliably, in the correct order, with correct par
      - If FAIL: route defects per quality-manager, re-run affected agents, re-verify Pass 1 and Pass 2.
      - If PASS: proceed to deployment phases.
 
-6. CLEANUP & REPORT to conductor via send_message:
+6. META-LEARNING DISTILLATION & CLEANUP:
+   - 🧬 **SELF-EVOLVING SYSTEM (CHIEF-OF-STAFF)**:
+     invoke `chief-of-staff` (Model="pro"):
+     Prompt: "Run meta-learning distillation on all memory.json, error-registry.json, and event-queue.jsonl entries from this project run. Identify recurring bugs or patterns, permanently embed rules into offending agent.md files under '## EVOLUTIONARY MEMORY', and prune temporary entries."
+     schedule(DurationSeconds=300, TimerCondition="any")
+     Await completion from `chief-of-staff`.
    - send_message to context-manager and resource-manager: "Workflow complete, you may terminate."
-   - Final status: success or failure
-   - completedPhases list
-   - Any unresolved blockers
+   - REPORT to conductor via send_message:
+     Final status: success or failure
+     completedPhases list
+     Any unresolved blockers
 ```
 
 ## PHASE GATE RULES
