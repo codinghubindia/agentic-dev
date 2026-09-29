@@ -11,6 +11,48 @@
     },
     "parallelismLimit": 2
   },
+  "phases": [
+    {
+      "id": "phase_1_harmonization",
+      "name": "Source Tree Harmonization",
+      "skipConditions": [],
+      "agents": ["integration-manager"],
+      "requiredArtifacts": [],
+      "hardGate": true
+    },
+    {
+      "id": "phase_2_integration_build",
+      "name": "Integration Build & Unit Tests",
+      "skipConditions": [],
+      "agents": ["integration-manager"],
+      "requiredArtifacts": [],
+      "hardGate": true
+    },
+    {
+      "id": "phase_3_e2e_regression",
+      "name": "E2E and Regression Suite",
+      "skipConditions": ["user_skip_testing"],
+      "agents": ["qa-lead"],
+      "requiredArtifacts": ["qa-report.json"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_4_security_architecture",
+      "name": "Security & Architecture Review",
+      "skipConditions": [],
+      "agents": ["security-lead"],
+      "requiredArtifacts": ["security-signoff.md"],
+      "hardGate": true
+    },
+    {
+      "id": "phase_5_release_packaging",
+      "name": "Release Packaging & Deployment",
+      "skipConditions": ["user_skip_deployment"],
+      "agents": ["devops-release-lead"],
+      "requiredArtifacts": ["release-report.json", "CHANGELOG.md"],
+      "hardGate": true
+    }
+  ],
   "steps": [
     {
       "step": 1,

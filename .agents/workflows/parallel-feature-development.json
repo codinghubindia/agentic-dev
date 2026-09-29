@@ -13,9 +13,11 @@
   "prerequisites": ["architecture.json", "api-contract.json", "ownership-map.json"],
   "phases": [
     {
+      "id": "phase_1_parallel_streams",
       "phase": 1,
       "name": "Parallel Implementation Streams",
       "executionMode": "PARALLEL",
+      "skipConditions": [],
       "agents": ["backend-lead", "frontend-lead", "data-lead", "security-lead"],
       "streams": [
         {"name": "backend", "owner": "backend-lead", "scope": ["backend/", "server/"], "contract": "api-contract.json"},
@@ -23,21 +25,30 @@
         {"name": "database", "owner": "data-lead", "scope": ["database/", "migrations/", "models/"], "contract": "architecture.json"},
         {"name": "security", "owner": "security-lead", "scope": ["security/", "auth/"], "contract": "architecture.json"}
       ],
-      "requiredArtifacts": ["backend-handoff-report.json", "frontend-handoff-report.json"]
+      "requiredArtifacts": ["backend-handoff-report.json", "frontend-handoff-report.json"],
+      "hardGate": true
     },
     {
+      "id": "phase_2_integration",
       "phase": 2,
       "name": "Integration & Synchronization",
       "executionMode": "SEQUENTIAL",
+      "skipConditions": [],
       "leadAgent": "integration-manager",
-      "requiredArtifacts": ["integration-report.json"]
+      "agents": ["integration-manager"],
+      "requiredArtifacts": ["integration-report.json"],
+      "hardGate": true
     },
     {
+      "id": "phase_3_validation",
       "phase": 3,
       "name": "Validation",
       "executionMode": "SEQUENTIAL",
+      "skipConditions": ["user_skip_testing"],
       "leadAgent": "qa-lead",
-      "requiredArtifacts": ["qa-report.json"]
+      "agents": ["qa-lead"],
+      "requiredArtifacts": ["qa-report.json"],
+      "hardGate": true
     }
   ]
 }
