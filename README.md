@@ -1,20 +1,20 @@
 # 🏢 AgenticDev: Autonomous AI Software Company Framework
 
 > An **SEO-optimized, production-ready autonomous multi-agent software engineering company** built for [Google Antigravity (AGY)](https://antigravity.dev).
-> Drop this .agents/ folder into any workspace to instantly deploy **58 specialized AI software engineers**, **23 rich skill guides**, and **6 automated workflows**. Build, test, and release real software with an autonomous AI developer team.
+> Drop this .agents/ folder into any workspace to instantly deploy **62 specialized AI software engineers**, **23 rich skill guides**, and **6 automated workflows**. Build, test, and release real software with an autonomous AI developer team.
 
-[![Agents](https://img.shields.io/badge/Agents-58-6366f1?style=flat-square)](#-agent-roster)
+[![Agents](https://img.shields.io/badge/Agents-62-6366f1?style=flat-square)](#-agent-roster)
 [![Skills](https://img.shields.io/badge/Skills-23-10b981?style=flat-square)](#-skills-library)
 [![Workflows](https://img.shields.io/badge/Workflows-6-f59e0b?style=flat-square)](#-workflows)
-[![Architecture](https://img.shields.io/badge/Architecture-Neural_Orchestra-8b5cf6?style=flat-square)](#-architecture-overview)
+[![Architecture](https://img.shields.io/badge/Architecture-Neural_Orchestra_v5.1-8b5cf6?style=flat-square)](#-architecture-overview)
 [![License](https://img.shields.io/badge/License-MIT-gray?style=flat-square)](./LICENSE)
 
 ---
 
 ## 📋 Table of Contents
 
-- [What's New: Neural Orchestra v4](#-whats-new-neural-orchestra-v4)
-- [Enterprise Resilience (Day-2 Ops)](#-enterprise-resilience-day-2-ops)
+- [What's New: Neural Orchestra v5.1 Hyper-Optimized](#-whats-new-neural-orchestra-v51-hyper-optimized)
+- [Enterprise Resilience & Token Economics](#-enterprise-resilience--token-economics)
 - [Architecture Overview](#-architecture-overview)
 - [Project Type Routing](#-project-type-routing)
 - [Phase Gate System](#-phase-gate-system)
@@ -28,36 +28,33 @@
 
 ---
 
-## 🎉 What's New: Neural Orchestra v4
+## 🎉 What's New: Neural Orchestra v5.1 Hyper-Optimized
 
-The monolithic `project-manager` has been completely replaced by the **Neural Orchestra** — a distributed, brain-like management layer that radically improves token efficiency, parallel execution, and quality control.
+The framework has evolved into a self-learning, token-efficient software enterprise:
 
-- **The Conductor (`conductor`)**: The ultra-thin user-facing entry point. It receives requests, classifies them, routes to specialized managers, and surfaces the final results.
-- **6 Specialized Managers**:
-  - `intake-manager`: Handles user interviews, project classification, and feature manifests.
-  - `execution-manager`: Runs workflow phases, enforces gates, and handles rollbacks via deep `git reset --hard`.
-  - `quality-manager`: Runs 4 quality gates in parallel (Compliance, QA, Security, UI) and tracks agent reputation.
-  - `context-manager`: Generates targeted, per-agent context snapshots to save tokens.
-  - `memory-manager`: Runs as a background daemon processing the `event-queue.jsonl` to validate, deduplicate, and cross-share lessons across agents.
-  - `resource-manager`: Optimizes model usage (`pro`/`flash`/`flash_lite`) and tracks token budgets.
-- **Dynamic Workflows (`workflow-compiler`)**: For simple bug fixes or single features, it compiles a minimal custom workflow, avoiding the overhead of the full 6-phase pipeline.
-- **Codebase Onboarding (`codebase-onboarder`)**: Quickly reverse-engineers external codebases using signature-only scanning (grep) to save tokens.
-- **Auto-Refreshing Skills (`skill-researcher`)**: Skills now have a `refreshMode`. Stale skills are sequentially researched and updated from the web to avoid API rate limits.
-- **Professional UI Craft (`professional-ui-craft`)**: New protected skill enforcing color psychology, cognitive design laws, and an anti-vibe-code blacklist.
+- **The Conductor (`conductor`)**: The Supreme Director and single user-facing entry point. It is mathematically the **only agent** with UI render tools (`ask_question`), safely relaying questions from all subagents via `[QUESTION_TO_USER]`.
+- **The Agent Factory (`hr-manager`)**: Dynamically writes custom, temporary `agent.md` system prompts on the fly when the architect specifies technologies outside the default roster (e.g., Rust, Web3/Solidity, Game engines).
+- **Self-Evolving Prompts (`chief-of-staff`)**: Runs during project retrospective to distill runtime lessons from `memory.json` into permanent architectural rules, rewriting core `agent.md` system prompts to eliminate recurring mistakes.
+- **Dual-Axis Intake (`software-intake-manager`)**: Decouples the Core Engine (Scraper, Pipeline, API, Fullstack) from the Presentation Layer (Headless vs. Micro-UI vs. Full UI), auto-locking UI design for any visual tool.
+- **The Micro-Design Spec (`uiux-lead`)**: Generates a lightweight, single-pass layout and token contract (`micro-design-spec.md` < 500 tokens) for scrapers and admin tools, saving ~15,000 tokens while guaranteeing visual craft.
+- **Domain Abstract Index (`domain-abstracts.json`)**: All 33 workers register concise interface summaries (< 120 words). Peers read abstracts first, eliminating blind full-file ingestion and avoiding $O(N^2)$ broadcast storms.
+- **Dual-Pass QA**: Pass 1 runs deterministic compilers/linters at 0 LLM tokens; Pass 2 evaluates targeted Git diffs via specialized QA leads.
+- **Targeted Parallel Reverts & Shadow Vault**: Isolated file checkouts ensure parallel workers never clobber each other's code during rollbacks, backed by non-destructive pre-phase file vaults.
 
 ---
 
-## 🛡️ Enterprise Resilience (Day-2 Ops)
+## 🛡️ Enterprise Resilience & Token Economics
 
-v4.0.0 introduces massive "Day 2" operational stability upgrades to ensure the AI agents act like a real engineering team and never get stuck in infinite token-burning loops:
+v5.1 introduces industry-leading operational stability and cost controls:
 
-- **Universal UX Relay**: Any worker agent can send a `[QUESTION_TO_USER]` or hit an `[APPROVAL_REQUIRED]` checkpoint. The Conductor will pause the entire pipeline, safely suspend liveness timers, and ask you directly via a UI prompt before proceeding.
-- **Shift-Left Local Testing**: Agents are now mathematically blocked from infinite debugging loops. The Architect generates a `localVerificationCommand` (e.g., `tsc --noEmit` or `flutter analyze`). Workers **must** run this locally and are hard-capped at 3 retries before they are forced to escalate to their Lead.
-- **Mandatory Bootstrapping**: Leads are strictly required to run `npm install` and auto-generate safe `.env.local` files with mock data *before* delegating tasks, ensuring that local shift-left tests actually boot instead of crashing instantly.
-- **Self-Healing QA Routing**: When tests fail, the QA Lead no longer fails the entire phase. Instead, it scans the `file-responsibility-index.json`, finds the exact worker who wrote the broken file, and routes the error log directly to them via `send_message`.
-- **Zero-Cost Package Vetting**: Before adding any dependencies to `package.json`, Leads must execute `npm view <package> deprecated time.modified --json` in the sandbox to verify the package is actively maintained, preventing the integration of dead/deprecated libraries.
-- **Git-Backed Conflict Resolution**: The `conflict-resolver` and `integration-manager` no longer blindly overwrite files using LLM context. They now strictly rely on standard git markers (`<<<<<<< HEAD`) and unified diffs to fix conflicts cleanly.
-- **Strict Memory Anti-Bloat**: The `memory-manager` enforces hard item limits (`error-registry.json` capped at 20 fingerprints; individual agent `memory.json` capped at 15) to prevent the "Global Brain" from consuming massive token budgets over months of use.
+- **Ironclad UX Relay**: The Conductor alone renders UI. All 61 subagents use `[QUESTION_TO_USER]` send_message packets. Background execution never hangs or stalls.
+- **User-Gated Git Automation**: Git operations run automatically by default, but seamlessly fall back to local file vaults (`.agent_execution/backups/`) if the user requests "no git".
+- **Chunked Diff Slicing**: When reviewing large codebase refactors (> 500 lines), `qa-lead` slices diffs file-by-file to keep token burn flat.
+- **Universal Build Probes**: `technical-architect` auto-detects rare compilers (Cargo, Mix, Maven, Zig) or sets verification to `none` to avoid machine verification stalls.
+- **Non-Daemon Verification Mandate**: Verification commands are strictly non-daemon (e.g. `tsc --noEmit`, `cargo check`), preventing port collisions and dev server deadlocks.
+- **2-Second Jittered Stagger**: Spaces out parallel worker invocations by 2 seconds to eliminate API rate-limit (HTTP 429) bursts.
+- **Shift-Left Local Testing**: Agents verify code locally using compiler commands, capped at 3 retries before escalating.
+- **Zero-Cost Package Vetting**: Mandatory pre-verification of packages using sandbox `npm view` checks to reject abandoned dependencies.
 
 ---
 
@@ -140,18 +137,20 @@ Performance and resilience are treated as first-class citizens:
 
 ## 👥 Agent Roster
 
-The system comprises 58 agents across 9 departments.
+The system comprises 62 agents across 9 departments.
 
-**The Neural Orchestra (Management)**
-- `conductor`: Supreme Director (main entry point)
-- `intake-manager`: Project intake, interviews, classification
-- `execution-manager`: Workflow runner, phase gates, rollback
+**The Neural Orchestra (Management & Evolution)**
+- `conductor`: Supreme Director (main entry point, exclusive UI renderer)
+- `software-intake-manager`: Project intake, dual-axis classification, feature manifests
+- `execution-manager`: Workflow runner, phase gates, shadow vault rollback
 - `quality-manager`: Parallel quality gatekeeper
-- `context-manager`: Tailored context snapshots
+- `context-manager`: Tailored context snapshots & P2P abstract queries
 - `memory-manager`: Event queue processing & knowledge sharing
-- `resource-manager`: Token budget & model tier assignments
+- `resource-manager`: Token budget, model tiers & persona slotting
 - `workflow-compiler`: Dynamic workflow generation
 - `conflict-resolver`: Parallel stream conflict detection
+- `hr-manager`: The Agent Factory (mints dynamic custom agents on the fly)
+- `chief-of-staff`: Meta-Learning engine (rewrites agent system prompts from runtime lessons)
 - `skill-researcher`: Auto-refreshes skill files
 - `codebase-onboarder`: Token-efficient external codebase scanning
 - `project-manager`: *(Deprecated - use conductor)*

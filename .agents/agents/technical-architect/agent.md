@@ -155,3 +155,7 @@ If the project uses an unusual or custom technology stack not listed above:
 1. Probe the root directory for build definitions (`Cargo.toml`, `mix.exs`, `pom.xml`, `Makefile`, `CMakeLists.txt`).
 2. If found, specify the corresponding non-destructive compilation/syntax command.
 3. If no automated compiler exists, set `"localVerificationCommand": "none"` so Phase 1 QA machine verification does not crash or stall on an invalid command.
+
+> [!CAUTION]
+> **NON-DAEMON VERIFICATION MANDATE**:
+> `localVerificationCommand` MUST ALWAYS be a non-daemon, terminating command (e.g. `tsc --noEmit`, `cargo check`, `go test ./...`). NEVER specify long-running dev server commands (like `npm run dev` or `python manage.py runserver`) for verification, as they occupy ports, collide with background tasks, and stall automated test gates.

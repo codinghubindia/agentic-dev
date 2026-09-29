@@ -85,9 +85,11 @@ Run every phase of the workflow reliably, in the correct order, with correct par
 
    g. IF liveness timer fires:
       - CHECK the agent's last communication.
-      - IF the agent is waiting on a `[QUESTION_TO_USER]` or `[APPROVAL_REQUIRED]`, DO NOT KILL IT. The user is just taking time to reply. Wait patiently and reset the timer.
-      - OTHERWISE, manage_subagents(Action="list") to check status.
-      - Kill + restart once if stuck. If fails again: report to conductor for escalation.
+      - ⏳ **HUMAN-WAITING GRACE STATE**:
+        IF the agent or execution pipeline is waiting on a `[QUESTION_TO_USER]` or `[APPROVAL_REQUIRED]`, DO NOT KILL THE AGENT. The human user is simply reviewing the UI or typing a response. Re-schedule the timer: `schedule(DurationSeconds=600, TimerCondition="any")` and continue awaiting the user's answer calmly.
+      - OTHERWISE (agent was executing pure code and stopped responding with no open questions):
+        manage_subagents(Action="list") to check status.
+        Kill + restart once if stuck. If fails again: report to conductor for escalation.
 
    h. AFTER ALL AGENTS IN PHASE COMPLETE:
       - 🛡️ **UI BOUNDARY SENTINEL**:
