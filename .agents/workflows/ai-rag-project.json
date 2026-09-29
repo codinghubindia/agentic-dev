@@ -18,7 +18,7 @@
       "id": "phase_1_discovery",
       "name": "Discovery & Requirements",
       "skipConditions": ["user_skip_discovery"],
-      "agents": ["project-manager"],
+      "agents": ["software-intake-manager"],
       "requiredArtifacts": ["ai-requirements.md"],
       "hardGate": true
     },
@@ -29,6 +29,14 @@
       "agents": ["technical-architect", "ai-ml-lead"],
       "requiredArtifacts": ["ai-architecture.md", "data-pipeline-spec.md"],
       "hardGate": true
+    },
+    {
+      "id": "phase_2_5_design",
+      "name": "UI/UX Design",
+      "skipConditions": ["api-only", "no_frontend", "user_skip_design"],
+      "agents": ["uiux-lead"],
+      "requiredArtifacts": ["design-system.md"],
+      "hardGate": false
     },
     {
       "id": "phase_3_implementation",

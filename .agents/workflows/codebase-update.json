@@ -23,6 +23,14 @@
       "hardGate": true
     },
     {
+      "id": "phase_1_5_design",
+      "name": "UI/UX Design Alignment",
+      "skipConditions": ["api-only", "no_frontend", "user_skip_design"],
+      "agents": ["uiux-lead"],
+      "requiredArtifacts": ["design-system.md"],
+      "hardGate": false
+    },
+    {
       "id": "phase_2_implementation",
       "name": "Implementation",
       "skipConditions": [],

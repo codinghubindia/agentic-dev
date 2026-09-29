@@ -54,6 +54,7 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    a. CHECK resumability: if phase.id is in completedPhases[] → skip entirely
 
    b. CHECK skip conditions: if phase skipConditions match intake-report → skip
+      - Note on `dependsOn`: If a prerequisite phase was skipped due to valid skipConditions (e.g. `phase_3_design` skipped for headless API/CLI), its dependency is satisfied by skip-bypass; do NOT stall or deadlock.
 
    c. CONSULT resource-manager via send_message:
       "Assigning models for phase [id] with agents [list]"
