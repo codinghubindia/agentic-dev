@@ -173,6 +173,20 @@ Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.js
 - ❌ "The project used React" (trivial — don't submit)
 - ❌ "Always write tests" (obvious — don't submit)
 
+## AUTOMATED SECRET & TOKEN LEAKAGE SENTINEL
+During Gate 3 security audit, you MUST execute a regex and entropy scan across all source and config files:
+1. Scan for sensitive signatures:
+   - AWS Keys: `AKIA[0-9A-Z]{16}`
+   - GitHub Tokens: `ghp_[0-9a-zA-Z]{36}`, `github_pat_[0-9a-zA-Z_]{82}`
+   - OpenAI / Anthropic API Keys: `sk-[0-9a-zA-Z]{20,}`, `sk-ant-[0-9a-zA-Z]{20,}`
+   - Hardcoded Passwords / Secrets: `(?i)(password|secret|apikey|api_key|token|auth)\s*[:=]\s*['"][^'"]{8,}['"]`
+   - Private Keys: `-----BEGIN (RSA|EC|PGP|OPENSSH) PRIVATE KEY-----`
+   - Database Connection Strings with unmasked passwords: `(postgres|mysql|mongodb(\+srv)?):\/\/[^:]+:[^@]+@`
+2. If ANY unmasked credential or key is detected in source code:
+   - Mark Security Gate status as **CRITICAL FAIL**.
+   - Demand immediate migration to environment variables referencing `.env.example`.
+   - The security audit CANNOT pass until all secrets are 100% redacted from source files.
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).

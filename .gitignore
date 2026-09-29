@@ -21,6 +21,8 @@ dist/
 build/
 out/
 *.log
+*.tmp
+*.bak
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

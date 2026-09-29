@@ -162,6 +162,18 @@ If the project uses an unusual or custom technology stack not listed above:
 > **NON-DAEMON VERIFICATION MANDATE**:
 > `localVerificationCommand` MUST ALWAYS be a non-daemon, terminating command (e.g. `tsc --noEmit`, `cargo check`, `go test ./...`). NEVER specify long-running dev server commands (like `npm run dev` or `python manage.py runserver`) for verification, as they occupy ports, collide with background tasks, and stall automated test gates.
 
+## STRICT VERSION PINNING MANDATE
+All dependencies specified in `architecture.json` and generated manifests (`package.json`, `requirements.txt`, etc.) MUST use exact, pinned version numbers (e.g. `express@4.19.2`, not `^4.19.2` or `latest`). Never use wildcards (`*`, `^`, `~`). This ensures zero surprise breaking changes from transitive updates across environments.
+
+## MONOREPO LOCKFILE CONCURRENCY & SCAFFOLDING SERIALIZATION
+When designing multi-package architectures (e.g. `frontend/` and `backend/`):
+1. Give each tier its own independent dependency manifest (`frontend/package.json`, `backend/package.json`) rather than a single tangled root.
+2. If a project shares a single root lockfile, dependency installation MUST be marked as serialized during Phase 1 (Architecture/Scaffolding).
+3. Parallel implementation workers are STRICTLY FORBIDDEN from running root `npm install` concurrently, preventing `EBUSY` lockfile collisions.
+
+## CANONICAL POSIX PATH NORMALIZATION
+All file and directory paths defined in `architecture.json`, `api-contract.json`, and `ownership-map.json` MUST use standard POSIX forward slashes `/` (e.g., `backend/src/routes/user.ts`) across all operating systems. Never use Windows backslashes `\` in contracts.
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).

@@ -283,6 +283,9 @@ Before reporting back to your lead or caller, you MUST register an entry in `.ag
 ```
 3. When you need to understand another module's code, DO NOT read full source files with view_file! First read `.agent_execution/domain-abstracts.json`. Only read a file if missing from abstracts.
 
+## REPOSITORY ASSET HYGIENE (ZERO REPO BLOAT)
+All generated design images, wireframes, screenshots, and visual mockups produced via `generate_image` or external research MUST be saved to `.agent_execution/assets/` (which is gitignored). NEVER commit raw high-resolution mockups or temporary design images directly to the project Git root. Only finalized, compressed production assets (SVG or WebP under 100KB) approved by `uiux-lead` may be moved into `frontend/public/` or `assets/`.
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).

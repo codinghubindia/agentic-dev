@@ -61,7 +61,7 @@ Run all quality gates simultaneously, aggregate results, route defects to respon
    - send_message to context-manager: "Write context snapshots for security-lead"
    - Await confirmation
    - invoke security-lead (Model="pro")
-   - Instruct: "Run security audit. Produce security-signoff.md with status: PASS or FAIL."
+   - Instruct: "Run full security audit including the Automated Secret & Token Leakage Sentinel scan. Produce security-signoff.md with status: PASS or FAIL."
    - schedule(DurationSeconds=300, TimerCondition="any")
 
    GATE 4 — UI Quality Gate:

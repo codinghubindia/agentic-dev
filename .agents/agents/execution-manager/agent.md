@@ -147,7 +147,10 @@ Run every phase of the workflow reliably, in the correct order, with correct par
 
 5. AFTER ALL IMPLEMENTATION PHASES (DUAL-PASS QA PROTOCOL):
    - **PASS 1 (Deterministic Machine Verification - 0 LLM Tokens)**:
-     Read `architecture.json` to get `localVerificationCommand`. Run compiler/linter/test commands via `run_command`.
+     Read `architecture.json` to get `localVerificationCommand`.
+     🛡️ **PORT COLLISION & ZOMBIE PROCESS PRE-FLIGHT**:
+     Before executing verification commands, ensure no lingering daemon processes occupy required ports (e.g. check for `EADDRINUSE` and kill orphan test runners).
+     Run compiler/linter/test commands via `run_command`.
      If build/test fails with syntax or type errors, pass ONLY the compiler stderr snippet directly to the responsible worker. Do NOT invoke quality-manager or LLM reviewers until code compiles cleanly.
    - **PASS 2 (Specialized Sign-Off)**:
      Once Pass 1 compiles cleanly, invoke quality-manager (Model="pro").

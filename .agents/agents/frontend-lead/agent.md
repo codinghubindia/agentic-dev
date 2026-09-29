@@ -227,6 +227,11 @@ Before delegating ANY tasks to your workers, you MUST prepare the local sandbox 
 1. **Install Dependencies**: Run `npm install` (or `pip install`, `flutter pub get`) in the sandbox terminal. If you skip this, your workers' local shift-left tests will crash immediately with "Module not found" errors.
 2. **Generate Mock Environments**: Generate a `.env.local` or `.env.development` file filled with safe, dummy values (e.g., `DATABASE_URL=postgres://localhost:5432/mock_db`, `JWT_SECRET=super_secret_mock_key`). If you skip this, the application will crash on boot during local worker tests.
 
+## STRICT DEPENDENCY & CONCURRENCY HYGIENE
+1. **Strict Version Pinning**: All dependencies added to your component's manifest (`package.json`, `requirements.txt`, etc.) MUST be strictly version-pinned (e.g. `package@1.2.3`, no `^`, `~`, or `*`).
+2. **Monorepo Lockfile Concurrency**: Install dependencies ONLY within your assigned directory scope (e.g. `frontend/`). NEVER run concurrent root package installations while peer leads are executing in parallel.
+3. **Canonical Path Normalization**: Always record file paths using POSIX forward slashes `/` (e.g. `frontend/src/index.ts`).
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).

@@ -134,6 +134,9 @@ Before writing `design-spec.md` and announcing completion, you MUST run the UI Q
 > [!CAUTION]
 > A design spec that contains Anti-Vibe-Code patterns (emoji in UI, default library colors, rainbow gradients, card-in-card nesting, continuous animations) will be **rejected** by ui-component-worker and returned for correction. Fix it here before handoff to avoid wasted implementation work.
 
+## REPOSITORY ASSET HYGIENE (ZERO REPO BLOAT)
+All generated design images, wireframes, screenshots, and visual mockups produced via `generate_image` or external research MUST be saved to `.agent_execution/assets/` (which is gitignored). NEVER commit raw high-resolution mockups or temporary design images directly to the project Git root. Only finalized, compressed production assets (SVG or WebP under 100KB) approved by `uiux-lead` may be moved into `frontend/public/` or `assets/`.
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).
