@@ -128,10 +128,13 @@ Agents cannot advance to the next phase without producing required artifacts, en
 
 ## ⚡ Rate Limiting, Caching & Stress Testing
 
-Performance and resilience are treated as first-class citizens:
-- **Architecture**: Rate limiting and caching strategies are mandated in the initial design.
-- **Backend**: Skill guides enforce Redis caching patterns and token bucket rate limits.
-- **Stress Testing**: The `stress-test-worker` validates these boundaries under load using `k6`/`Locust` before release.
+Performance, resilience, and concurrency safeguards are treated as first-class citizens:
+- **Shared Search Cache & Web Circuit Breaker**: Agents inspect `.agent_execution/search-cache.json` before querying external documentation. Queries are capped at 3 per task with 2-second backoff on 429 errors to protect upstream rate limits.
+- **Partitioned Concurrency Safeguard**: Parallel streams write to isolated `.agent_execution/partitions/` ledgers (`file-index-*.json`, `domain-abstract-*.json`, `events-*.json`). `execution-manager` atomically merges them upon phase completion, eliminating file write race conditions.
+- **Human-Waiting Grace State & Approval Circuit Breaker**: Liveness timers gracefully pause while human users review UI checkpoints via `[APPROVAL_REQUIRED]`; repetitive feedback cycles are capped with a 3-iteration circuit breaker before escalating to requirements review.
+- **Shadow Vault Untracked File Immutability**: Targeted sniper rollbacks compare against `.agent_execution/manifests/phase_[id]_before.json`, guaranteeing that user untracked files (`.env`, local scripts, custom configs) are never deleted or clobbered.
+- **Atomic State Commits**: All workflow state transitions commit via `.tmp` swap (`workflow-state.json.tmp` -> `workflow-state.json`) to prevent partial corruption.
+- **Stress Testing**: The `stress-test-worker` validates API and system boundaries under load using `k6`/`Locust` before release.
 
 ---
 

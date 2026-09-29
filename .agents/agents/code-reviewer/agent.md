@@ -93,7 +93,8 @@ Ensure every piece of code merged into the codebase is correct, maintainable, se
 
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
-1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
-2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
-3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
-4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.
+1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).
+2. **Targeted Querying**: Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+3. **Circuit Breaker & Rate Limiting**: Limit web searches to a maximum of 3 queries per task. If a search returns 429 (rate limited) or network fails, apply a 2-second backoff and fall back to local skills without looping.
+4. **Fetch & Verify**: Use `read_url_content` to fetch official docs or GitHub issue resolutions directly. NEVER guess deprecated syntax or hallucinate non-existent API parameters.
+5. **Cache Findings**: When research succeeds, append the query, resolution, and source URL to `.agent_execution/search-cache.json` and log the fix to your memory retrospective so peer agents reuse it.

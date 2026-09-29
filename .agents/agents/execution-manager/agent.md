@@ -98,6 +98,9 @@ Run every phase of the workflow reliably, in the correct order, with correct par
         Kill + restart once if stuck. If fails again: report to conductor for escalation.
 
    h. AFTER ALL AGENTS IN PHASE COMPLETE:
+      - 🧩 **PARTITION MERGE & CONCURRENCY SAFEGUARD**:
+        Scan `.agent_execution/partitions/` for worker files: `file-index-*.json`, `domain-abstract-*.json`, `events-*.json`.
+        Atomically merge all partition entries into canonical `.agent_execution/file-responsibility-index.json`, `.agent_execution/domain-abstracts.json`, and `.agent_execution/event-queue.json`. This completely eliminates parallel write race conditions.
       - 🛡️ **UI BOUNDARY SENTINEL**:
         Scan modified files in `.agent_execution/file-responsibility-index.json`.
         If any newly written file has extension (.html, .tsx, .jsx, .vue, .svelte, .css) and Phase 3 (Design) was skipped:
@@ -117,6 +120,8 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    i. ROLLBACK PROTOCOL (Targeted Sniper Revert & Shadow Vault):
       - If a phase fails, NEVER use `git reset --hard` or `git clean -fd` (they destroy parallel work).
       - Read `.agent_execution/file-responsibility-index.json` to find ONLY the files modified by the failing agent in this phase.
+      - 🛡️ **USER UNTRACKED FILE IMMUTABILITY**:
+        Compare current workspace files against `.agent_execution/manifests/phase_[id]_before.json`. Any file present before the phase began that was not owned/created by the failing agent (e.g. `.env`, custom config files, local user scripts) is strictly immutable and protected from deletion or overwrite.
       - Read `gitAutomation` from `workflow-state.json`:
         * IF `gitAutomation == true`: Run targeted file checkout: `git checkout HEAD -- <filepath>` for modified files, and delete newly created files. Parallel workers' files are left completely untouched!
         * IF `gitAutomation == false`: Restore modified files from `.agent_execution/backups/phase_[id]/` and delete newly created files against `phase_[id]_before.json`. Zero Git interaction.
@@ -126,6 +131,7 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    j. LOG completion:
       - Add phase.id to completedPhases[] in workflow-state.json
       - Update currentPhase, write timestamp
+      - **ATOMIC STATE COMMIT**: Always write `workflow-state.json.tmp` first, then atomically overwrite `workflow-state.json` to prevent partial/corrupted states if interrupted.
 
    k. INTERACTIVE PHASE GATE (User Approval Checkpoint):
       - If phase.id == "phase_4_implementation":
@@ -136,7 +142,8 @@ Run every phase of the workflow reliably, in the correct order, with correct par
         - IF user rejects/gives feedback: 
           1. Route feedback to the responsible lead via send_message.
           2. AWAIT their fix completion.
-          3. REPEAT the APPROVAL LOOP from the start (You MUST send [APPROVAL_REQUIRED] to conductor again). DO NOT proceed until explicitly approved.
+          3. 🛑 **CIRCUIT BREAKER**: If user rejects or provides feedback more than 3 consecutive times, escalate to conductor with an iteration summary: `[APPROVAL_ESCALATION] 3 feedback cycles reached. Please confirm whether to accept the current build, adjust requirements, or continue iterating.`
+          4. REPEAT the APPROVAL LOOP from the start (You MUST send [APPROVAL_REQUIRED] to conductor again). DO NOT proceed until explicitly approved.
 
 5. AFTER ALL IMPLEMENTATION PHASES (DUAL-PASS QA PROTOCOL):
    - **PASS 1 (Deterministic Machine Verification - 0 LLM Tokens)**:
@@ -180,7 +187,8 @@ Run every phase of the workflow reliably, in the correct order, with correct par
 
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
-1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
-2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
-3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
-4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.
+1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).
+2. **Targeted Querying**: Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+3. **Circuit Breaker & Rate Limiting**: Limit web searches to a maximum of 3 queries per task. If a search returns 429 (rate limited) or network fails, apply a 2-second backoff and fall back to local skills without looping.
+4. **Fetch & Verify**: Use `read_url_content` to fetch official docs or GitHub issue resolutions directly. NEVER guess deprecated syntax or hallucinate non-existent API parameters.
+5. **Cache Findings**: When research succeeds, append the query, resolution, and source URL to `.agent_execution/search-cache.json` and log the fix to your memory retrospective so peer agents reuse it.
