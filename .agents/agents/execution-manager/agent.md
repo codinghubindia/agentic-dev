@@ -64,9 +64,14 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       "Write context snapshot for phase [id], agents [list], projectType [type], techStack [stack]"
       Await confirmation that context-snapshot.json is written
 
+   d.5. 🛡️ **PRE-PHASE SHADOW VAULT & MANIFEST**:
+      - Record current workspace file manifest in `.agent_execution/manifests/phase_[id]_before.json`.
+      - Backup any files about to be modified by this phase to `.agent_execution/backups/phase_[id]/`.
+      - This guarantees that if a parallel worker fails, only that worker's modified files are rolled back, leaving parallel workers and untracked user files 100% safe.
+
    e. INVOKE agents:
       - Single agent: invoke directly with assigned model
-      - Multiple agents: invoke ALL simultaneously (parallel)
+      - Multiple agents: invoke with **2-Second Jittered Stagger** (spawn agent 1 → wait 2s → spawn agent 2) to eliminate provider 429 rate limit spikes.
       - Instruct every agent: "Read .agent_execution/context-snapshot.json first. Read .agent_execution/codebase-summary.md for project overview. Report back via send_message when done."
       - After ALL invocations: schedule(DurationSeconds=300, TimerCondition="any")
 
@@ -101,13 +106,14 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - If artifact missing AND hardGate=true: REJECT, notify agent, demand deliverable
       - If artifact missing AND hardGate=false: log warning, continue
 
-   i. ROLLBACK PROTOCOL (Targeted Sniper Revert):
-      - If a phase fails, DO NOT use `git reset --hard` (it destroys parallel work).
-      - Read `.agent_execution/file-responsibility-index.json`.
-      - Find all files modified during the current phase.
-      - For each file: run `git checkout HEAD -- <filepath>` (if pre-existing) or delete the file (if it was newly created).
+   i. ROLLBACK PROTOCOL (Targeted Sniper Revert & Shadow Vault):
+      - If a phase fails, NEVER use `git reset --hard` or `git clean -fd` (they destroy parallel work).
+      - Read `.agent_execution/file-responsibility-index.json` to find ONLY the files modified by the failing agent in this phase.
+      - Read `gitAutomation` from `workflow-state.json`:
+        * IF `gitAutomation == true`: Run targeted file checkout: `git checkout HEAD -- <filepath>` for modified files, and delete newly created files. Parallel workers' files are left completely untouched!
+        * IF `gitAutomation == false`: Restore modified files from `.agent_execution/backups/phase_[id]/` and delete newly created files against `phase_[id]_before.json`. Zero Git interaction.
       - Update workflow-state.json: phase status = "rolled-back"
-      - Report to conductor: "Phase [X] rolled back via targeted file checkout. Parallel work preserved."
+      - Report to conductor: "Targeted rollback complete. Parallel workers and untracked files preserved."
 
    j. LOG completion:
       - Add phase.id to completedPhases[] in workflow-state.json

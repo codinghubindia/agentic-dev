@@ -94,6 +94,8 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
    - Handle Option 3: read write-in, update manifest, confirm via conductor.
 
 8. UPDATE OR WRITE .agent_execution/workflow-state.json:
+   - Check if user's prompt explicitly requested NOT to use git (e.g. "no git", "don't use git", "skip git"):
+     Set `gitAutomation: false` if explicitly forbidden; otherwise default to `gitAutomation: true`.
    - IF resuming from a previous run: ONLY update the `startedAt` field in the existing JSON. Do NOT overwrite `completedPhases` or `currentPhase`!
    - IF starting fresh, write this new JSON:
 {
@@ -101,6 +103,7 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
   "requestType": "<type>",
   "presentationLayer": "<headless|micro-ui|full-ui>",
   "uiMode": "<none|micro-design|full-design>",
+  "gitAutomation": true,
   "projectOrigin": "<self-built|external>",
   "onboardingComplete": true,
   "greenfield": true,
@@ -120,6 +123,7 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
   "requestType": "<type>",
   "presentationLayer": "<headless|micro-ui|full-ui>",
   "uiMode": "<none|micro-design|full-design>",
+  "gitAutomation": true,
   "projectOrigin": "<self-built|external>",
   "techStack": { "frontend": "React", "backend": "Node.js", "db": "PostgreSQL" },
   "skipConditions": [],

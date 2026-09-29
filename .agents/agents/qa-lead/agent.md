@@ -89,7 +89,12 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 0.5. **Read Context Snapshot FIRST**: Read `.agent_execution/context-snapshot.json` — it contains your pre-filtered scope. Only open raw files if missing from snapshot.
 0.8. **DUAL-PASS QA (TOKEN OPTIMIZED VERIFICATION)**:
    - **PASS 1 Check (0 LLM Tokens)**: Run local compiler/test suites (`run_command`). If syntax, type, or lint errors exist, immediately route the compiler stderr snippet directly to the responsible worker. Do NOT spend LLM tokens writing a full report on broken code!
-   - **PASS 2 Semantic Sign-Off**: Once Pass 1 passes cleanly, evaluate **only the Git Diff** (`git diff HEAD~1`) and test receipts. Do NOT ingest the whole repository. Verify acceptance criteria, security, and edge cases against the diff.
+   - **PASS 2 Semantic Sign-Off**:
+     * Check `gitAutomation` in `workflow-state.json`.
+     * IF `gitAutomation == true`: inspect `git diff HEAD~1` (or staged diff).
+     * IF `gitAutomation == false`: inspect file diffs against pre-phase snapshots in `.agent_execution/backups/`.
+     * ✂️ **CHUNKED DIFF SLICER**: If the total diff exceeds 500 lines, DO NOT ingest the entire diff at once! Slice the diff file-by-file or module-by-module. Review each chunk sequentially to guarantee token usage remains low even during massive 5,000+ line codebase refactors.
+     * Verify acceptance criteria, security, and edge cases against the diff. Do NOT ingest the whole repository.
 1. Read project-plan.json → identify all features requiring QA
 2. Define test plan with coverage targets per layer
 3. Delegate in parallel:

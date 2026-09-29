@@ -97,7 +97,10 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
    - observability-worker → implement monitoring, health checks, error tracking (BLOCKING: await observability-report.json PASS before release)
 3. Run CI pipeline locally to verify build passes
 4. Apply semantic version bump
-5. Tag git commit
+5. Packaging & Release:
+   - Check `gitAutomation` in `workflow-state.json`.
+   - IF `gitAutomation == true`: Tag git commit and commit release bundle.
+   - IF `gitAutomation == false`: Package release artifacts and save `release-notes.md` locally without invoking git tag or commit.
 6. Write release-report.json
 7. Report completion to project-manager
 ```

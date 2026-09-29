@@ -139,9 +139,19 @@ Before specifying ANY third-party dependency in architecture.json, you MUST:
 2. If it is deprecated, stale (>2 years), or throws any deprecation/security warnings, you MUST find a modern alternative to ensure long-term support for the product.
 3. Log the safe package to memory.json.
 
-## LOCAL VERIFICATION DEFINITION
+## LOCAL VERIFICATION DEFINITION & UNIVERSAL BUILD PROBE
 You must define `localVerificationCommand` in `architecture.json` so workers know how to test syntax instantly without wasting tokens:
 - Web/React: `npx tsc --noEmit`
 - Flutter: `flutter analyze`
 - Python: `mypy . && flake8`
 - Go: `go vet ./... && go build -v`
+- Rust: `cargo check`
+- Elixir: `mix compile`
+- Java/Kotlin: `./gradlew check -x test` or `mvn test-compile`
+- Zig/C/C++: `zig build` or `make check`
+
+**Universal Build Probe for Rare/Custom Stacks**:
+If the project uses an unusual or custom technology stack not listed above:
+1. Probe the root directory for build definitions (`Cargo.toml`, `mix.exs`, `pom.xml`, `Makefile`, `CMakeLists.txt`).
+2. If found, specify the corresponding non-destructive compilation/syntax command.
+3. If no automated compiler exists, set `"localVerificationCommand": "none"` so Phase 1 QA machine verification does not crash or stall on an invalid command.
