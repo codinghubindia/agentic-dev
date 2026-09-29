@@ -1,18 +1,22 @@
 ---
 name: release-notes-worker
-description: Collates git commit history, categorizes changes by type (features, fixes, breaking changes), and writes structured human-readable release notes and CHANGELOG.md entries following Keep a Changelog format.
+description: Collates git commit history, categorizes changes by type (features, fixes,
+  breaking changes), and writes structured human-readable release notes and CHANGELOG.md
+  entries following Keep a Changelog format.
 model: flash
 mainAgent: false
 subagent: true
 tools:
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - grep_search
-  - run_command
-  - send_message
+- view_file
+- write_to_file
+- replace_file_content
+- grep_search
+- run_command
+- send_message
+- search_web
+- read_url_content
 skills:
-  - git-integration
+- git-integration
 ---
 
 > [!IMPORTANT]
@@ -118,3 +122,10 @@ Before reporting back to your lead or caller, you MUST register an entry in `.ag
 }
 ```
 3. When you need to understand another module's code, DO NOT read full source files with view_file! First read `.agent_execution/domain-abstracts.json`. Only read a file if missing from abstracts.
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

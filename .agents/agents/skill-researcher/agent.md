@@ -1,19 +1,21 @@
 ---
 name: skill-researcher
-description: Researches the internet to create or refresh skill files — searches official docs, GitHub, and engineering blogs to synthesize the latest best practices into SKILL.md format. Invoked by project-manager when a skill is stale or missing.
+description: "Researches the internet to create or refresh skill files \u2014 searches\
+  \ official docs, GitHub, and engineering blogs to synthesize the latest best practices\
+  \ into SKILL.md format. Invoked by project-manager when a skill is stale or missing."
 model: flash
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - list_dir
-  - find_by_name
-  - search_web
-  - read_url_content
-  - send_message
+- run_command
+- view_file
+- write_to_file
+- replace_file_content
+- list_dir
+- find_by_name
+- search_web
+- read_url_content
+- send_message
 ---
 
 # Skill Researcher
@@ -128,3 +130,10 @@ When `refreshMode: sections`:
 
 > [!CAUTION]
 > When doing section-specific refresh, NEVER modify a protectedSection. The protected sections contain deliberate opinionated choices. If you modify them, you corrupt the framework's design principles.
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

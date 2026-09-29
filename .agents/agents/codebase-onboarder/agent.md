@@ -1,18 +1,24 @@
 ---
 name: codebase-onboarder
-description: One-time lightweight codebase scanner that generates all missing framework artifacts (architecture.json, api-contract.json, ownership-map.json, file-responsibility-index.json, codebase-summary.md) for external projects not built by this framework. Uses signature-only scanning (grep/find) to minimize token usage. Invoked automatically by project-manager when projectOrigin is 'external' and onboardingComplete is false.
+description: One-time lightweight codebase scanner that generates all missing framework
+  artifacts (architecture.json, api-contract.json, ownership-map.json, file-responsibility-index.json,
+  codebase-summary.md) for external projects not built by this framework. Uses signature-only
+  scanning (grep/find) to minimize token usage. Invoked automatically by project-manager
+  when projectOrigin is 'external' and onboardingComplete is false.
 model: flash
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - list_dir
-  - find_by_name
-  - grep_search
-  - send_message
+- run_command
+- view_file
+- write_to_file
+- replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- send_message
+- search_web
+- read_url_content
 ---
 
 # Codebase Onboarder
@@ -140,3 +146,10 @@ Check for: next, react, vue, angular, express, fastapi, django, rails, spring, p
 - Cannot detect framework → write what is known, flag as `"projectType": "unknown"` in architecture.json
 - No package.json or requirements.txt → check for Makefile, docker-compose.yml, or README for hints
 - Minified/compiled code with no source → report to your caller: manual architecture input needed
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

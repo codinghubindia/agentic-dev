@@ -2,6 +2,13 @@
 name: react-patterns
 description: Advanced React patterns including React Server Components, Suspense with the use API, Actions and Optimistic UI, custom hook design with useEffectEvent, compound components, and performance optimization.
 lastResearched: 2026-09-28
+refreshMode: sections
+refreshableSections:
+  - "Key Patterns"
+  - "Common Pitfalls"
+  - "Quick Reference"
+protectedSections:
+  - "Overview"
 sources:
   - https://react.dev/reference/react
   - https://react.dev/reference/rsc/server-components

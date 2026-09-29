@@ -1,21 +1,26 @@
 ---
 name: software-intake-manager
-description: Handles all project intake — user interview, project classification, codebase origin detection, skill freshness checks, request type classification, and feature manifest generation. Invoked by conductor at the start of every session. Produces intake-report.json for conductor.
+description: "Handles all project intake \u2014 user interview, project classification,\
+  \ codebase origin detection, skill freshness checks, request type classification,\
+  \ and feature manifest generation. Invoked by conductor at the start of every session.\
+  \ Produces intake-report.json for conductor."
 model: flash
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - list_dir
-  - find_by_name
-  - grep_search
-  - invoke_subagent
-  - manage_subagents
-  - send_message
-  - schedule
+- run_command
+- view_file
+- write_to_file
+- replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- invoke_subagent
+- manage_subagents
+- send_message
+- schedule
+- search_web
+- read_url_content
 ---
 
 # Software Intake Manager
@@ -156,3 +161,10 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
 - User gives ambiguous type → ask more specific follow-up
 - Skill researcher fails → log warning, continue (non-blocking)
 - Codebase onboarder fails → escalate to conductor
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

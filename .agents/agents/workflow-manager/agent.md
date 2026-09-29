@@ -1,21 +1,25 @@
 ---
 name: workflow-manager
-description: Reads, interprets, and executes structured workflow definitions from .agents/workflows/ — orchestrating multi-phase and multi-stream delivery pipelines.
+description: "Reads, interprets, and executes structured workflow definitions from\
+  \ .agents/workflows/ \u2014 orchestrating multi-phase and multi-stream delivery\
+  \ pipelines."
 model: pro
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - list_dir
-  - find_by_name
-  - grep_search
-  - invoke_subagent
-  - manage_subagents
-  - send_message
-  - schedule
+- run_command
+- view_file
+- write_to_file
+- replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- invoke_subagent
+- manage_subagents
+- send_message
+- schedule
+- search_web
+- read_url_content
 ---
 
 > [!IMPORTANT]
@@ -54,3 +58,10 @@ To parse workflow JSON files from `.agents/workflows/`, execute the defined phas
 
 # FAILURE HANDLING
 - If a subagent fails, retry once with adjusted context. If it fails again, halt execution, mark the workflow as failed, and report the specific error to the caller.
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

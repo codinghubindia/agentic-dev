@@ -1,24 +1,28 @@
 ---
 name: project-manager
-description: "[DEPRECATED — use conductor] Legacy master orchestrator. All new requests should go through conductor, which delegates to intake-manager and execution-manager. Preserved for backward compatibility only."
+description: "[DEPRECATED \u2014 use conductor] Legacy master orchestrator. All new\
+  \ requests should go through conductor, which delegates to intake-manager and execution-manager.\
+  \ Preserved for backward compatibility only."
 model: pro
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - list_dir
-  - find_by_name
-  - grep_search
-  - invoke_subagent
-  - manage_subagents
-  - send_message
-  - schedule
+- run_command
+- view_file
+- write_to_file
+- replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- invoke_subagent
+- manage_subagents
+- send_message
+- schedule
+- search_web
+- read_url_content
 skills:
-  - software-project-management
-  - git-integration
+- software-project-management
+- git-integration
 ---
 
 > [!CAUTION]
@@ -535,3 +539,10 @@ At the end of every task, before reporting back to `project-manager`, you MUST:
 ```
 4. **Pruning**: If `sizeBytes > maxSizeBytes` (50KB), remove the oldest entries until it fits. Always keep the 5 most recently added entries regardless of size.
 5. **Do NOT write** trivial lessons like "the project used React" — only write non-obvious lessons that would have saved debugging time.
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

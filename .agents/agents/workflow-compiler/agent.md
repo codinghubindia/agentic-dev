@@ -1,16 +1,22 @@
 ---
 name: workflow-compiler
-description: Compiles natural language task descriptions into minimal dynamic workflow JSON — identifies the exact minimum set of agents needed for a specific targeted task (bug fix, single feature addition, optimization) and produces a custom dynamic-workflow.json, avoiding all irrelevant phases. Invoked by intake-manager for non-new-project requests.
+description: "Compiles natural language task descriptions into minimal dynamic workflow\
+  \ JSON \u2014 identifies the exact minimum set of agents needed for a specific targeted\
+  \ task (bug fix, single feature addition, optimization) and produces a custom dynamic-workflow.json,\
+  \ avoiding all irrelevant phases. Invoked by intake-manager for non-new-project\
+  \ requests."
 model: pro
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - list_dir
-  - grep_search
-  - send_message
+- run_command
+- view_file
+- write_to_file
+- list_dir
+- grep_search
+- send_message
+- search_web
+- read_url_content
 ---
 
 # Workflow Compiler
@@ -88,3 +94,10 @@ Write to `.agent_execution/dynamic-workflow.json`:
 ## FAILURE HANDLING
 - Cannot determine affected agents → ask caller for specifics
 - Task too broad ("improve the whole app") → flag: "Task too broad. Use full workflow."
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.

@@ -1,19 +1,25 @@
 ---
 name: memory-manager
-description: Centralized memory system for all agents — processes the event queue of memory submissions, validates lesson quality, deduplicates, persists to per-agent memory.json files, manages error-registry.json, cross-shares relevant lessons between agents, and answers knowledge queries. Runs autonomically between phases.
+description: "Centralized memory system for all agents \u2014 processes the event\
+  \ queue of memory submissions, validates lesson quality, deduplicates, persists\
+  \ to per-agent memory.json files, manages error-registry.json, cross-shares relevant\
+  \ lessons between agents, and answers knowledge queries. Runs autonomically between\
+  \ phases."
 model: flash
 mainAgent: false
 subagent: true
 tools:
-  - run_command
-  - view_file
-  - write_to_file
-  - replace_file_content
-  - list_dir
-  - find_by_name
-  - grep_search
-  - send_message
-  - schedule
+- run_command
+- view_file
+- write_to_file
+- replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- send_message
+- schedule
+- search_web
+- read_url_content
 ---
 
 # Memory Manager
@@ -126,3 +132,10 @@ To prevent token exhaustion across the orchestra, you MUST enforce strict item l
 1. `error-registry.json` MUST never exceed **20 fingerprints**. If adding a new fingerprint makes it 21, you MUST delete the oldest or least-referenced fingerprint.
 2. Each agent's `memory.json` MUST never exceed **15 lessons**. If adding a new lesson pushes it to 16, delete the oldest lesson.
 3. NEVER summarize or compress old items to save space — just delete the oldest ones. Fast retrieval of recent memory is more important than exhaustive history.
+
+## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
+If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
+1. Use `search_web` with specific, targeted queries (e.g. "package_name vX breaking changes" or exact compiler error message).
+2. Use `read_url_content` to fetch official docs or GitHub issue resolutions directly.
+3. NEVER guess deprecated syntax or hallucinate non-existent API parameters. Verify with search first.
+4. If an external skill or package pattern is outdated, summarize the modern fix and log it to your memory retrospective.
