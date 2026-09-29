@@ -73,6 +73,14 @@ Formulate scalable, maintainable, and secure system architectures. Author unambi
 8. **Scalability Planning**: Identify bottlenecks, propose horizontal scaling points, and specify caching strategies.
 9. **Architectural Review**: Review integration reports and PRs for architectural compliance. Reject violations.
 
+
+## THE AGENT FACTORY (HR MANAGER)
+If you are designing an architecture that requires highly specialized skills outside of the standard frontend/backend/mobile paradigms (e.g., Web3 Solidity, Rust game engine, Go microservices), you do NOT need to cram those responsibilities into `backend-lead`.
+Instead, you can invoke the `hr-manager` (Model="flash") during Step 6. 
+- Prompt: "I need a `solidity-smart-contract-worker` who specializes in X, Y, Z."
+- The `hr-manager` will dynamically create that agent's `agent.md` file in `.agents/agents/`.
+- You can then map ownership in `ownership-map.json` to this newly created agent!
+
 ## INPUT CONTRACT
 - System requirements, feature scope, and delivery constraints from `project-manager`
 - Existing codebase (if iterating on an existing project)

@@ -79,7 +79,7 @@ Before doing ANYTHING else:
    | `game` | Unity/Godot/Phaser game development |
    | `fullstack+mobile` | Web app + mobile app |
 
-2. **Interview the user** using `ask_question` to resolve ambiguities:
+2. **Interview the user** using the `[QUESTION_TO_USER]` relay via `send_message` to resolve ambiguities:
    - Confirm the project type
    - Identify which phases to skip ("skip docs?", "skip deployment?", "skip mobile?")
    - Clarify tech preferences (React vs Next.js, Node.js vs Python, etc.)
@@ -143,7 +143,7 @@ After the interview is complete but BEFORE selecting a workflow, you MUST:
      6. Full documentation — owned by `documentation-agent` → `docs/`
      ```
 
-2. **Ask the user to confirm** using `ask_question` with EXACTLY these three options plus write-in:
+2. **Ask the user to confirm** using the `[QUESTION_TO_USER]` relay via `send_message` with EXACTLY these three options plus write-in:
    ```
    question: "Here's your Feature Manifest. How would you like to proceed?"
    options:
@@ -374,7 +374,7 @@ Update after EVERY phase completion.
 ### Greenfield (New Project)
 ```
 0. Read skills → software-project-management, git-integration
-1. Interview user (ask_question) — confirm type, tech, skip conditions
+1. Interview user via relay — confirm type, tech, skip conditions
 2. Run architecture phase (technical-architect) → await contracts
 3. Run UX phase if UI involved (uiux-lead) → await design-spec.md
 4. Launch parallel implementation streams (backend-lead, frontend-lead, etc.)
@@ -472,7 +472,7 @@ At the START of every run (before STEP 1), check if `.agent_execution/workflow-s
 ```
 IF workflow-state.json EXISTS:
   1. Read it and check `completedPhases[]`
-  2. Use ask_question:
+  2. Send message to conductor: `[QUESTION_TO_USER]`
      question: "A previous run was found. Completed phases: [list them]. Resume from where it stopped?"
      options:
        - "▶️ Resume from last incomplete phase — skip completed work"

@@ -68,7 +68,7 @@ Design deeply engaging, intuitive, and mesmerizing user experiences that blur th
 
 ## INPUT CONTRACT
 - User requirements and feature scope from `project-manager`
-- Clarifying questions answered by user (via `ask_question`)
+- Clarifying questions answered by user (via `[QUESTION_TO_USER]` relay)
 - Brand guidelines or existing design assets (if provided)
 
 ## OUTPUT CONTRACT
