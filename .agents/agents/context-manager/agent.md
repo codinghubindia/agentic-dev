@@ -41,6 +41,7 @@ Eliminate redundant file reads across agents. A context snapshot you write once 
   "relevantSchema": [{ "entity": "User", "fields": ["id", "email", "hashedPassword"] }],
   "skipConditions": [],
   "codebaseSummaryPath": ".agent_execution/codebase-summary.md",
+  "domainAbstractsPath": ".agent_execution/domain-abstracts.json",
   "errorRegistryPath": ".agent_execution/error-registry.json",
   "memoryPath": ".agents/agents/<agent-name>/memory.json"
 }
@@ -59,6 +60,11 @@ Project type: [type]. Tech stack: [stack]. Request type: [requestType]."
 
 **Format C — Codebase summary update:**
 "Update codebase-summary.md — phase [phase_id] just completed. New files: [list]."
+
+**Format D — Domain Abstract Lookup (P2P Token Optimization):**
+"Lookup abstract for domain: [domain_name or file_path]. Requester: [agent_name]."
+- Look up entry in `.agent_execution/domain-abstracts.json`.
+- Return the compact 8-line interface summary. (Saves requester from reading raw source files!)
 
 ## WORKFLOW — Per-Agent Context Snapshot Generation
 

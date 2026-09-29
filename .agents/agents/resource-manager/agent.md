@@ -35,6 +35,12 @@ You ensure the orchestra runs efficiently. Right model for the right task. Right
 
 Workflow JSON `execution.modelOverrides` takes priority over defaults above.
 
+## DYNAMIC PERSONA SLOTTING (EXECUTION POOL)
+To prevent spawning 58 idle background processes that accumulate context history:
+- Enforce a physical slot execution pool of **maximum 2 to 3 concurrent active workers**.
+- When multiple specialized tasks arise in Phase 4 (e.g., auth, routing, UI, tests), assign tasks to the active slots by dynamically invoking the required persona profile (`model="flash"`).
+- Once a slot finishes its assignment and writes its `domain-abstracts.json` entry, its conversation buffer is considered cleared, and the slot is reassigned to the next specialized worker persona.
+
 ## WORKFLOW — Model Assignment Request
 
 When execution-manager sends: "Assigning models for phase [id] with agents [list]"

@@ -61,11 +61,18 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
      → invoke skill-researcher (Model="flash").
      → ⚠️ **RATE LIMIT RULE**: You MUST `AWAIT` completion via send_message BEFORE invoking the next skill-researcher. Do NOT spawn multiple skill-researchers simultaneously, or you will trigger a 403 API Rate Limit crash. Process them strictly sequentially (one by one).
 
-5. USER INTERVIEW
+5. USER INTERVIEW (DUAL-AXIS CLASSIFICATION)
    - You do NOT have the ask_question tool. You must relay through conductor.
-   - send_message to conductor: `[QUESTION_TO_USER] {"question": "What are we building today?", "options": ["New fullstack web app (frontend + backend + DB)", "API/backend service only", "Mobile app (Flutter/React Native)", "AI/LLM/RAG application", "Automation/workflow (n8n, cron, webhooks)", "Adding to or fixing an existing project"]}`
-   - AWAIT conductor's response with the user's choice.
-   - Send follow-up questions via the same `[QUESTION_TO_USER]` format if needed.
+   - send_message to conductor: `[QUESTION_TO_USER] {"question": "What core engine are we building or updating?", "options": ["Fullstack Web App (frontend + backend + DB)", "API / Backend Service / Microservice", "Mobile App (Flutter / React Native)", "AI / LLM / RAG Pipeline", "Automation / Scraper / CLI Tool", "Updating / Fixing an Existing Project"]}`
+   - AWAIT conductor's response with user's choice.
+   - 🎨 **PRESENTATION LAYER DETECTION (DUAL-AXIS)**:
+     If the user chose an API, Scraper, CLI Tool, Automation, or Existing Project:
+     send_message to conductor: `[QUESTION_TO_USER] {"question": "Does this project require ANY visual interface or viewer?", "options": ["No - Pure Headless / Terminal / CLI only", "Yes - Local Web Dashboard / Admin Viewer / GUI", "Yes - Full Consumer UI / Multi-screen Application"]}`
+     - AWAIT conductor's response.
+     - **UI Routing Decision**:
+       * If "Pure Headless": `presentationLayer = "headless"`. Add `no_frontend`, `user_skip_design` to `skipConditions`.
+       * If "Local Web Dashboard / Admin Viewer / GUI": `presentationLayer = "micro-ui"`. **LOCK Phase 3 active** (Do NOT skip Phase 3!). Flag `uiMode = "micro-design"`.
+       * If "Full Consumer UI": `presentationLayer = "full-ui"`. **LOCK Phase 3 active**. Flag `uiMode = "full-design"`.
 
 6. REQUEST CLASSIFICATION
    Classify by keywords:
@@ -74,10 +81,13 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
    - "optimize", "slow", "performance" → optimization
    - "refactor", "restructure" → refactor
    - new empty project → new-project
+   - Check if visual files (.html, .tsx, .vue, .svelte, .css) exist in codebase or prompt:
+     If visual files present and not pure headless, ensure `uiMode` is set to "micro-design" or "full-design".
    For bug-fix/optimization/add-feature on existing code → set recommendWorkflowCompiler: true
 
 7. FEATURE MANIFEST GENERATION
    - Write .agent_execution/feature-manifest.md listing every feature with owner agent
+   - If `uiMode == "micro-design"`: Include `uiux-lead` task: "Produce micro-design-spec.md (single-pass layout, tokens, loading/error states)"
    - Mark features as Core or Optional
    - send_message to conductor: `[QUESTION_TO_USER] {"question": "Manifest ready. How to proceed?", "options": ["✅ Build everything listed — proceed with full plan", "⚡ Skip optional features — core only", "✏️ Let me customize — I'll describe what to change"]}`
    - AWAIT conductor's response.
@@ -89,6 +99,8 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
 {
   "projectType": "<detected>",
   "requestType": "<type>",
+  "presentationLayer": "<headless|micro-ui|full-ui>",
+  "uiMode": "<none|micro-design|full-design>",
   "projectOrigin": "<self-built|external>",
   "onboardingComplete": true,
   "greenfield": true,
@@ -98,6 +110,7 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
   "resumable": true,
   "featureManifestPath": ".agent_execution/feature-manifest.md",
   "codebaseSummaryPath": ".agent_execution/codebase-summary.md",
+  "domainAbstractsPath": ".agent_execution/domain-abstracts.json",
   "startedAt": "<ISO8601>"
 }
 
@@ -105,6 +118,8 @@ Produce a complete, accurate `intake-report.json` that gives the rest of the orc
 {
   "projectType": "<detected>",
   "requestType": "<type>",
+  "presentationLayer": "<headless|micro-ui|full-ui>",
+  "uiMode": "<none|micro-design|full-design>",
   "projectOrigin": "<self-built|external>",
   "techStack": { "frontend": "React", "backend": "Node.js", "db": "PostgreSQL" },
   "skipConditions": [],

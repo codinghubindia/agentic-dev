@@ -263,3 +263,19 @@ For every file you create or significantly modify, append an entry:
 }
 ```
 If the file already has an entry, UPDATE it (don't duplicate). Do this BEFORE reporting back to your lead.
+
+## DOMAIN ABSTRACT (ZERO-INGESTION PROTOCOL)
+Before reporting back to your lead or caller, you MUST register an entry in `.agent_execution/domain-abstracts.json`:
+1. If the file does not exist, create it with `{ "version": 1, "abstracts": {} }`.
+2. Add your domain entry under `abstracts["<your exact agent name>"]`:
+```json
+{
+  "owner": "<your exact agent name>",
+  "domain": "<concise domain title, e.g. Auth, Routes, Schema>",
+  "filesOwned": ["<relative/path/to/files>"],
+  "interfaceSummary": "<compact description of exported functions, request/response bodies, or props in < 100 words>",
+  "keyTypesOrEndpoints": ["<key function/endpoint signatures>"],
+  "gotchas": "<any non-obvious requirement or gotcha, or none>"
+}
+```
+3. When you need to understand another module's code, DO NOT read full source files with view_file! First read `.agent_execution/domain-abstracts.json`. Only read a file if missing from abstracts.

@@ -84,6 +84,14 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - Kill + restart once if stuck. If fails again: report to conductor for escalation.
 
    h. AFTER ALL AGENTS IN PHASE COMPLETE:
+      - 🛡️ **UI BOUNDARY SENTINEL**:
+        Scan modified files in `.agent_execution/file-responsibility-index.json`.
+        If any newly written file has extension (.html, .tsx, .jsx, .vue, .svelte, .css) and Phase 3 (Design) was skipped:
+        * Halt pipeline execution.
+        * Trigger emergency Micro-Design pass: invoke `uiux-lead` with `uiMode = "micro-design"`.
+        * Await `micro-design-spec.md` before allowing implementation to proceed.
+      - 📚 **DOMAIN ABSTRACT REGISTRATION**:
+        Verify each completing worker has registered its domain contract in `.agent_execution/domain-abstracts.json` (< 120 words summary) so peers never need to ingest raw source files.
       - If 2+ parallel agents: invoke conflict-resolver (Model="flash")
         Pass: list of files written this phase from file-responsibility-index.json
         Wait for conflict resolution before gate check
@@ -115,11 +123,16 @@ Run every phase of the workflow reliably, in the correct order, with correct par
           2. AWAIT their fix completion.
           3. REPEAT the APPROVAL LOOP from the start (You MUST send [APPROVAL_REQUIRED] to conductor again). DO NOT proceed until explicitly approved.
 
-5. AFTER ALL IMPLEMENTATION PHASES:
-   - invoke quality-manager (Model="pro")
-   - Wait for PASS or FAIL
-   - If FAIL: route defects per quality-manager, re-run affected agents, re-invoke quality-manager
-   - If PASS: proceed to deployment phases
+5. AFTER ALL IMPLEMENTATION PHASES (DUAL-PASS QA PROTOCOL):
+   - **PASS 1 (Deterministic Machine Verification - 0 LLM Tokens)**:
+     Read `architecture.json` to get `localVerificationCommand`. Run compiler/linter/test commands via `run_command`.
+     If build/test fails with syntax or type errors, pass ONLY the compiler stderr snippet directly to the responsible worker. Do NOT invoke quality-manager or LLM reviewers until code compiles cleanly.
+   - **PASS 2 (Specialized Sign-Off)**:
+     Once Pass 1 compiles cleanly, invoke quality-manager (Model="pro").
+     Instruct quality-manager to review Git Diffs and test receipts.
+     Wait for PASS or FAIL.
+     - If FAIL: route defects per quality-manager, re-run affected agents, re-verify Pass 1 and Pass 2.
+     - If PASS: proceed to deployment phases.
 
 6. CLEANUP & REPORT to conductor via send_message:
    - send_message to context-manager and resource-manager: "Workflow complete, you may terminate."

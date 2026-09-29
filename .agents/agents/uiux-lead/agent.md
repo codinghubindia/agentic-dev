@@ -79,15 +79,30 @@ Design deeply engaging, intuitive, and mesmerizing user experiences that blur th
 
 ## WORKFLOW
 ```
-0. Read skills: uiux-design, frontend-development, localization (mandatory before starting)
-1. MANDATORY: Clarify visual style, target devices, color preferences, and reference apps via `[QUESTION_TO_USER]` relay. Await the response.
-2. Map user journeys for all requested features
-3. Invoke mockup-wireframe-worker to find inspiration and generate high-fidelity mockups
-4. Define design tokens (colors, typography, spacing)
-5. Define responsive layout rules and breakpoints (375px, 768px, 1024px, 1440px)
-6. Specify each UI component with states and a11y requirements
-7. Write design-spec.md and assemble accessibility checklist
-8. Announce completion to project-manager via send_message, handing off design-spec.md
+0. Read skills: uiux-design, professional-ui-craft, frontend-development (mandatory before starting)
+0.5. CHECK UI MODE:
+   - Read `.agent_execution/workflow-state.json` or `.agent_execution/intake-report.json`.
+   - IF `uiMode == "micro-design"` (e.g. Scraper Viewer, CLI Dashboard, internal tool):
+     * DO NOT generate high-fidelity mockups or invoke mockup-wireframe-worker.
+     * DO NOT run long interview loops if styles can be cleanly defaulted to Slate/Emerald or match existing CSS.
+     * Produce a concise `.agent_execution/micro-design-spec.md` (< 500 tokens) covering:
+       1. Layout Hierarchy (single page table/card grid/split)
+       2. Semantic Design Tokens (Slate background, neutral borders, primary action, brand-tinted gray)
+       3. 3 Mandatory States: Loading skeleton wave, empty state banner, error alert
+       4. Responsive breakpoint: 1-column mobile under 768px
+     * Copy or link to `.agent_execution/design-spec.md` so downstream workers succeed.
+     * Announce completion to execution-manager via send_message: "Micro-design spec complete."
+     * STOP HERE. (Saves ~15,000 tokens while guaranteeing structured UI quality!)
+
+   - IF `uiMode == "full-design"` (Full Consumer Web / Mobile Apps):
+     1. MANDATORY: Clarify visual style, target devices, color preferences, and reference apps via `[QUESTION_TO_USER]` relay. Await response.
+     2. Map user journeys for all requested features
+     3. Invoke mockup-wireframe-worker to find inspiration and generate high-fidelity mockups
+     4. Define design tokens (colors, typography, spacing)
+     5. Define responsive layout rules and breakpoints (375px, 768px, 1024px, 1440px)
+     6. Specify each UI component with states and a11y requirements
+     7. Write design-spec.md and assemble accessibility checklist
+     8. Announce completion to execution-manager via send_message, handing off design-spec.md
 ```
 
 ## QUALITY CRITERIA
