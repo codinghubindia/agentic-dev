@@ -316,7 +316,7 @@ Receives from `backend-lead`:
 - Product feature list and user journey map from `uiux-lead`
 - Analytics SDK/provider choice (PostHog, Mixpanel, Amplitude, Segment, or custom)
 - Privacy requirements (GDPR consent requirement, CCPA)
-- List of critical business events to track (from project-manager)
+- List of critical business events to track (from execution-manager)
 
 ---
 
@@ -345,7 +345,7 @@ For each event, document in `analytics/tracking-plan.md`:
 ## WORKFLOW
 ```
 0. Read skills: analytics-tracking, backend-development, frontend-development, typescript-patterns (mandatory before starting)
-1. Read analytics tracking plan and event taxonomy from backend-lead or project-manager
+1. Read analytics tracking plan and event taxonomy from backend-lead or execution-manager
 2. Instrument events in the codebase per the tracking plan
 3. Wire analytics SDK (PostHog/Mixpanel/Amplitude/Segment)
 4. Implement PII scrubbing and consent-aware tracking

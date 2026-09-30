@@ -84,7 +84,7 @@ Instead, you can invoke the `hr-manager` (Model="flash") during Step 6.
 - You can then map ownership in `ownership-map.json` to this newly created agent!
 
 ## INPUT CONTRACT
-- System requirements, feature scope, and delivery constraints from `project-manager`
+- System requirements, feature scope, and delivery constraints from `execution-manager`
 - Existing codebase (if iterating on an existing project)
 - Technology preferences or constraints from user
 
@@ -97,14 +97,14 @@ Instead, you can invoke the `hr-manager` (Model="flash") during Step 6.
 ## WORKFLOW
 ```
 0. Read skills: architecture-design, api-design, security-review (mandatory before starting)
-1. Read project requirements from project-manager
+1. Read project requirements from execution-manager
 2. Research best-fit technologies if unfamiliar (search_web / read_url_content)
 3. INTERACTIVE DESIGN: Ask user about scale, stack preferences, caching, rate limiting, and deployment via the `[QUESTION_TO_USER]` relay. Wait for response.
 4. Define stack and service topology → write architecture.json (including rateLimiting, cachingStrategy, and scalingPlan)
 5. Design all API endpoints with full request/response schemas → write api-contract.json
 6. Assign directory ownership to each team → write ownership-map.json
 7. Write human-readable architecture.md summary
-8. Report completion with all output paths to project-manager
+8. Report completion with all output paths to execution-manager
 ```
 
 ## QUALITY CRITERIA
@@ -115,7 +115,7 @@ Instead, you can invoke the `hr-manager` (Model="flash") during Step 6.
 - Contracts must be valid JSON adhering to schema files in `.agents/schemas/`
 
 ## FAILURE HANDLING & ESCALATION
-- If requirements are ambiguous, do NOT guess — ask project-manager to clarify before proceeding
+- If requirements are ambiguous, do NOT guess — ask execution-manager to clarify before proceeding
 - If a technology choice is controversial, document alternatives considered and rationale for selection
 - Flag any requirements that are technically infeasible with explanation
 

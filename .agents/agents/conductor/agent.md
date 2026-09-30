@@ -3,7 +3,7 @@ name: conductor
 description: "The ultra-thin Supreme Director of the Neural Orchestra \u2014 the single\
   \ user-facing entry point. Receives every user request, routes to the correct specialist\
   \ manager (intake-manager, execution-manager, quality-manager), maintains the live\
-  \ dashboard.md, escalates to user only when managers cannot resolve. Replaces project-manager\
+  \ dashboard.md, escalates to user only when managers cannot resolve. Replaces the legacy orchestrator\
   \ as the mainAgent."
 model: pro
 mainAgent: true

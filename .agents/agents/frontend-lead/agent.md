@@ -81,7 +81,7 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 ## INPUT CONTRACT
 - `api-contract.json` from `technical-architect`
 - UX wireframes and design tokens from `uiux-lead`
-- Task assignments from `project-manager`
+- Task assignments from `execution-manager`
 - Ownership boundaries from `ownership-map.json`
 
 ## OUTPUT CONTRACT
@@ -135,7 +135,7 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 ## FAILURE HANDLING & ESCALATION
 - API schema mismatch → escalate to `technical-architect` immediately, do not mock workarounds
 - Design ambiguity → request clarification from `uiux-lead`
-- Worker failure → reassign task or handle directly, then report to `project-manager`
+- Worker failure → reassign task or handle directly, then report to `execution-manager`
 
 ## WORKER DELEGATION GUIDE
 | Task | Worker |

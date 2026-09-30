@@ -395,7 +395,7 @@ The framework comprises **62 agents across 9 departments**:
 
 | Department | Agents |
 |---|---|
-| **Executive Management** | `conductor`, `software-intake-manager`, `execution-manager`, `quality-manager`, `context-manager`, `resource-manager`, `hr-manager`, `chief-of-staff`, `memory-manager`, `conflict-resolver`, `workflow-compiler`, `workflow-manager`, `codebase-onboarder`, `skill-researcher`, `project-manager` (legacy) |
+| **Executive Management** | `conductor`, `software-intake-manager`, `execution-manager`, `quality-manager`, `context-manager`, `resource-manager`, `hr-manager`, `chief-of-staff`, `memory-manager`, `conflict-resolver`, `workflow-compiler`, `workflow-manager`, `codebase-onboarder`, `skill-researcher` |
 | **Architecture & Governance** | `technical-architect`, `code-reviewer`, `security-lead` |
 | **Backend Engineering** | `backend-lead`, `api-route-worker`, `business-logic-worker`, `data-access-worker`, `auth-worker`, `error-handling-worker`, `analytics-worker` |
 | **Frontend Engineering** | `frontend-lead`, `ui-component-worker`, `routing-worker`, `state-management-worker`, `api-integration-worker`, `accessibility-worker`, `performance-worker`, `localization-worker` |

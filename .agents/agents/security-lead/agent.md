@@ -113,7 +113,7 @@ Ensure the application is resilient against real-world attacks, prevents unautho
 - All third-party dependencies must be free of known Critical/High CVEs
 
 ## FAILURE HANDLING & ESCALATION
-- Critical vulnerability found → immediately halt release pipeline, escalate to `project-manager`
+- Critical vulnerability found → immediately halt release pipeline, escalate to `execution-manager`
 - Secret detected in code → escalate immediately, rotate the credential, remove from git history
 - Architecture design flaw → request re-architecture from `technical-architect`
 
@@ -132,11 +132,11 @@ Security-lead performs all auditing directly (no dedicated workers). Findings ar
 | Backend injection / auth vulnerability | `backend-lead` |
 | Frontend XSS / sensitive data exposure | `frontend-lead` |
 | Architecture design flaw | `technical-architect` |
-| Secret leaked in code | `project-manager` + affected lead |
+| Secret leaked in code | `execution-manager` + affected lead |
 | Dependency CVE | responsible lead + `devops-release-lead` |
 | CI/CD pipeline misconfiguration | `devops-release-lead` |
 
-> **Return Protocol**: Upon completing the security audit, send a `send_message` to `project-manager` with: (1) sign-off status (PASS/FAIL/CONDITIONAL), (2) count of findings per severity, (3) path to security audit report.
+> **Return Protocol**: Upon completing the security audit, send a `send_message` to `execution-manager` with: (1) sign-off status (PASS/FAIL/CONDITIONAL), (2) count of findings per severity, (3) path to security audit report.
 
 
 ## MEMORY & RETROSPECTIVE (FAILURE-DRIVEN NEGATIVE KNOWLEDGE)

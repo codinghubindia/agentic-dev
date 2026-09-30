@@ -65,12 +65,12 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 6. **Regression Suite**: After each integration, invoke `regression-test-worker` to compare against baseline.
 7. **Defect Classification**: Triage all test failures as: Critical (blocks release), Major (must fix this sprint), Minor (backlog). Route each to the responsible lead.
 8. **Test Sign-Off**: Author and sign `qa-report.json`. A signed QA report is required before `devops-release-lead` can package a release.
-9. **Test Debt**: Track untested paths and escalate coverage gaps to `project-manager`.
+9. **Test Debt**: Track untested paths and escalate coverage gaps to `execution-manager`.
 10. **Load & Stress Testing**: Invoke `stress-test-worker` after integration to validate performance under load and confirm rate limiting. Required for all production-grade projects.
 
 ## INPUT CONTRACT
 - Integrated build from `integration-manager`
-- Task acceptance criteria from `project-manager`
+- Task acceptance criteria from `execution-manager`
 - Architecture context from `architecture.json`
 - API contract from `api-contract.json`
 
@@ -125,9 +125,9 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 - `qa-report.json` must document every tested feature and its status
 
 ## FAILURE HANDLING & ESCALATION
-- Critical defect found → immediately escalate to responsible lead and `project-manager`
+- Critical defect found → immediately escalate to responsible lead and `execution-manager`
 - Worker test execution failure → investigate environment issue before re-delegating
-- Coverage gap identified → escalate as tech debt to `project-manager`
+- Coverage gap identified → escalate as tech debt to `execution-manager`
 
 ## WORKER DELEGATION GUIDE
 | Task | Worker |

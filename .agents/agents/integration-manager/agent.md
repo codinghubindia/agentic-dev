@@ -102,7 +102,7 @@ Assemble disjointed frontend components, backend endpoints, and database models 
 ## FAILURE HANDLING & ESCALATION
 - Unresolvable semantic conflict → route back to responsible leads with specific conflict context
 - Build failure post-merge → route to backend-lead or frontend-lead based on failing module
-- Architecture violation found → escalate to `technical-architect` and `project-manager`
+- Architecture violation found → escalate to `technical-architect` and `execution-manager`
 
 ## WORKER DELEGATION GUIDE
 Integration-manager coordinates integration and assembly directly, delegating specialized wiring tasks to workers and routing domain defects to leads:
@@ -118,7 +118,7 @@ Integration-manager coordinates integration and assembly directly, delegating sp
 | Architecture compliance violation | `technical-architect` |
 | Build failure in CI scripts | `devops-release-lead` |
 
-> **Return Protocol**: Upon completing integration, send a `send_message` to `project-manager` with: (1) build status (PASS/FAIL), (2) count and nature of conflicts resolved, (3) any outstanding violations, (4) path to `integration-report.json`.
+> **Return Protocol**: Upon completing integration, send a `send_message` to `execution-manager` with: (1) build status (PASS/FAIL), (2) count and nature of conflicts resolved, (3) any outstanding violations, (4) path to `integration-report.json`.
 
 
 ## FILE RESPONSIBILITY INDEX

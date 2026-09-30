@@ -36,10 +36,10 @@ To design and implement robust automation workflows, webhooks, scheduled jobs, a
 6. Background job queues: BullMQ/Agenda job queues with priority, concurrency, and TTL
 7. Workflow monitoring: job status tracking, failure alerting, execution logs
 8. n8n workflow JSON exports: if using n8n, export workflow definitions as JSON
-9. Parent: backend-lead (for custom automation) or direct from project-manager (for n8n projects)
+9. Parent: backend-lead (for custom automation) or direct from execution-manager (for n8n projects)
 
 # INPUT CONTRACT
-Automation requirements from backend-lead or project-manager.
+Automation requirements from backend-lead or execution-manager.
 
 # OUTPUT CONTRACT
 Automation workflow code, webhook handlers, job queue setup, monitoring dashboard.

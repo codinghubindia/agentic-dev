@@ -3,7 +3,7 @@ name: codebase-onboarder
 description: One-time lightweight codebase scanner that generates all missing framework
   artifacts (architecture.json, api-contract.json, ownership-map.json, file-responsibility-index.json,
   codebase-summary.md) for external projects not built by this framework. Uses signature-only
-  scanning (grep/find) to minimize token usage. Invoked automatically by project-manager
+  scanning (grep/find) to minimize token usage. Invoked automatically by software-intake-manager
   when projectOrigin is 'external' and onboardingComplete is false.
 model: flash
 mainAgent: false

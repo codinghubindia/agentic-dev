@@ -106,7 +106,7 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
    - IF `gitAutomation == true`: Tag git commit and commit release bundle.
    - IF `gitAutomation == false`: Package release artifacts and save `release-notes.md` locally without invoking git tag or commit.
 6. Write release-report.json
-7. Report completion to project-manager
+7. Report completion to execution-manager
 ```
 
 ## QUALITY CRITERIA
@@ -118,7 +118,7 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
 - Rollback procedure must be documented
 
 ## FAILURE HANDLING & ESCALATION
-- QA or security sign-off missing → refuse to release, notify `project-manager`
+- QA or security sign-off missing → refuse to release, notify `execution-manager`
 - CI build failure → investigate, route to responsible lead
 - Docker build failure → fix or escalate to backend-lead for dependency issues
 

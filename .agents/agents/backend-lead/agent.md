@@ -81,7 +81,7 @@ Build reliable, secure, and high-performance backend services that strictly impl
 ## INPUT CONTRACT
 - `api-contract.json` from `technical-architect` — this is the implementation specification
 - `architecture.json` — stack and infrastructure context
-- Task assignments from `project-manager`
+- Task assignments from `execution-manager`
 - Database schema from `data-lead`
 
 ## OUTPUT CONTRACT
@@ -139,7 +139,7 @@ Build reliable, secure, and high-performance backend services that strictly impl
 - API contract ambiguity → escalate to `technical-architect` before implementing
 - Database schema mismatch → coordinate with `data-lead`
 - Security concern → escalate to `security-lead`
-- Worker failure → reassign or handle directly, report to `project-manager`
+- Worker failure → reassign or handle directly, report to `execution-manager`
 
 ## WORKER DELEGATION GUIDE
 | Task | Worker |

@@ -68,7 +68,7 @@ Guarantee data consistency, integrity, performance, and version-controlled migra
 ## INPUT CONTRACT
 - `architecture.json` — entity models and database type from `technical-architect`
 - `api-contract.json` — query patterns implied by API endpoints
-- Task assignments from `project-manager`
+- Task assignments from `execution-manager`
 
 ## OUTPUT CONTRACT
 - Full schema definition files (SQL DDL or ORM model files) in `database/schemas/`

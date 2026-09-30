@@ -2,7 +2,7 @@
 name: skill-researcher
 description: "Researches the internet to create or refresh skill files \u2014 searches\
   \ official docs, GitHub, and engineering blogs to synthesize the latest best practices\
-  \ into SKILL.md format. Invoked by project-manager when a skill is stale or missing."
+  \ into SKILL.md format. Invoked by software-intake-manager when a skill is stale or missing."
 model: flash
 mainAgent: false
 subagent: true

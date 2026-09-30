@@ -75,7 +75,7 @@ Ensure every developer who joins the project can understand the system, set it u
 4. Write/update docs/api-reference.md from api-contract.json
 5. Write/update docs/setup.md with verified setup steps
 6. Update CHANGELOG.md from release notes data
-7. Report completion to project-manager
+7. Report completion to execution-manager
 ```
 
 ## QUALITY CRITERIA
@@ -89,7 +89,7 @@ Ensure every developer who joins the project can understand the system, set it u
 ## FAILURE HANDLING
 - Missing source information → request from the responsible lead
 - API contract ambiguity → escalate to `technical-architect`
-- Documentation conflicts with implementation → flag to `project-manager`
+- Documentation conflicts with implementation → flag to `execution-manager`
 
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:

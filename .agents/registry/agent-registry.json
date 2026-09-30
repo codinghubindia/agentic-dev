@@ -5,11 +5,11 @@
   "totalAgents": 49,
   "agents": [
     {
-      "name": "project-manager",
+      "name": "execution-manager",
       "role": "Project Manager",
       "type": "orchestrator",
       "scope": "workspace",
-      "location": ".agents/agents/project-manager/agent.md",
+      "location": ".agents/agents/execution-manager/agent.md",
       "capabilities": [
         "planning",
         "task-decomposition",

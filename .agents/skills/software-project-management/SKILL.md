@@ -187,7 +187,7 @@ After every release:
 
 ### The Reactive Lifecycle
 Multi-agent systems operate on an asynchronous, reactive event loop:
-1. **Dispatch**: The orchestrator (`project-manager` or `workflow-manager`) invokes specialist agents via `invoke_subagent`.
+1. **Dispatch**: The orchestrator (`execution-manager` or `workflow-manager`) invokes specialist agents via `invoke_subagent`.
 2. **State Record**: Record dispatched tasks in `project-plan.json` or `workflow-state.json` with status `in-progress`.
 3. **Yield Turn Cleanly or Set Liveness Timer**:
    - Do NOT emit conversational text to the user like "Awaiting test results..." during active pipeline phases. In terminal CLI environments (`agy`), emitting text to the user marks the turn as complete and returns to the interactive prompt (`> `), causing the system to appear silent and hung until the user types `continue`.

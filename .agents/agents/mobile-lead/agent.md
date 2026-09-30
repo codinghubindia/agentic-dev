@@ -75,7 +75,7 @@ Build high-performance, accessible, and offline-capable mobile applications that
 ## INPUT CONTRACT
 - `api-contract.json` from `technical-architect`
 - Design specifications from `uiux-lead` (mobile-specific screens)
-- Task assignments from `project-manager`
+- Task assignments from `execution-manager`
 
 ## OUTPUT CONTRACT
 - Mobile application source code in `mobile/`
@@ -119,7 +119,7 @@ Build high-performance, accessible, and offline-capable mobile applications that
 - API mismatch → escalate to `technical-architect`
 - Design inconsistency → coordinate with `uiux-lead`
 - Platform-specific build failure → document and escalate to `devops-release-lead`
-- Worker failure → reassign or handle directly, report to `project-manager`
+- Worker failure → reassign or handle directly, report to `execution-manager`
 
 ## WORKER DELEGATION GUIDE
 | Task | Worker |
