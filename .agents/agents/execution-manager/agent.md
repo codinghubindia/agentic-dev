@@ -141,19 +141,19 @@ Run every phase of the workflow reliably, in the correct order, with correct par
       - Update currentPhase, write timestamp
       - **ATOMIC STATE COMMIT**: Always write `workflow-state.json.tmp` first, then atomically overwrite `workflow-state.json` to prevent partial/corrupted states if interrupted.
 
-   k. INTERACTIVE PHASE GATE (User Approval Checkpoint):
-      - If phase.id == "phase_4_implementation":
+   k. INTERACTIVE PHASE GATE (Integrated User Approval Checkpoint):
+      - If phase.id in ["phase_5_integration", "phase_2_5_integration", "phase_3_5_integration", "phase_2_integration"] (or if integration phase was skipped and phase.id in ["phase_4_implementation", "phase_2_implementation"]):
         - 🔄 **APPROVAL LOOP START**:
-        - send_message to conductor: "[APPROVAL_REQUIRED] Phase {phase.id} is complete. Please ask the user to review the application in the browser and approve before we proceed to QA."
+        - send_message to conductor: "[APPROVAL_REQUIRED] Integration Phase ({phase.id}) is complete. The application is fully assembled, routes are live, and APIs are connected. Please ask the user to test and review the live application in the browser and approve before we proceed to QA."
         - AWAIT conductor reply. DO NOT POLL.
         - IF user approves: break loop, proceed to next phase.
         - IF user rejects/gives feedback: 
-          1. Route feedback to the responsible lead via send_message.
-          2. AWAIT their fix completion.
+          1. Route feedback to `integration-manager` or the responsible lead (frontend-lead / backend-lead) via send_message.
+          2. AWAIT their fix completion and updated `integration-report.json`.
           3. 🛑 **CIRCUIT BREAKER**: If user rejects or provides feedback more than 3 consecutive times, escalate to conductor with an iteration summary: `[APPROVAL_ESCALATION] 3 feedback cycles reached. Please confirm whether to accept the current build, adjust requirements, or continue iterating.`
           4. REPEAT the APPROVAL LOOP from the start (You MUST send [APPROVAL_REQUIRED] to conductor again). DO NOT proceed until explicitly approved.
 
-5. AFTER ALL IMPLEMENTATION PHASES (DUAL-PASS QA PROTOCOL):
+5. AFTER ALL IMPLEMENTATION & INTEGRATION PHASES (DUAL-PASS QA PROTOCOL):
    - **PASS 1 (Deterministic Machine Verification - 0 LLM Tokens)**:
      Read `architecture.json` to get `localVerificationCommand`.
      🛡️ **PORT COLLISION & ZOMBIE PROCESS PRE-FLIGHT**:
@@ -183,6 +183,8 @@ Run every phase of the workflow reliably, in the correct order, with correct par
 ## PHASE GATE RULES
 - Architecture phase → must produce architecture.json + api-contract.json + ownership-map.json
 - Design phase → must produce design-spec.md
+- Implementation phase → must produce implementation_complete_flag, backend-handoff-report.json, and frontend-handoff-report.json
+- Integration phase → must produce integration-report.json with status: "PASS" (HARD GATE: QA cannot execute until integration is verified)
 - QA phase → must produce qa-report.json with status: "PASS"
 - Security phase → must produce security-signoff.md
 

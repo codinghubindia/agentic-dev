@@ -90,7 +90,8 @@ Build reliable, secure, and high-performance backend services that strictly impl
 - Authentication and authorization middleware
 - Backend unit and integration test suites
 - Environment configuration template (`.env.example`)
-- Implementation handoff report to `project-manager`
+- `backend-handoff-report.json` — route registry, schemas, port bindings, and verification commands ready for Phase 5 integration assembly
+- Implementation handoff report to `execution-manager`
 
 ## WORKFLOW
 
@@ -117,7 +118,11 @@ Build reliable, secure, and high-performance backend services that strictly impl
    - backend-test-worker → write unit + integration tests for all services
 6. Run integration smoke tests locally
 7. Review all delivered code against api-contract.json
-8. Report to your caller (e.g., execution-manager)
+8. Generate `.agent_execution/backend-handoff-report.json` documenting:
+   - Full list of implemented routes with HTTP methods, paths, and status codes
+   - Verified data schemas, database migrations applied, and seed state
+   - Port configurations, environment variable requirements, and local running instructions
+9. Report completion to `execution-manager`. Handoff directly to `integration-manager` for Phase 5 (Fullstack Integration & Assembly). Backend endpoints are wired to real frontend clients during Phase 5 before QA runs.
 ```
 
 ## QUALITY CRITERIA

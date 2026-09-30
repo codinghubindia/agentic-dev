@@ -1,13 +1,14 @@
 {
   "name": "ai-rag-project",
-  "version": "1.0",
-  "description": "Pipeline for Artificial Intelligence, LLM, and RAG (Retrieval-Augmented Generation) applications.",
+  "version": "1.1",
+  "description": "Pipeline for Artificial Intelligence, LLM, and RAG (Retrieval-Augmented Generation) applications with mandatory integration assembly.",
   "execution": {
     "defaultModel": "inherit",
     "modelOverrides": {
       "technical-architect": "pro",
       "ai-ml-lead": "pro",
       "security-lead": "pro",
+      "integration-manager": "pro",
       "documentation-agent": "flash"
     },
     "parallelismLimit": 3
@@ -47,12 +48,23 @@
       "hardGate": true
     },
     {
+      "id": "phase_3_5_integration",
+      "name": "Fullstack AI Integration & Assembly",
+      "skipConditions": [],
+      "leadAgent": "integration-manager",
+      "agents": ["integration-manager", "ai-ml-lead", "backend-lead", "frontend-lead"],
+      "requiredArtifacts": ["integration-report.json"],
+      "hardGate": true,
+      "dependsOn": ["phase_3_implementation"]
+    },
+    {
       "id": "phase_4_testing",
       "name": "AI Testing & Evaluation",
       "skipConditions": ["user_skip_testing"],
       "agents": ["qa-lead", "ai-ml-lead"],
       "requiredArtifacts": ["eval-benchmarks.md"],
-      "hardGate": true
+      "hardGate": true,
+      "dependsOn": ["phase_3_5_integration"]
     },
     {
       "id": "phase_5_security",

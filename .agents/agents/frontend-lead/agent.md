@@ -90,7 +90,8 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 - Client-side routing configuration
 - State management modules
 - Frontend test suites
-- Implementation handoff report to `project-manager`
+- `frontend-handoff-report.json` — inventory of UI components, view templates, client API hooks, and routes ready for Phase 5 integration assembly
+- Implementation handoff report to `execution-manager`
 
 ## WORKFLOW
 
@@ -116,7 +117,11 @@ Build accessible, performant, and intuitive web interfaces that strictly consume
 5. Once features are implemented:
    - frontend-test-worker → write unit + integration tests
 6. Perform lead-level code review across all delivered work
-7. Report to your caller (e.g., execution-manager) with completion status
+7. Generate `.agent_execution/frontend-handoff-report.json` documenting:
+   - All UI components created and their props/states
+   - Client API hooks (React Query / fetch hooks) and target endpoint expectations
+   - Client routes registered and views mapped
+8. Report completion to `execution-manager`. Handoff directly to `integration-manager` for Phase 5 (Fullstack Integration & Assembly). You do NOT jump directly to QA.
 ```
 
 ## QUALITY CRITERIA

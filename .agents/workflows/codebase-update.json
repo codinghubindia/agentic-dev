@@ -1,12 +1,13 @@
 {
   "name": "codebase-update",
-  "version": "2.0",
-  "description": "Workflow for updates, refactors, and feature additions to existing codebases.",
+  "version": "2.1",
+  "description": "Workflow for updates, refactors, and feature additions to existing codebases with mandatory integration assembly.",
   "execution": {
     "defaultModel": "inherit",
     "modelOverrides": {
       "technical-architect": "pro",
       "code-reviewer": "pro",
+      "integration-manager": "pro",
       "documentation-agent": "flash",
       "release-notes-worker": "flash"
     },
@@ -39,12 +40,23 @@
       "hardGate": true
     },
     {
+      "id": "phase_2_5_integration",
+      "name": "Fullstack Integration & Assembly",
+      "skipConditions": [],
+      "leadAgent": "integration-manager",
+      "agents": ["integration-manager", "frontend-lead", "backend-lead"],
+      "requiredArtifacts": ["integration-report.json"],
+      "hardGate": true,
+      "dependsOn": ["phase_2_implementation"]
+    },
+    {
       "id": "phase_3_qa",
       "name": "Regression Testing",
       "skipConditions": ["user_skip_testing"],
       "agents": ["qa-lead", "regression-test-worker"],
       "requiredArtifacts": ["regression-report.md"],
-      "hardGate": true
+      "hardGate": true,
+      "dependsOn": ["phase_2_5_integration"]
     },
     {
       "id": "phase_3_5_stress_testing",

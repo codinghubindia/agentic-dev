@@ -376,16 +376,16 @@ The `software-intake-manager` auto-detects project classification and configures
 
 ## 🚦 Phase Gate System
 
-No phase can advance without producing validated artifacts, verified by `execution-manager` and `quality-manager`:
+No phase can advance without producing validated artifacts, strictly verified by `execution-manager` and `quality-manager`:
 
 1. **Intake Gate**: `intake-report.json` + confirmed `feature-manifest.md`.
 2. **Architecture Gate**: `architecture.json` + `api-contract.json` + `ownership-map.json` + `cir.json`.
 3. **Data Modeling Gate**: `schema-design.md` + migration scripts.
 4. **UI/UX Gate**: `design-system.md` + `component-specs.md` (or `micro-design-spec.md`).
-5. **Implementation Gate**: Hand-off reports from leads + domain abstracts + Interactive Human Approval checkpoint (`[APPROVAL_REQUIRED]`).
-6. **Pass 1 Machine Verification**: Terminal compilation & syntax verification at 0 LLM tokens (`tsc --noEmit`, `cargo check`).
-7. **Unified Quality Gate**: Simultaneous audit across Compliance, QA, Security, and UI quality.
-8. **Release Packaging**: `release-report.json` + `CHANGELOG.md`.
+5. **Atomic Implementation Gate**: Hand-off reports (`backend-handoff-report.json`, `frontend-handoff-report.json`) + domain abstracts from parallel leads.
+6. **Fullstack Integration & Assembly Gate (MANDATORY BEFORE QA)**: `integration-manager` leads live API wiring (`api-integration-worker`), page assembly (`routing-worker`), contract parity verification, and Pass 1 deterministic compilation probe (`tsc --noEmit`, `cargo check`) $\to$ produces `integration-report.json` (status: `"PASS"`) + prompts the interactive User Browser Approval Checkpoint (`[APPROVAL_REQUIRED]`).
+7. **Unified Quality Gate**: Multi-angle verification across Deterministic QA (`qa-report.json`), Security audit (`security-signoff.md`), and UI visual craft standards.
+8. **Performance, Stress Testing & Release Packaging**: `performance-report.md`, `release-report.json`, and `CHANGELOG.md`.
 
 ---
 
@@ -445,9 +445,9 @@ Contains **24 authoritative engineering manuals** in `.agents/skills/`:
 
 Standard pipelines configured in `.agents/workflows/` (in addition to on-demand dynamic compilation):
 
-1. **`software-project.json`** — Full lifecycle greenfield pipeline (Requirements $\to$ DB $\to$ Design $\to$ Core Implementation $\to$ QA $\to$ Stress Testing $\to$ Release).
-2. **`codebase-update.json`** — Brownfield updates on existing code (Architecture review $\to$ Code inspection $\to$ Refactoring $\to$ Regression testing).
-3. **`parallel-feature-development.json`** — Concurrent feature development across Backend, Frontend, Data, and Security streams with contract locks.
+1. **`software-project.json`** — Full lifecycle 8-phase greenfield pipeline (Requirements $\to$ DB $\to$ Design $\to$ Atomic Implementation $\to$ **Fullstack Integration & Assembly** $\to$ QA $\to$ Stress Testing $\to$ Release).
+2. **`codebase-update.json`** — Brownfield updates on existing code (Architecture review $\to$ Design $\to$ Implementation $\to$ **Fullstack Integration & Assembly** $\to$ Regression Testing $\to$ Performance $\to$ Release).
+3. **`parallel-feature-development.json`** — Concurrent feature development across Backend, Frontend, Data, and Security streams $\to$ **Integration & Synchronization** $\to$ Validation.
 4. **`integration-and-release.json`** — Source tree harmonization, build validation, regression suites, and release packaging.
 5. **`ai-rag-project.json`** — Dedicated AI lifecycle (Document chunking $\to$ Embeddings $\to$ Vector DB $\to$ RAG evaluation $\to$ UI wiring).
 6. **`automation-workflow.json`** — Webhooks, n8n pipeline orchestration, scheduled jobs, and integration tests.
