@@ -158,13 +158,16 @@ Build automated, repeatable, and observable deployment workflows that ship QA-si
 8. ✅ Report to your caller (e.g., execution-manager)
 ```
 
-## MEMORY & RETROSPECTIVE
+## MEMORY & RETROSPECTIVE (FAILURE-DRIVEN NEGATIVE KNOWLEDGE)
 
-At the end of every task, before reporting back, you MUST:
+> [!CAUTION]
+> **ZERO PROJECT DETAILS & STRICT FAILURE-ONLY MANDATE**:
+> 1. Memory MUST ONLY learn from **wrong things**: CI build pipeline failures, Docker caching invalidations, failed health probes, or environment deployment crashes.
+> 2. NEVER record project names, feature requirements, user requests, domain concepts, or successful normal executions.
+> 3. If your release or deployment passed with ZERO unexpected pipeline errors or deployment traps: **WRITE ZERO ENTRIES** to the event queue. Success is expected; only failures and traps are recorded.
 
-1. **Reflect**: What unexpected issues occurred? What shortcuts worked? What would have saved time?
-2. **Write 1-3 non-trivial lessons** — specific, actionable, non-obvious
-3. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
+When and ONLY when an unexpected DevOps failure, CI break, or container trap was encountered and resolved:
+1. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
 
 ```json
 {
@@ -174,23 +177,26 @@ At the end of every task, before reporting back, you MUST:
   "timestamp": "<ISO8601>",
   "processed": false,
   "payload": {
-    "lesson": "<concise single-sentence lesson>",
-    "projectType": "<detected project type>",
-    "tags": ["<relevant tech/topic tags>"]
+    "failureMode": "<concise summary of what pipeline or build step broke>",
+    "rootCause": "<technical explanation of the underlying container/CI break>",
+    "negativeConstraint": "NEVER <bad pattern>; ALWAYS <correct pattern>",
+    "resolution": "<exact Dockerfile, YAML, or script fix applied>",
+    "tags": ["<relevant tech/devops tags>"]
   }
 }
 ```
 
-Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.jsonl. Do NOT use an array wrapper.
+Append as a SINGLE-LINE JSON object (JSONL format) to `event-queue.jsonl`. Do NOT use an array wrapper.
 
 > [!IMPORTANT]
-> Do NOT write to memory.json directly. `memory-manager` processes the event queue and handles persistence, deduplication, LRU pruning, and cross-agent sharing automatically.
+> Do NOT write to `memory.json` directly. `memory-manager` validates that the entry contains strictly negative technical knowledge (drops any entry containing project details or positive summaries), deduplicates, and prunes automatically.
 
-**Good lesson examples**:
-- ✅ "Stripe webhook signature verification requires raw body — use express.raw() middleware, not express.json()"
-- ✅ "Prisma generate must run before prisma migrate dev or migrations fail silently"
-- ❌ "The project used React" (trivial — don't submit)
-- ❌ "Always write tests" (obvious — don't submit)
+**Valid failure entry examples**:
+- ✅ `failureMode`: "Docker multi-stage build crashed on missing alpine build-base for native C++ addon" | `rootCause`: "Alpine node image lacks gcc/g++ required to compile bcrypt" | `negativeConstraint`: "NEVER build native node addons in alpine without installing python3 make g++ first" | `resolution`: "RUN apk add --no-cache python3 make g++"
+- ✅ `failureMode`: "GitHub Actions pipeline failed on npm ci due to lockfile mismatch" | `rootCause`: "npm install ran locally with modern npm bumped lockfileVersion without commit" | `negativeConstraint`: "NEVER run npm ci in CI without verifying package-lock.json matches package.json" | `resolution`: "Regenerated lockfile and committed before pushing"
+- ❌ "The project deployed a SaaS app" (REJECTED — contains project domain details)
+- ❌ "Docker container built successfully" (REJECTED — success is not a failure)
+- ❌ "Always use CI/CD" (REJECTED — trivial/obvious)
 
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:

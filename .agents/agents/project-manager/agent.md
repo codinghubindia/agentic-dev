@@ -514,31 +514,33 @@ invoke_subagent(TypeName="technical-architect", Model="pro", ...)
 > [!TIP]
 > Routing routine agents to `flash` reduces token cost by ~60-70% for those tasks with no quality loss.
 
-## MEMORY & RETROSPECTIVE
+## MEMORY & RETROSPECTIVE (FAILURE-DRIVEN NEGATIVE KNOWLEDGE)
 
-At the end of every task, before reporting back to `project-manager`, you MUST:
+> [!CAUTION]
+> **ZERO PROJECT DETAILS & FAILURE-ONLY MANDATE**:
+> Memory MUST ONLY learn from **wrong things**: process breakdowns, gate failures, dependency conflicts, or failed architectural assumptions.
+> NEVER record project names, feature requirements, user requests, or successful normal executions.
+> If your execution succeeded with ZERO unexpected errors or failures: **WRITE ZERO ENTRIES**.
 
-1. **Read** `.agents/agents/project-manager/memory.json` (create it if it doesn't exist)
-2. **Reflect** on this run: what unexpected issues occurred? What shortcuts or fixes worked? What would have saved time?
-3. **Write** 1-3 new lessons in this format:
+When and ONLY when an unexpected workflow failure, blocker, or breaking coordination defect occurred:
+1. Append to `.agent_execution/event-queue.jsonl`:
 ```json
 {
-  "version": 1,
-  "sizeBytes": 0,
-  "maxSizeBytes": 51200,
-  "entries": [
-    {
-      "timestamp": "<ISO8601>",
-      "projectType": "<detected project type>",
-      "lesson": "<concise single-sentence lesson>",
-      "source": "project-manager",
-      "tags": ["<relevant tech/topic tags>"]
-    }
-  ]
+  "id": "evt_<timestamp_ms>",
+  "type": "memory-write",
+  "source": "project-manager",
+  "timestamp": "<ISO8601>",
+  "processed": false,
+  "payload": {
+    "failureMode": "<what failed or broke in the workflow>",
+    "rootCause": "<technical or coordination root cause>",
+    "negativeConstraint": "NEVER <bad pattern>; ALWAYS <correct pattern>",
+    "resolution": "<exact correction applied>",
+    "tags": ["<workflow/stack tags>"]
+  }
 }
 ```
-4. **Pruning**: If `sizeBytes > maxSizeBytes` (50KB), remove the oldest entries until it fits. Always keep the 5 most recently added entries regardless of size.
-5. **Do NOT write** trivial lessons like "the project used React" — only write non-obvious lessons that would have saved debugging time.
+2. Single-line JSONL format only. `memory-manager` validates failure-only criteria and prunes to max 15 entries.
 
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:

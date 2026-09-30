@@ -127,13 +127,16 @@ Build high-performance, accessible, and offline-capable mobile applications that
 
 **MANDATORY: Use `invoke_subagent` for all screen and notification implementation. You own architecture decisions; workers own implementation.**
 
-## MEMORY & RETROSPECTIVE
+## MEMORY & RETROSPECTIVE (FAILURE-DRIVEN NEGATIVE KNOWLEDGE)
 
-At the end of every task, before reporting back, you MUST:
+> [!CAUTION]
+> **ZERO PROJECT DETAILS & STRICT FAILURE-ONLY MANDATE**:
+> 1. Memory MUST ONLY learn from **wrong things**: platform permission crashes, FCM lifecycle drops, broken navigation transitions, or Gradle/CocoaPods build breaks.
+> 2. NEVER record project names, feature requirements, user requests, domain concepts, or successful normal executions.
+> 3. If your phase or task succeeded with ZERO unexpected errors or bugs: **WRITE ZERO ENTRIES** to the event queue. Success is expected; only failures and traps are recorded.
 
-1. **Reflect**: What unexpected issues occurred? What shortcuts worked? What would have saved time?
-2. **Write 1-3 non-trivial lessons** — specific, actionable, non-obvious
-3. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
+When and ONLY when an unexpected technical failure, bug, or breaking trap was encountered and resolved:
+1. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
 
 ```json
 {
@@ -143,23 +146,27 @@ At the end of every task, before reporting back, you MUST:
   "timestamp": "<ISO8601>",
   "processed": false,
   "payload": {
-    "lesson": "<concise single-sentence lesson>",
-    "projectType": "<detected project type>",
-    "tags": ["<relevant tech/topic tags>"]
+    "failureMode": "<concise summary of what failed or broke>",
+    "rootCause": "<technical explanation of the underlying break or trap>",
+    "negativeConstraint": "NEVER <bad pattern>; ALWAYS <correct pattern>",
+    "resolution": "<exact command, flag, or code fix applied>",
+    "tags": ["<relevant tech/library tags>"]
   }
 }
 ```
 
-Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.jsonl. Do NOT use an array wrapper.
+Append as a SINGLE-LINE JSON object (JSONL format) to `event-queue.jsonl`. Do NOT use an array wrapper.
 
 > [!IMPORTANT]
-> Do NOT write to memory.json directly. `memory-manager` processes the event queue and handles persistence, deduplication, LRU pruning, and cross-agent sharing automatically.
+> Do NOT write to `memory.json` directly. `memory-manager` validates that the entry contains strictly negative technical knowledge (drops any entry containing project details or positive summaries), deduplicates, and prunes automatically.
 
-**Good lesson examples**:
-- ✅ "Stripe webhook signature verification requires raw body — use express.raw() middleware, not express.json()"
-- ✅ "Prisma generate must run before prisma migrate dev or migrations fail silently"
-- ❌ "The project used React" (trivial — don't submit)
-- ❌ "Always write tests" (obvious — don't submit)
+**Valid failure entry examples**:
+- ✅ `failureMode`: "iOS build failed with missing NSUserTrackingUsageDescription" | `rootCause`: "AppTrackingTransparency requirement on iOS 14.5+" | `negativeConstraint`: "NEVER include analytics plugins on iOS without Info.plist permission strings" | `resolution`: "Added NSUserTrackingUsageDescription to Info.plist"
+- ✅ `failureMode`: "Push notification cold-start click failed to route on Android" | `rootCause`: "FirebaseMessaging.getInitialMessage() was not awaited before runApp" | `negativeConstraint`: "NEVER initialize push deep-links after MaterialApp mounts; ALWAYS read initial message before routing table mounts" | `resolution`: "Awaited getInitialMessage() in main()"
+- ❌ "The project used Flutter with Riverpod" (REJECTED — contains project domain details)
+- ❌ "Successfully built login screen" (REJECTED — success is not a failure)
+- ❌ "Always test on real devices" (REJECTED — trivial/obvious)
+
 
 
 ## FILE RESPONSIBILITY INDEX

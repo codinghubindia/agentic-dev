@@ -138,13 +138,16 @@ Guarantee that every feature meets acceptance criteria, handles edge cases corre
 | Run regression suite against baseline | `regression-test-worker` |
 | Write and run load/stress tests, validate rate limiting | `stress-test-worker` |
 
-## MEMORY & RETROSPECTIVE
+## MEMORY & RETROSPECTIVE (FAILURE-DRIVEN NEGATIVE KNOWLEDGE)
 
-At the end of every task, before reporting back, you MUST:
+> [!CAUTION]
+> **ZERO PROJECT DETAILS & STRICT FAILURE-ONLY MANDATE**:
+> 1. Memory MUST ONLY learn from **wrong things**: flaky test conditions, async race conditions, unmocked network calls, or test timeout traps.
+> 2. NEVER record project names, feature requirements, user requests, domain concepts, or successful normal executions.
+> 3. If your test suite passed with ZERO unexpected test failures or test environment traps: **WRITE ZERO ENTRIES** to the event queue. Success is expected; only failures and traps are recorded.
 
-1. **Reflect**: What unexpected issues occurred? What shortcuts worked? What would have saved time?
-2. **Write 1-3 non-trivial lessons** — specific, actionable, non-obvious
-3. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
+When and ONLY when an unexpected test failure, harness crash, or mocking trap was encountered and resolved:
+1. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
 
 ```json
 {
@@ -154,23 +157,27 @@ At the end of every task, before reporting back, you MUST:
   "timestamp": "<ISO8601>",
   "processed": false,
   "payload": {
-    "lesson": "<concise single-sentence lesson>",
-    "projectType": "<detected project type>",
-    "tags": ["<relevant tech/topic tags>"]
+    "failureMode": "<concise summary of what failed or broke>",
+    "rootCause": "<technical explanation of the underlying break or trap>",
+    "negativeConstraint": "NEVER <bad pattern>; ALWAYS <correct pattern>",
+    "resolution": "<exact command, flag, or code fix applied>",
+    "tags": ["<relevant tech/library tags>"]
   }
 }
 ```
 
-Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.jsonl. Do NOT use an array wrapper.
+Append as a SINGLE-LINE JSON object (JSONL format) to `event-queue.jsonl`. Do NOT use an array wrapper.
 
 > [!IMPORTANT]
-> Do NOT write to memory.json directly. `memory-manager` processes the event queue and handles persistence, deduplication, LRU pruning, and cross-agent sharing automatically.
+> Do NOT write to `memory.json` directly. `memory-manager` validates that the entry contains strictly negative technical knowledge (drops any entry containing project details or positive summaries), deduplicates, and prunes automatically.
 
-**Good lesson examples**:
-- ✅ "Stripe webhook signature verification requires raw body — use express.raw() middleware, not express.json()"
-- ✅ "Prisma generate must run before prisma migrate dev or migrations fail silently"
-- ❌ "The project used React" (trivial — don't submit)
-- ❌ "Always write tests" (obvious — don't submit)
+**Valid failure entry examples**:
+- ✅ `failureMode`: "Vitest crashed with unhandled rejection on async mock" | `rootCause`: "vi.mock hoisted before import does not resolve in ESM without dynamic factory" | `negativeConstraint`: "NEVER use static object in vi.mock for ESM modules; ALWAYS use dynamic import factory pattern" | `resolution`: "vi.mock('./api', () => ({ fetchUser: vi.fn() }))"
+- ✅ `failureMode`: "Supertest port conflict caused EADDRINUSE during parallel integration runs" | `rootCause`: "Express app.listen() called inside app.ts instead of server.ts entry point" | `negativeConstraint`: "NEVER call app.listen() in files imported by test suites; ALWAYS export app unlistened" | `resolution`: "Separated app.ts from server.ts"
+- ❌ "The project tested a React dashboard" (REJECTED — contains project domain details)
+- ❌ "All unit tests passed with 95% coverage" (REJECTED — success is not a failure)
+- ❌ "Always write unit tests" (REJECTED — trivial/obvious)
+
 
 
 ## ERROR FINGERPRINT REGISTRY

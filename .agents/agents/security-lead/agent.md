@@ -139,13 +139,16 @@ Security-lead performs all auditing directly (no dedicated workers). Findings ar
 > **Return Protocol**: Upon completing the security audit, send a `send_message` to `project-manager` with: (1) sign-off status (PASS/FAIL/CONDITIONAL), (2) count of findings per severity, (3) path to security audit report.
 
 
-## MEMORY & RETROSPECTIVE
+## MEMORY & RETROSPECTIVE (FAILURE-DRIVEN NEGATIVE KNOWLEDGE)
 
-At the end of every task, before reporting back, you MUST:
+> [!CAUTION]
+> **ZERO PROJECT DETAILS & STRICT FAILURE-ONLY MANDATE**:
+> 1. Memory MUST ONLY learn from **wrong things**: discovered CVEs, authentication bypass vulnerabilities, CORS misconfigurations, or leaked credentials.
+> 2. NEVER record project names, feature requirements, user requests, domain concepts, or successful normal executions.
+> 3. If your security audit passed with ZERO unexpected vulnerabilities or security configuration defects: **WRITE ZERO ENTRIES** to the event queue. Success is expected; only failures and traps are recorded.
 
-1. **Reflect**: What unexpected issues occurred? What shortcuts worked? What would have saved time?
-2. **Write 1-3 non-trivial lessons** — specific, actionable, non-obvious
-3. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
+When and ONLY when an unexpected security vulnerability, auth trap, or dangerous dependency was encountered and remediated:
+1. **Submit to event queue** — append to `.agent_execution/event-queue.jsonl`:
 
 ```json
 {
@@ -155,23 +158,27 @@ At the end of every task, before reporting back, you MUST:
   "timestamp": "<ISO8601>",
   "processed": false,
   "payload": {
-    "lesson": "<concise single-sentence lesson>",
-    "projectType": "<detected project type>",
-    "tags": ["<relevant tech/topic tags>"]
+    "failureMode": "<concise summary of what vulnerability or flaw was found>",
+    "rootCause": "<technical explanation of the underlying security vulnerability>",
+    "negativeConstraint": "NEVER <bad pattern>; ALWAYS <correct pattern>",
+    "resolution": "<exact security patch or configuration applied>",
+    "tags": ["<relevant tech/security tags>"]
   }
 }
 ```
 
-Append your lesson as a SINGLE-LINE JSON object (JSONL format) to event-queue.jsonl. Do NOT use an array wrapper.
+Append as a SINGLE-LINE JSON object (JSONL format) to `event-queue.jsonl`. Do NOT use an array wrapper.
 
 > [!IMPORTANT]
-> Do NOT write to memory.json directly. `memory-manager` processes the event queue and handles persistence, deduplication, LRU pruning, and cross-agent sharing automatically.
+> Do NOT write to `memory.json` directly. `memory-manager` validates that the entry contains strictly negative technical knowledge (drops any entry containing project details or positive summaries), deduplicates, and prunes automatically.
 
-**Good lesson examples**:
-- ✅ "Stripe webhook signature verification requires raw body — use express.raw() middleware, not express.json()"
-- ✅ "Prisma generate must run before prisma migrate dev or migrations fail silently"
-- ❌ "The project used React" (trivial — don't submit)
-- ❌ "Always write tests" (obvious — don't submit)
+**Valid failure entry examples**:
+- ✅ `failureMode`: "CORS origin wildcard with credentials caused browser security block" | `rootCause`: "Access-Control-Allow-Origin: * cannot be used with Access-Control-Allow-Credentials: true" | `negativeConstraint`: "NEVER pair wildcard CORS origin with credentials: true; ALWAYS reflect explicit allowlisted origin" | `resolution`: "cors({ origin: [process.env.APP_URL], credentials: true })"
+- ✅ `failureMode`: "JWT verification failed to reject 'none' algorithm token" | `rootCause`: "jwt.verify called without explicit algorithms array allowed insecure fallback" | `negativeConstraint`: "NEVER verify JWTs without algorithms: ['HS256'] explicitly declared" | `resolution`: "jwt.verify(token, secret, { algorithms: ['HS256'] })"
+- ❌ "The project used JWT auth for a healthcare app" (REJECTED — contains project domain details)
+- ❌ "Security audit completed with zero critical issues" (REJECTED — success is not a failure)
+- ❌ "Always validate inputs" (REJECTED — trivial/obvious)
+
 
 ## AUTOMATED SECRET & TOKEN LEAKAGE SENTINEL
 During Gate 3 security audit, you MUST execute a regex and entropy scan across all source and config files:

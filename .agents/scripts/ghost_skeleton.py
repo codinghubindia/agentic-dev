@@ -73,14 +73,54 @@ def extract_prisma_models(content: str) -> list:
         models.append(f"model {name} {{ {', '.join(fields[:10])} }}")
     return models
 
+def extract_go_signatures(content: str) -> list:
+    signatures = []
+    # Match structs and interfaces
+    for m in re.finditer(r'type\s+([A-Za-z0-9_]+)\s+(struct|interface)\b', content):
+        signatures.append(f"type {m.group(1)} {m.group(2)}")
+    # Match functions and methods
+    for m in re.finditer(r'func\s+(?:\((?:[^)]+)\)\s+)?([A-Za-z0-9_]+)\s*\(([^)]*)\)(?:\s*([^{]+))?', content):
+        name = m.group(1)
+        params = ' '.join(m.group(2).split())
+        ret = m.group(3).strip() if m.group(3) else ""
+        signatures.append(f"func {name}({params}) {ret}".strip())
+    return signatures
+
+def extract_rust_signatures(content: str) -> list:
+    signatures = []
+    # Match structs, enums, traits
+    for m in re.finditer(r'(?:pub\s+)?(struct|enum|trait)\s+([A-Za-z0-9_]+)', content):
+        signatures.append(f"{m.group(1)} {m.group(2)}")
+    # Match functions
+    for m in re.finditer(r'(?:pub\s+)?(?:async\s+)?fn\s+([A-Za-z0-9_]+)\s*(?:<[^>]+>)?\s*\(([^)]*)\)(?:\s*->\s*([^{]+))?', content):
+        name = m.group(1)
+        params = ' '.join(m.group(2).split())
+        ret = m.group(3).strip() if m.group(3) else "()"
+        signatures.append(f"fn {name}({params}) -> {ret}")
+    return signatures
+
+def extract_sql_tables(content: str) -> list:
+    tables = []
+    for m in re.finditer(r'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z0-9_."]+)\s*\(([^;]+)\);', content, re.IGNORECASE):
+        table_name = m.group(1)
+        cols = [line.strip().split()[0] for line in m.group(2).splitlines() if line.strip() and not line.strip().startswith('--') and not line.strip().upper().startswith(('PRIMARY', 'FOREIGN', 'CONSTRAINT', 'KEY', 'UNIQUE', 'CHECK'))]
+        tables.append(f"table {table_name} ({', '.join(cols[:10])})")
+    return tables
+
 def scan_codebase(root_dir: str, target_symbols: list = None) -> dict:
     skeleton = {}
+    visited_files = set()
     for root, dirs, files in os.walk(root_dir):
         dirs[:] = [d for d in dirs if d not in IGNORE_DIRS and not d.startswith('.')]
         for f in files:
             ext = os.path.splitext(f)[1]
             if ext in EXTENSIONS:
                 filepath = os.path.join(root, f)
+                norm_path = os.path.normpath(filepath)
+                if norm_path in visited_files:
+                    continue
+                visited_files.add(norm_path)
+                
                 relpath = os.path.relpath(filepath, root_dir).replace('\\', '/')
                 try:
                     with open(filepath, 'r', encoding='utf-8', errors='ignore') as fp:
@@ -89,12 +129,22 @@ def scan_codebase(root_dir: str, target_symbols: list = None) -> dict:
                     continue
 
                 sigs = []
-                if ext in ('.ts', '.tsx', '.js', '.jsx'):
-                    sigs = extract_typescript_signatures(content)
-                elif ext == '.py':
-                    sigs = extract_python_signatures(content)
-                elif ext == '.prisma':
-                    sigs = extract_prisma_models(content)
+                try:
+                    if ext in ('.ts', '.tsx', '.js', '.jsx'):
+                        sigs = extract_typescript_signatures(content)
+                    elif ext == '.py':
+                        sigs = extract_python_signatures(content)
+                    elif ext == '.prisma':
+                        sigs = extract_prisma_models(content)
+                    elif ext == '.go':
+                        sigs = extract_go_signatures(content)
+                    elif ext == '.rs':
+                        sigs = extract_rust_signatures(content)
+                    elif ext == '.sql':
+                        sigs = extract_sql_tables(content)
+                except Exception as parse_err:
+                    # Graceful degradation on syntactically broken or exotic brownfield files
+                    sigs = [f"/* parse-fallback: {str(parse_err)[:50]} */"]
 
                 if sigs:
                     if target_symbols:
