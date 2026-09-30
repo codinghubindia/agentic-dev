@@ -1,10 +1,10 @@
 # 🏢 AgenticDev: Autonomous AI Software Company Framework
 
 > An **enterprise-grade, production-ready autonomous multi-agent software engineering company** built for [Google Antigravity (AGY)](https://antigravity.dev).
-> Drop this `.agents/` directory into any workspace to deploy **62 specialized AI software engineers**, **23 authoritative engineering skills**, **6 automated workflows** (plus dynamic on-demand compilation), and the **v6.0 Zero-Compounding Autonomous Software Engine (ZCASE)**. Build, take over, extend, refactor, and ship software with an autonomous AI developer enterprise.
+> Drop this `.agents/` directory into any workspace to deploy **62 specialized AI software engineers**, **24 authoritative engineering skills**, **6 automated workflows** (plus dynamic on-demand compilation), and the **v6.0 Zero-Compounding Autonomous Software Engine (ZCASE)**. Build, take over, extend, refactor, and ship software with an autonomous AI developer enterprise.
 
 [![Agents](https://img.shields.io/badge/Agents-62-6366f1?style=flat-square)](#-agent-roster-62-specialists)
-[![Skills](https://img.shields.io/badge/Skills-23-10b981?style=flat-square)](#-skills-library-23-engineering-manuals)
+[![Skills](https://img.shields.io/badge/Skills-24-10b981?style=flat-square)](#-skills-library-24-engineering-manuals)
 [![Workflows](https://img.shields.io/badge/Workflows-6%2B_Dynamic-f59e0b?style=flat-square)](#-workflows)
 [![Architecture](https://img.shields.io/badge/Architecture-ZCASE_Engine_v6.0-8b5cf6?style=flat-square)](#-the-zero-compounding-autonomous-software-engine-zcase)
 [![Memory](https://img.shields.io/badge/Memory-Strict_Negative_Knowledge-ef4444?style=flat-square)](#-strict-negative-knowledge-memory-engine)
@@ -33,7 +33,7 @@
 - [Project Type Routing](#-project-type-routing)
 - [Phase Gate System](#-phase-gate-system)
 - [Agent Roster (62 Specialists)](#-agent-roster-62-specialists)
-- [Skills Library (23 Engineering Manuals)](#-skills-library-23-engineering-manuals)
+- [Skills Library (24 Engineering Manuals)](#-skills-library-24-engineering-manuals)
 - [Workflows](#-workflows)
 - [Quick Start](#-quick-start)
 - [Contributing](#-contributing)
@@ -408,9 +408,9 @@ The framework comprises **62 agents across 9 departments**:
 
 ---
 
-## 📚 Skills Library (23 Engineering Manuals)
+## 📚 Skills Library (24 Engineering Manuals)
 
-Contains **23 authoritative engineering manuals** in `.agents/skills/`:
+Contains **24 authoritative engineering manuals** in `.agents/skills/`:
 
 | Skill | Focus Areas |
 |---|---|
@@ -420,7 +420,8 @@ Contains **23 authoritative engineering manuals** in `.agents/skills/`:
 | `database-engineering` | PostgreSQL, MongoDB, migration idempotency, N+1 prevention |
 | `frontend-development` | React 19, Vite 6, Tailwind CSS, TanStack Query v5, Zustand v5 |
 | `uiux-design` | Visual hierarchy, 8-pt spacing, design tokens, responsive layouts |
-| `professional-ui-craft` | Color psychology, cognitive laws, motion choreography, anti-vibe-code |
+| `professional-ui-craft` | Color psychology, cognitive laws, duration scales, anti-vibe-code |
+| `modern-ui-motion` | 60/120 FPS motion tokens, spring physics, LazyMotion, FLIP layouts, Rive, reduced motion |
 | `flutter-development` | Riverpod/Bloc, GoRouter, platform channels, offline storage |
 | `ai-ml-engineering` | RAG pipelines, vector search, prompt patterns, cost optimization |
 | `security-review` | OWASP Top 10, secret scanning, JWT rotation, input sanitization |

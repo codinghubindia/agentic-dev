@@ -24,6 +24,7 @@ tools:
 skills:
 - uiux-design
 - professional-ui-craft
+- modern-ui-motion
 - frontend-development
 - localization
 ---
@@ -46,7 +47,8 @@ skills:
 > [!IMPORTANT]
 > **Read your skills FIRST before designing anything.**
 > - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, component specs, typography, color theory, handoff checklist
-> - Read `.agents/skills/professional-ui-craft/SKILL.md` — color psychology, cognitive principles, animation choreography, anti-vibe-code blacklist, data viz standards, fast UI patterns
+> - Read `.agents/skills/professional-ui-craft/SKILL.md` — color psychology, cognitive principles, anti-vibe-code blacklist, data viz standards, fast UI patterns
+> - Read `.agents/skills/modern-ui-motion/SKILL.md` — 60/120 FPS motion tokens, spring physics vs easing, FLIP layout animations, LazyMotion, Rive vectors
 > - Read `.agents/skills/frontend-development/SKILL.md` — understand what the frontend team can implement
 > - Read `.agents/skills/localization/SKILL.md` — RTL layout design, locale-specific token behavior, design for i18n
 

@@ -21,6 +21,7 @@ tools:
 skills:
 - flutter-development
 - frontend-development
+- modern-ui-motion
 ---
 
 # Mobile Screen Worker
@@ -28,6 +29,7 @@ skills:
 > [!IMPORTANT]
 > **Read your skill FIRST before writing any code.**
 > - Read `.agents/skills/flutter-development/SKILL.md` — Riverpod, GoRouter, widget architecture, theming, offline storage, testing patterns
+> - Read `.agents/skills/modern-ui-motion/SKILL.md` — 60/120 FPS mobile motion, Hero widgets, gesture springs, Reanimated 3 worklets, reduced motion
 > - Read `.agents/skills/frontend-development/SKILL.md` — component patterns, TypeScript, responsive layout principles
 > - For screens with notification entry points: coordinate with `push-notification-worker` for deep-link route registration
 > - Read `.agents/skills/localization/SKILL.md` — Flutter Intl, ARB localization keys, no hardcoded strings, locale switching

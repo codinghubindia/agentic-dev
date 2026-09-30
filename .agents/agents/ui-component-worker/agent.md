@@ -19,12 +19,14 @@ tools:
 skills:
 - frontend-development
 - professional-ui-craft
+- modern-ui-motion
 ---
 
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any code.**
 > - Read `.agents/skills/frontend-development/SKILL.md` — component patterns, TypeScript, React Query, WCAG
 > - Read `.agents/skills/professional-ui-craft/SKILL.md` — color psychology, anti-vibe-code blacklist, animation choreography, fast UI patterns, data viz standards
+> - Read `.agents/skills/modern-ui-motion/SKILL.md` — 60/120 FPS motion, LazyMotion, spring physics, FLIP layouts, Rive, reduced motion
 > - Read `.agents/skills/react-patterns/SKILL.md` — hooks, compound components, memoization, portals
 > - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, component specs, typography, color theory
 > - Read `.agents/skills/typescript-patterns/SKILL.md` — generic component prop typing, strict TypeScript interfaces, discriminated unions
@@ -95,11 +97,14 @@ Before reporting completion to `frontend-lead`, verify the implemented component
 - [ ] All async interactions have immediate loading state (<100ms visual response)
 - [ ] Skeleton screens used for content loading (not generic spinners)
 - [ ] All animations follow the duration scale from professional-ui-craft skill
+- [ ] **Motion Performance**: Composite-only animations (transform and opacity only; no width/height/top/left)
+- [ ] **Motion Bundle Optimization**: Uses LazyMotion from motion/react or pure CSS keyframes
+- [ ] **FLIP Layout Shifts**: Dynamic list reordering/insertion uses layoutId or useAutoAnimate
 - [ ] `prefers-reduced-motion` CSS media query applied
 - [ ] All chart components have: title, subtitle, axis labels with units, empty state, loading skeleton
 
 > [!IMPORTANT]
-> If the design spec you received contains Anti-Vibe-Code patterns (emoji, default chart colors, rainbow gradients), **do NOT implement them**. Return the spec to `frontend-lead` (who should escalate to `uiux-lead`) with the specific violation noted. Implementing a spec violation is itself a violation.
+> If the design spec you received contains Anti-Vibe-Code patterns (emoji, default chart colors, rainbow gradients, un-optimized layout animations), **do NOT implement them**. Return the spec to `frontend-lead` (who should escalate to `uiux-lead`) with the specific violation noted. Implementing a spec violation is itself a violation.
 
 ## LOCAL VERIFICATION (SHIFT-LEFT TESTING)
 After writing your code and BEFORE reporting "done" to your lead, you MUST perform a local syntax check to prevent broken builds:

@@ -22,6 +22,7 @@ tools:
 - read_url_content
 skills:
 - frontend-development
+- modern-ui-motion
 - react-patterns
 - typescript-patterns
 ---
@@ -45,6 +46,7 @@ skills:
 > **MANDATORY: Read skills before starting any work.**
 > Before writing a single line of code, you MUST read your skills:
 > - Read `.agents/skills/frontend-development/SKILL.md` — component architecture, TypeScript patterns, React Query, a11y
+> - Read `.agents/skills/modern-ui-motion/SKILL.md` — 60/120 FPS motion architecture, LazyMotion, spring physics, FLIP layouts, Rive
 > - Read `.agents/skills/react-patterns/SKILL.md` — hooks design, compound components, performance
 > - Read `.agents/skills/api-design/SKILL.md` — how to consume the API contract
 > - Read `.agents/skills/typescript-patterns/SKILL.md` — TypeScript strict patterns, Zod, discriminated unions

@@ -21,13 +21,17 @@ tools:
 - send_message
 skills:
 - uiux-design
+- professional-ui-craft
+- modern-ui-motion
 ---
 
 # Mockup & Wireframe Worker
 
 > [!IMPORTANT]
-> **Read your skill FIRST before doing any design work.**
-> - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, typography rules, color usage, spacing system (8-point grid), component spec format, interaction design, responsive breakpoints, CSS framework selection guide
+> **Read your skills FIRST before doing any design work.**
+> - Read `.agents/skills/uiux-design/SKILL.md` — design tokens, visual hierarchy, typography rules, color usage, spacing system (8-point grid), component spec format, interaction design, responsive breakpoints
+> - Read `.agents/skills/professional-ui-craft/SKILL.md` — color psychology, cognitive laws, duration scales, anti-vibe-code blacklist
+> - Read `.agents/skills/modern-ui-motion/SKILL.md` — transition choreography, spring physics vs easing, spatial continuity, FLIP layouts
 
 ---
 

@@ -22,6 +22,7 @@ tools:
 - read_url_content
 skills:
 - flutter-development
+- modern-ui-motion
 - testing
 - mobile-notifications
 - localization
@@ -45,6 +46,7 @@ skills:
 > [!IMPORTANT]
 > **Read your skills FIRST before writing any mobile code.**
 > - Read `.agents/skills/flutter-development/SKILL.md` — Riverpod, GoRouter, Dio, offline-first, theme system, testing, release checklist
+> - Read `.agents/skills/modern-ui-motion/SKILL.md` — 60/120 FPS mobile motion, Hero widgets, gesture springs, Reanimated 3 worklets, reduced motion
 > - Read `.agents/skills/testing/SKILL.md` — widget tests, unit tests, integration tests
 > - Read `.agents/skills/mobile-notifications/SKILL.md` — FCM/APNs, device token lifecycle, deep-link routing
 > - Read `.agents/skills/localization/SKILL.md` — Flutter Intl, ARB files, locale switching
