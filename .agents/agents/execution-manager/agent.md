@@ -78,6 +78,14 @@ Run every phase of the workflow reliably, in the correct order, with correct par
    e. INVOKE agents:
       - Single agent: invoke directly with assigned model
       - Multiple agents: invoke with **2-Second Jittered Stagger** (spawn agent 1 → wait 2s → spawn agent 2) to eliminate provider 429 rate limit spikes.
+      - ⚡ **EPHEMERAL 1-SHOT MICRO-RUNNERS PROTOCOL**:
+        When assigning implementation tasks to subagents, do not keep conversational loops open. Dispatch stateless 1-turn tasks containing only:
+        1. The target function/class boundary.
+        2. Input/output type contracts from `api-contract.json` / `cir.json`.
+        3. The invariant rules.
+        Instruct the worker: 'Generate only the required function implementation or AST surgery payload, then report completion and terminate immediately.' This stops conversation memory from accumulating past Turn 2.
+      - 🧾 **CONTENT-ADDRESSABLE RECEIPT SWAPPING**:
+        Whenever a worker completes a tool execution or compiler command, execute `python .agents/scripts/receipt_swapper.py` on the output. Store the raw payload in `.agent_execution/receipts/` and maintain only an O(1) semantic receipt (<50 tokens) in the active context.
       - Instruct every agent: "Read .agent_execution/context-snapshot.json first. Read .agent_execution/codebase-summary.md for project overview. Report back via send_message when done."
       - After ALL invocations: schedule(DurationSeconds=300, TimerCondition="any")
 

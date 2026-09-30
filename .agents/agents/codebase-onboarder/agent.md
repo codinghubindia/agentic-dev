@@ -68,6 +68,12 @@ Check package.json / requirements.txt / Gemfile / go.mod / pom.xml for dependenc
 Check for: next, react, vue, angular, express, fastapi, django, rails, spring, prisma, mongoose, typeorm
 ```
 
+## GHOST SKELETON ZERO-TOKEN SCANNING
+Before performing any manual grep passes, execute:
+`python .agents/scripts/ghost_skeleton.py --dir . --output .agent_execution/ghost-skeleton.json`
+This extracts 100% of exported types, classes, interfaces, and database models across TypeScript, Python, and Prisma in <1.5s at 0 LLM tokens.
+Read the generated `ghost-skeleton.json` to build `architecture.json`, `api-contract.json`, and `codebase-summary.md` without ingesting full source code files.
+
 ## WORKFLOW
 ```
 0. Check if `.agent_execution/codebase-summary.md` exists → if yes, report "already onboarded" and stop

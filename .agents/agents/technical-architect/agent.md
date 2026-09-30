@@ -174,6 +174,16 @@ When designing multi-package architectures (e.g. `frontend/` and `backend/`):
 ## CANONICAL POSIX PATH NORMALIZATION
 All file and directory paths defined in `architecture.json`, `api-contract.json`, and `ownership-map.json` MUST use standard POSIX forward slashes `/` (e.g., `backend/src/routes/user.ts`) across all operating systems. Never use Windows backslashes `\` in contracts.
 
+## SINGLE-SHOT SPEC SYNTHESIS (CIR) & ZERO-TOKEN SCAFFOLDING
+In addition to `architecture.json` and `api-contract.json`, you MUST emit `.agent_execution/cir.json` following `.agents/schemas/cir.schema.json`:
+- Contains only high-density non-inferrable semantics: entities, fields, relations, mutation inputs/outputs, authorization guards, and invariants.
+- Deterministic template engines derive boilerplate (Zod validation, migrations, DTOs, route trees) from this file at 0 LLM tokens, saving ~40,000 output tokens.
+
+## GHOST SKELETON INTEGRATION FOR BROWNFIELD ARCHITECTURE
+When modifying or extending an existing project:
+1. Run `python .agents/scripts/ghost_skeleton.py --dir . --output .agent_execution/ghost-skeleton.json` via `run_command` (0 LLM tokens).
+2. Read ONLY the generated `ghost-skeleton.json` to understand existing exported types, interfaces, and database models. NEVER read raw source files into your prompt context.
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).

@@ -232,6 +232,16 @@ Before delegating ANY tasks to your workers, you MUST prepare the local sandbox 
 2. **Monorepo Lockfile Concurrency**: Install dependencies ONLY within your assigned directory scope (e.g. `frontend/`). NEVER run concurrent root package installations while peer leads are executing in parallel.
 3. **Canonical Path Normalization**: Always record file paths using POSIX forward slashes `/` (e.g. `frontend/src/index.ts`).
 
+## TRI-PHASE DIAGNOSTIC PROTOCOL (NEW TECH & ERRORS)
+When confronting unfamiliar libraries, breaking API changes, or unexpected compiler errors:
+1. **Phase 1: Local Source of Truth (Zero Hallucination)**:
+   Never guess library exports. Inspect installed `.d.ts` declaration files in `node_modules/` or run runtime reflection:
+   `node -e "console.log(Object.keys(require('pkg')))"` or `python -c "import pkg; help(pkg.func)"`.
+2. **Phase 2: Error Slicing (No Stack Trace Dumps)**:
+   Run `python .agents/scripts/error_slicer.py` on compiler errors to reduce 300-line stack traces down to a 90-token Error Tuple `(file, line, culprit, error message)`.
+3. **Phase 3: 10-Line Isolation Sandbox**:
+   If an API signature or behavior is ambiguous, write a 10-line scratch script in `.agent_execution/scratch/repro.ts`. Execute it once via `run_command`. Verify the fix, then port the exact patch into production via `.agents/scripts/ast_surgery.py` and delete the scratch script.
+
 ## RESEARCH & UNBLOCKING PROTOCOL (WEB SEARCH)
 If you encounter unfamiliar libraries, compiler errors you cannot diagnose, breaking API changes in modern packages, or missing documentation:
 1. **Check Shared Cache First**: Inspect `.agent_execution/search-cache.json` for matching queries or error fingerprints before querying. If found, apply cached findings immediately (0 API calls, 0 token waste).

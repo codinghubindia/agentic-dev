@@ -69,6 +69,10 @@ Run all quality gates simultaneously, aggregate results, route defects to respon
    - If exists with all ✅ items: PASS
    - If missing or has failures: invoke uiux-lead to run audit
 
+   GATE 5 — Clean Diff & Interface Invariance Audit:
+   - Run `git diff --stat` to verify zero unintended file modifications or leftover debug statements.
+   - Verify that all public API and database schema exports match the frozen contracts with zero unintended breaking signature changes.
+
 3. AGGREGATE RESULTS:
    - Any FAIL = overall FAIL
    - All PASS = overall PASS
