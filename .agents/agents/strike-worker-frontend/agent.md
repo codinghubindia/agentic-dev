@@ -38,6 +38,13 @@ Before writing a single line of code, read all skill files referenced in your Sn
 > [!CAUTION]
 > DO NOT skip reading the skill files. The `modern-ui-motion` skill contains the Golden Arsenal package list, install commands, and canonical motion patterns. The `professional-ui-craft` skill contains the Anti-Vibe-Code Blacklist — a violation here blocks handoff.
 
+> [!NOTE]
+> **Context Budget**: Reading 2–3 skill files costs ~750 tokens each (~2,250 total). Your full
+> context budget is ~32,000 tokens. If your assigned component is small, read the full skills.
+> For large component tasks with big design-spec slices: read only the Golden Arsenal (Section 0)
+> and the Motion patterns relevant to your assigned component type (e.g. modal = Section 2,
+> list/grid = Section 4, page = Section 5). Skip unrelated sections to preserve context budget.
+
 ---
 
 ## 2. Package Deprecation Check Protocol (MANDATORY)
@@ -46,8 +53,10 @@ Before installing ANY package:
 ```bash
 npm view <package-name> deprecated
 ```
-- If output is empty → package is safe to install
-- If output is non-empty → package is DEPRECATED. DO NOT install.
+- Parse output for the word `deprecated` specifically (npm also emits notices/funding that are NOT deprecations)
+- Safe shell check: `npm view <pkg> deprecated 2>/dev/null | grep -i deprecated`
+- If grep returns output → DEPRECATED. DO NOT install.
+- If grep returns empty → package is safe to install.
 
 Use the install commands from the modern-ui-motion skill's Golden Arsenal section — they are pre-verified.
 

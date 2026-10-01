@@ -65,8 +65,8 @@ You are the **Principal Architect and General** of the software project.
 
    a. Check if Bun is available (sub-20ms startup):
       - Probe: `where bun` or `bun --version`
-      - If present: RUNTIME="bun", SCRIPT_DIR=".agents/scripts", EXT=".js"
-        (Bun executes both .js and .ts natively with zero npm install)
+      - If present: RUNTIME="bun", SCRIPT_DIR=".agents/scripts/node", EXT=".js"
+        (Bun runs Node.js-compatible scripts natively — uses same mirror scripts as Node.js path)
 
    b. Else check if Node.js is available:
       - Probe: `where node` or `node --version`
@@ -90,7 +90,7 @@ You are the **Principal Architect and General** of the software project.
       - If user approves Bun install:
         * Windows (PowerShell): `irm bun.sh/install.ps1 | iex`
         * macOS/Linux: `curl -fsSL https://bun.sh/install | bash`
-        * Set RUNTIME="bun", SCRIPT_DIR=".agents/scripts", EXT=".js"
+        * Set RUNTIME="bun", SCRIPT_DIR=".agents/scripts/node", EXT=".js"
       - If user approves Node.js:
         * Windows: `winget install -e --id OpenJS.NodeJS.LTS`
         * macOS: `brew install node`
@@ -101,6 +101,13 @@ You are the **Principal Architect and General** of the software project.
         * macOS: `brew install python`
         * Linux: `sudo apt-get install -y python3`
         * Set RUNTIME="python", SCRIPT_DIR=".agents/scripts", EXT=".py"
+      > [!WARNING]
+      > **PATH Refresh Required After Install**: After auto-installing Bun, Node.js, or Python,
+      > the current shell process may NOT see the new PATH entry. Re-probe by running the version
+      > command in a NEW shell invocation (via `run_command`) rather than trusting the install
+      > process exit code. Confirm the binary is detectable before setting RUNTIME.
+      > On Windows: PowerShell sessions must be restarted or PATH refreshed via:
+      > `$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')`
       - If user chooses Pure Native Mode:
         * Set RUNTIME="native" (bypasses all script commands, uses native view_file/replace_file_content).
 
@@ -108,7 +115,9 @@ You are the **Principal Architect and General** of the software project.
    a. Check if request qualifies for Zero-Worker Fast-Path:
       - If request is a single-file targeted edit, typo, or config tweak (<= 25 lines):
         Execute edit directly via replace_file_content/write_to_file.
-        Run targeted verification test and skip worker dispatch entirely.
+        Run targeted verification test and terminate immediately — skip ALL remaining steps
+        (Step 2 Architecture Blueprint, Step 3 CLI Scaffolding, Steps 4–9 are ALL bypassed).
+        DO NOT produce architecture-blueprint.md or design-spec.md for fast-path requests.
    b. Run Preflight Environment Probe:
       - If RUNTIME != "native": Execute `${RUNTIME} ${SCRIPT_DIR}/environment_probe${EXT} .`
       - Inspect `.agent_execution/environment-preflight.json` to identify available compilers.
@@ -160,18 +169,39 @@ You are the **Principal Architect and General** of the software project.
       [font-family, 6 size steps (xs/sm/base/lg/xl/2xl), weights]
       ## Component Inventory
       [List each component needed: name, purpose, motion behavior]
-      ## Motion Contract — MANDATORY
+      ## Motion Contract — MANDATORY (every field REQUIRED, no placeholder values accepted)
       ### Entrance Animations
-      [How each component enters — which spring preset, duration]
+      # Format: ComponentName | spring preset (stiffness/damping) | initial state | animate state
+      # Example: HeroSection | spring(400,30) | {opacity:0, y:20} | {opacity:1, y:0}
+      # Example: ProductCard | spring(300,28) | {opacity:0, scale:0.95} | {opacity:1, scale:1}
+      [List every component that appears on page load with its exact spring values]
+
       ### Interaction Micro-animations
-      [Button press, card hover, input focus — all must be specified]
+      # Format: Element | trigger | transform | duration
+      # Example: PrimaryButton | whileTap | scale(0.97) | spring(400,20)
+      # Example: NavLink | whileHover | y(-1), color(brand-600) | 150ms ease-out
+      # Example: InputField | whileFocus | scale(1.01), ring(2px brand) | spring(500,25)
+      [Every interactive element MUST be listed — no element can be missing]
+
       ### Stagger Patterns
-      [Which lists/grids stagger and at what interval]
+      # Format: ContainerName | staggerChildren interval | delayChildren
+      # Example: ProductGrid | 0.05s | 0.02s
+      # Example: NavMenu | 0.04s | 0s
+      [Every list/grid must have an entry — "none" is NOT acceptable]
+
       ### Page Transitions
-      [Route change animation strategy]
+      # Format: transition style | initial | animate | exit | duration
+      # Example: fade-slide | {opacity:0,y:8} | {opacity:1,y:0} | {opacity:0,y:-4} | 250ms ease-out
+      [Specify exactly one strategy — cannot be left empty]
       ## Skeleton Screens
       [Which content areas need skeleton screens — shape and pattern]
       ```
+   > [!CAUTION]
+   > Motion Contract VALIDATION RULES:
+   > - Every component listed in Component Inventory MUST appear in Entrance Animations
+   > - Every button, card, link, and input MUST appear in Interaction Micro-animations
+   > - "TBD", "add animations", or empty sections = INVALID contract, must be rewritten
+   > - A frontend worker receiving a vague contract MUST flag it back to conductor before writing code
 
    > [!IMPORTANT]
    > The design-spec.md MUST include a complete Motion Contract section.
@@ -185,34 +215,46 @@ You are the **Principal Architect and General** of the software project.
 
    ### Frontend Scaffolding
    ```bash
-   # React + Vite + TypeScript
+   # React + Vite + TypeScript (non-interactive — never hangs)
    npm create vite@latest my-app -- --template react-ts
+   # Note: Vite CLI is fully non-interactive when --template is specified. Safe to run as-is.
 
-   # Next.js (App Router)
-   npx create-next-app@latest my-app --typescript --tailwind --app --src-dir
+   # Next.js (App Router — all flags suppress prompts)
+   npx create-next-app@latest my-app --typescript --tailwind --app --src-dir --no-git --import-alias "@/*"
 
-   # Remix
-   npx create-remix@latest my-app
+   # Remix (non-interactive)
+   npx create-remix@latest my-app --yes
    ```
 
    ### Backend Scaffolding
    ```bash
-   # Hono (Bun-compatible, ultra-lightweight)
-   npm create hono@latest my-api
+   # Hono (Bun-compatible, ultra-lightweight — non-interactive)
+   npm create hono@latest my-api -- --template nodejs
 
-   # Express + TypeScript (use official generator)
-   npx express-generator --no-view my-api
-   # Then: npm install -D typescript @types/node @types/express ts-node
-   # Then: npx tsc --init
+   # Express + TypeScript — DO NOT use npx express-generator (generates CommonJS)
+   # Instead: scaffold manually with ESM-compatible structure:
+   mkdir my-api
+   # Then run: npm init -y
+   # Then: npm install express && npm install -D typescript @types/node @types/express tsx
+   # Then: npx tsc --init --target ES2022 --module NodeNext --moduleResolution NodeNext
+   # This ensures ESM output matching the TypeScript patterns in backend-engineering skill.
    ```
 
    ### Database Scaffolding
    ```bash
-   # Prisma
+   # Prisma — IMPORTANT: 3-step sequence, do NOT skip step 2
    npx prisma init
+   # ⚠️ STEP 2 (MANDATORY): Set DATABASE_URL in .env before ANY further prisma commands.
+   #    The .env created by `prisma init` contains a placeholder — replace it with a real URL:
+   #    DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
+   #    For local dev: use a local Postgres, Docker Postgres, or Neon/Supabase free tier.
+   #    DO NOT run `npx prisma migrate dev` or `npx prisma generate` until DATABASE_URL is real.
+   npx prisma generate
+   npx prisma migrate dev --name init
 
    # Drizzle
    npx drizzle-kit init
+   # ⚠️ Same rule: Set DATABASE_URL in .env before running any drizzle-kit push commands.
    ```
 
    > [!CAUTION]
@@ -246,11 +288,14 @@ You are the **Principal Architect and General** of the software project.
           Execute deterministic refactor via `${RUNTIME} ${SCRIPT_DIR}/codemod_engine${EXT} rename-symbol <old> <new> .`.
         Else:
           Perform targeted sequential line replacements.
-   c. Boundary Collision Guard:
+   c. Boundary Collision Guard (RUN THIS BEFORE DISPATCHING ANY WORKERS):
+      - Assign each worker its file list FIRST, then check for overlaps before launching.
       - If RUNTIME != "native":
         Check worker file boundaries for intersections using `${RUNTIME} ${SCRIPT_DIR}/ast_surgery${EXT} detect_collisions`.
-      - If collision detected on shared singleton files (e.g. `routes.ts`, `schema.prisma`),
-        automatically COLLAPSE execution from PARALLEL to SEQUENTIAL, or merge via `ast_surgery`.
+      - If collision detected on shared singleton files (e.g. `routes.ts`, `schema.prisma`):
+        * COLLAPSE execution from PARALLEL to SEQUENTIAL before dispatch (not after).
+        * Or designate ONE worker as the sole owner of the shared file and have others send merge instructions.
+        * NEVER dispatch two workers with overlapping file paths simultaneously.
    d. Ephemeral Role Morphing (On-Demand Specialist Materialization):
       - Lock `.agents/agents/` to the Core 6.
       - Morph base workers dynamically via Sniper Prompts:

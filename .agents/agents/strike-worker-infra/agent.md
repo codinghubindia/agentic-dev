@@ -43,5 +43,15 @@ skills:
 ## 3. Workflow
 1. Scaffold or update the required Dockerfile or `.github/workflows/ci.yml`.
 2. Validate syntax (e.g. `docker build --dry-run` or linter).
-3. Execute `python .agents/scripts/receipt_swapper.py` on your output.
-4. Send your verified diff and receipt back to `conductor` via `send_message` and terminate.
+3. Emit your completion receipt as a JSON block in your `send_message` to conductor (no external script required):
+   ```json
+   {
+     "worker": "strike-worker-infra",
+     "task": "<task from prompt>",
+     "filesModified": ["<paths>"],
+     "verificationCommand": "<command run>",
+     "verificationResult": "PASS | FAIL",
+     "issues": []
+   }
+   ```
+4. Send your verified diff and receipt JSON to `conductor` via `send_message` and terminate.

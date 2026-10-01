@@ -4,6 +4,11 @@ description: Production backend service architecture, Express/FastAPI modular pa
 lastResearched: 2026-10-01
 ---
 
+> [!NOTE]
+> **Skill Freshness**: `lastResearched` is set at authoring time. The skill synthesizer flags this
+> skill as stale after 90 days and triggers a refresh. Do not manually bump `lastResearched` —
+> the `skill_synthesizer --promote` command updates it automatically after a successful compile cycle.
+
 # 🚀 Backend Engineering & API Standards
 
 > [!IMPORTANT]
@@ -18,7 +23,12 @@ lastResearched: 2026-10-01
 > ```
 > npm view <package-name> deprecated
 > ```
-> If output is non-empty, the package is deprecated — DO NOT install. Find the current successor.
+> Parse the output specifically for the word `deprecated`. npm may emit funding notices, peer
+> dependency warnings, or notices that are NOT deprecation warnings. Safe check pattern:
+> ```
+> npm view <package-name> deprecated 2>/dev/null | grep -i "deprecated"
+> ```
+> If that grep returns output → deprecated, do not install. If empty → safe to install.
 
 ### Approved Backend Packages (Current, Non-Deprecated)
 
@@ -38,6 +48,11 @@ lastResearched: 2026-10-01
 > [!WARNING]
 > NEVER install: `jsonwebtoken` (use `jose` instead — `jsonwebtoken` has known CVEs), `express-jwt` (unmaintained), `passport` without careful version pinning, `mongoose` without checking current deprecation notices, `body-parser` (built into Express 4.16+). Always run `npm view <pkg> deprecated` first.
 
+> [!WARNING]
+> **DO NOT use `npx express-generator`** — it scaffolds a CommonJS project (require/module.exports).
+> The TypeScript patterns in this skill use ESM (import/export). Using express-generator creates
+> an immediate ESM/CJS mismatch that breaks compilation. Use the ESM scaffold sequence above instead.
+
 ### CLI Scaffold Commands (Use These, NEVER manually create config files)
 ```bash
 # Initialize Prisma (creates schema.prisma and .env)
@@ -45,6 +60,18 @@ npx prisma init
 
 # Initialize Drizzle config
 npx drizzle-kit init
+
+# Express + TypeScript (ESM-compatible — do NOT use npx express-generator, it generates CommonJS)
+# Instead use this ESM scaffold sequence:
+npm init -y
+npm install express
+npm install -D typescript @types/node @types/express tsx
+npx tsc --init
+# Then manually set in tsconfig.json: "module": "NodeNext", "moduleResolution": "NodeNext", "target": "ES2022"
+# Add to package.json: "type": "module", "scripts": { "dev": "tsx src/server.ts", "build": "tsc" }
+
+# Hono (ultra-lightweight, Bun/Node compatible — preferred for new APIs)
+npm create hono@latest my-api -- --template nodejs
 
 # Generate Prisma client after schema changes
 npx prisma generate
@@ -204,3 +231,7 @@ src/
 - [ ] No secrets in source code — all via `process.env`
 - [ ] SQL queries via ORM parameterization (never string interpolation)
 - [ ] CORS configured to allowlist (not wildcard `*` in production)
+- [ ] **Brownfield dep audit**: For existing projects, run `npm audit` to surface known CVEs in installed packages
+- [ ] **Deprecation sweep**: For existing projects, scan `package.json` dependencies with:
+      `cat package.json | grep -o '"[^"]*"\s*:' | tr -d '":' | xargs -I{} sh -c 'npm view {} deprecated 2>/dev/null | grep -i deprecated && echo "  ^ {} is deprecated"'`
+      or use: `npx npm-check-updates --deprecated` to list deprecated packages needing replacement

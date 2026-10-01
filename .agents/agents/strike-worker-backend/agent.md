@@ -39,6 +39,13 @@ Before writing a single line of code, read all skill files referenced in your Sn
 > [!CAUTION]
 > DO NOT proceed to implementation without reading the assigned skill files. The skills contain the Golden Arsenal package list, deprecation-check protocol, and canonical implementation patterns you MUST follow.
 
+> [!NOTE]
+> **Context Budget**: Reading 2–3 skill files costs ~750 tokens each (~2,250 total). Your full
+> context budget is ~32,000 tokens. If you receive a large CIR slice, read ONLY the sections
+> of each skill directly relevant to your micro-task (e.g. for a routes task, read sections
+> 1–3 of backend-engineering, skip Section 6 architecture layout). Do not read all skills
+> exhaustively if your CIR slice is already large.
+
 ---
 
 ## 2. Package Deprecation Check Protocol (MANDATORY)
@@ -47,8 +54,10 @@ Before installing ANY package:
 ```bash
 npm view <package-name> deprecated
 ```
-- If output is empty → package is safe to install
-- If output is non-empty → package is DEPRECATED. DO NOT install. Report the issue back to conductor.
+- Parse output for the word `deprecated` specifically (npm also emits notices/funding that are NOT deprecations)
+- Safe shell check: `npm view <pkg> deprecated 2>/dev/null | grep -i deprecated`
+- If grep returns output → DEPRECATED. DO NOT install. Report to conductor.
+- If grep returns empty → package is safe to install.
 
 Always use the install commands from the skill's Golden Arsenal section — they are pre-verified.
 

@@ -4,6 +4,11 @@ description: Production-grade web motion choreography, GPU-accelerated micro-int
 lastResearched: 2026-10-01
 ---
 
+> [!NOTE]
+> **Skill Freshness**: `lastResearched` is set at authoring time. The skill synthesizer flags this
+> skill as stale after 90 days and triggers a refresh. Do not manually bump `lastResearched` —
+> the `skill_synthesizer --promote` command updates it automatically after a successful compile cycle.
+
 # ⚡ Modern UI Motion & Kinetic Choreography
 
 > [!IMPORTANT]
@@ -18,17 +23,30 @@ lastResearched: 2026-10-01
 > ```
 > npm view <package-name> deprecated
 > ```
-> If the output is non-empty, the package is deprecated — DO NOT install it. Find a current alternative.
+> Parse the output specifically for the word `deprecated`. The command may produce npm notices,
+> funding messages, or peer dependency warnings that are NOT deprecation. Only block install if
+> the output contains the literal word `deprecated`. Safe check pattern:
+> ```
+> npm view <package-name> deprecated 2>/dev/null | grep -i "deprecated"
+> ```
+> If that grep returns output → package is deprecated. If empty → safe to install.
 
 ### Approved Motion Packages (Current, Non-Deprecated)
 
 | Package | Purpose | Install Command |
 |---|---|---|
-| `framer-motion` | Spring physics, layout animations, gesture handling | `npm install framer-motion` |
-| `motion` | Lightweight Framer Motion alternative (same API, smaller bundle) | `npm install motion` |
+| `framer-motion` | Full Framer Motion — spring physics, layout animations, gestures, AnimatePresence | `npm install framer-motion` |
+| `motion` | **Same library as framer-motion** — rebranded package name in v11+. Identical API. Pick ONE, never install both. `motion` is the newer package name; `framer-motion` still receives updates. For new projects use `framer-motion` (more community resources). | `npm install framer-motion` |
 | `@formkit/auto-animate` | Zero-config list reorder animations | `npm install @formkit/auto-animate` |
 | `tailwindcss-animate` | Tailwind utility animation classes | `npm install tailwindcss-animate` |
 | `react-spring` | Physics-based spring animations (alternative to Framer Motion) | `npm install @react-spring/web` |
+
+> [!CAUTION]
+> **NEVER install both `framer-motion` AND `motion` in the same project.** They conflict and
+> will cause duplicate `AnimatePresence` instances and context errors. Choose exactly ONE:
+> - New project → `npm install framer-motion` (preferred, more docs/examples)
+> - Bundle-size critical → `npm install motion` (same API, ~30% smaller)
+> Never import from both in the same codebase.
 
 > [!WARNING]
 > NEVER install: `react-transition-group` (legacy API), `animejs` v3 (deprecated build system), `velocity-animate` (unmaintained), `react-motion` (superseded). Always verify with `npm view <pkg> deprecated` before installing.
@@ -167,16 +185,19 @@ const childVariants = {
 ## 5. Page / Route Transition Pattern
 
 ```tsx
-// _app.tsx or layout.tsx wrapper
+// ── Next.js App Router (app/layout.tsx) ──────────────────────────────
+'use client';
 import { AnimatePresence, motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';  // ← correct import for App Router
 
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -4 }
+  exit:    { opacity: 0, y: -4 }
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();  // ← pathname is now defined
   return (
     <AnimatePresence mode="wait">
       <motion.main
@@ -192,7 +213,53 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     </AnimatePresence>
   );
 }
+
+// ── Next.js Pages Router (_app.tsx) ─────────────────────────────────
+import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/router';  // ← Pages Router uses useRouter
+import type { AppProps } from 'next/app';
+
+export default function App({ Component, pageProps }: AppProps) {
+  const { pathname } = useRouter();  // ← pathname from router
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{ duration: 0.25, ease: [0.0, 0.0, 0.2, 1] }}
+      >
+        <Component {...pageProps} />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ── Vite/React Router v6 (App.tsx) ──────────────────────────────────
+import { AnimatePresence, motion } from 'framer-motion';
+import { useLocation, Outlet } from 'react-router-dom';
+
+export default function AnimatedLayout() {
+  const location = useLocation();  // ← React Router gives location.key
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.key}   // ← location.key changes on every navigation
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{ duration: 0.25, ease: [0.0, 0.0, 0.2, 1] }}
+      >
+        <Outlet />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 ```
+
 
 ---
 

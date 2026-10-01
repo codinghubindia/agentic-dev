@@ -4,6 +4,11 @@ description: Database schema modeling, idempotent migrations, indexing strategie
 lastResearched: 2026-10-01
 ---
 
+> [!NOTE]
+> **Skill Freshness**: `lastResearched` is set at authoring time. The skill synthesizer flags this
+> skill as stale after 90 days and triggers a refresh. Do not manually bump `lastResearched` —
+> the `skill_synthesizer --promote` command updates it automatically after a successful compile cycle.
+
 # 🗄️ Database Engineering & Schema Standards
 
 > [!IMPORTANT]
