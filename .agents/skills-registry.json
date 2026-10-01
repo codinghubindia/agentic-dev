@@ -1,0 +1,217 @@
+{
+  "version": "1.0.0",
+  "description": "Master index of all skills. Maps package names and tech slugs to skill metadata and file URIs. Conductor reads this at intake to determine available skills without scanning the filesystem.",
+  "lastUpdated": "2026-10-01",
+  "skills": {
+    "react": {
+      "uri": ".agents/skills/react/SKILL.md",
+      "category": "frontend",
+      "packages": ["react", "react-dom"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F1", "F2", "F3"],
+      "currentVersion": "18.3.1",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "next-js": {
+      "uri": ".agents/skills/next-js/SKILL.md",
+      "category": "frontend",
+      "packages": ["next"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F1", "F2"],
+      "currentVersion": "14.2.14",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 60,
+      "status": "stable"
+    },
+    "framer-motion": {
+      "uri": ".agents/skills/framer-motion/SKILL.md",
+      "category": "frontend",
+      "packages": ["framer-motion", "motion"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F3"],
+      "currentVersion": "11.11.11",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 60,
+      "status": "stable"
+    },
+    "tailwindcss": {
+      "uri": ".agents/skills/tailwindcss/SKILL.md",
+      "category": "frontend",
+      "packages": ["tailwindcss", "postcss", "autoprefixer"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F1", "F3"],
+      "currentVersion": "3.4.13",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "zod": {
+      "uri": ".agents/skills/zod/SKILL.md",
+      "category": "shared",
+      "packages": ["zod"],
+      "workerRoles": ["strike-worker-backend", "strike-worker-frontend"],
+      "microTasks": ["B2", "B3", "F2"],
+      "currentVersion": "3.23.8",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "express": {
+      "uri": ".agents/skills/express/SKILL.md",
+      "category": "backend",
+      "packages": ["express"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B2", "B3"],
+      "currentVersion": "4.21.1",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "prisma": {
+      "uri": ".agents/skills/prisma/SKILL.md",
+      "category": "backend",
+      "packages": ["@prisma/client", "prisma"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B1", "B2"],
+      "currentVersion": "5.20.0",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 60,
+      "status": "stable"
+    },
+    "hono": {
+      "uri": ".agents/skills/hono/SKILL.md",
+      "category": "backend",
+      "packages": ["hono", "@hono/node-server"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B2", "B3"],
+      "currentVersion": "4.6.3",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 60,
+      "status": "stable"
+    },
+    "jose": {
+      "uri": ".agents/skills/jose/SKILL.md",
+      "category": "backend",
+      "packages": ["jose"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B2", "B3"],
+      "currentVersion": "5.9.6",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "react-query": {
+      "uri": ".agents/skills/react-query/SKILL.md",
+      "category": "frontend",
+      "packages": ["@tanstack/react-query"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F2"],
+      "currentVersion": "5.59.0",
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 60,
+      "status": "stable"
+    },
+    "backend-engineering": {
+      "uri": ".agents/skills/backend-engineering/SKILL.md",
+      "category": "backend",
+      "packages": ["express", "fastify", "zod", "jose"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B1", "B2", "B3"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "database-engineering": {
+      "uri": ".agents/skills/database-engineering/SKILL.md",
+      "category": "backend",
+      "packages": ["@prisma/client", "drizzle-orm"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B1"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "modern-ui-motion": {
+      "uri": ".agents/skills/modern-ui-motion/SKILL.md",
+      "category": "frontend",
+      "packages": ["framer-motion"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F3"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "professional-ui-craft": {
+      "uri": ".agents/skills/professional-ui-craft/SKILL.md",
+      "category": "frontend",
+      "packages": [],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F1", "F3"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 365,
+      "status": "protected"
+    },
+    "ponytail": {
+      "uri": ".agents/skills/ponytail/SKILL.md",
+      "category": "global",
+      "packages": [],
+      "workerRoles": ["strike-worker-backend", "strike-worker-frontend", "strike-worker-infra"],
+      "microTasks": ["B1", "B2", "B3", "F1", "F2", "F3"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 365,
+      "status": "protected"
+    },
+    "security-audit": {
+      "uri": ".agents/skills/security-audit/SKILL.md",
+      "category": "global",
+      "packages": [],
+      "workerRoles": ["strike-worker-backend", "qa-auditor"],
+      "microTasks": ["B2", "B3"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "testing-verification": {
+      "uri": ".agents/skills/testing-verification/SKILL.md",
+      "category": "global",
+      "packages": [],
+      "workerRoles": ["strike-worker-backend", "strike-worker-frontend"],
+      "microTasks": ["B1", "B2", "B3", "F1", "F2", "F3"],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    },
+    "devops-infrastructure": {
+      "uri": ".agents/skills/devops-infrastructure/SKILL.md",
+      "category": "infra",
+      "packages": [],
+      "workerRoles": ["strike-worker-infra"],
+      "microTasks": [],
+      "lastResearched": "2026-10-01",
+      "refreshIntervalDays": 90,
+      "status": "stable"
+    }
+  },
+  "packageAliases": {
+    "@tanstack/react-query": "react-query",
+    "@tanstack/query-core": "react-query",
+    "react-query": "react-query",
+    "motion": "framer-motion",
+    "create-next-app": "next-js",
+    "@prisma/client": "prisma",
+    "drizzle-orm": "database-engineering",
+    "@hono/node-server": "hono",
+    "bcrypt": "security-audit",
+    "bcryptjs": "security-audit"
+  },
+  "microTaskSkillMap": {
+    "B1": ["prisma", "database-engineering"],
+    "B2": ["zod", "jose", "backend-engineering", "security-audit"],
+    "B3": ["express", "hono", "zod", "backend-engineering"],
+    "F1": ["react", "next-js", "tailwindcss", "professional-ui-craft"],
+    "F2": ["react", "react-query", "zod"],
+    "F3": ["react", "framer-motion", "modern-ui-motion", "tailwindcss", "professional-ui-craft"]
+  }
+}

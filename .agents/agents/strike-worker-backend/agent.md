@@ -15,6 +15,11 @@ skills:
   - backend-engineering
   - database-engineering
   - security-audit
+  - express
+  - prisma
+  - hono
+  - jose
+  - zod
 ---
 
 # ⚡ Strike Worker: Backend & Data Services

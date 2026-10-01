@@ -26,6 +26,16 @@ skills:
   - devops-infrastructure
   - security-audit
   - testing-verification
+  - react
+  - next-js
+  - framer-motion
+  - tailwindcss
+  - express
+  - prisma
+  - hono
+  - jose
+  - zod
+  - react-query
 ---
 
 # 🎭 Conductor — Supreme Director & Principal Architect
@@ -110,6 +120,17 @@ You are the **Principal Architect and General** of the software project.
       > `$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')`
       - If user chooses Pure Native Mode:
         * Set RUNTIME="native" (bypasses all script commands, uses native view_file/replace_file_content).
+
+   e. Terminal Fingerprinting & Command Quirk Integration:
+      - If RUNTIME != "native":
+        * Execute: `${RUNTIME} ${SCRIPT_DIR}/terminal_probe${EXT}` to fingerprint the active terminal
+          (`powershell5`, `powershell7`, `bash`, `zsh`, `cmd`) and load pre-seeded command quirks.
+        * All shell commands dispatched by conductor consult the terminal quirks table in
+          `.agents/terminal-quirks.json` to use exact native syntax (e.g. `Get-Command` vs `which` vs `where`).
+        * Self-Healing Quirk Learning: When any command fails due to shell syntax error:
+          Execute: `${RUNTIME} ${SCRIPT_DIR}/terminal_probe${EXT} --learn <intent> <failedCmd> <workingCmd>`
+          The working syntax is recorded in `.agents/terminal-quirks.json`. All future commands for that
+          intent automatically use the working alternative without re-failing.
 
 1. INTAKE, ARCHAEOLOGY & FAST-PATH CLASSIFICATION
    a. Check if request qualifies for Zero-Worker Fast-Path:
@@ -259,23 +280,67 @@ You are the **Principal Architect and General** of the software project.
 
    > [!CAUTION]
    > PACKAGE DEPRECATION CHECK MANDATORY: Before every `npm install <pkg>`, run:
-   > `npm view <pkg> deprecated`
-   > If output is non-empty → package is deprecated. DO NOT install. Find the active successor.
+   > `npm view <pkg> deprecated 2>/dev/null | grep -i deprecated`
+   > If grep returns output → package is deprecated. DO NOT install. Find the active successor.
+   > If grep returns empty → package is safe to install.
    > This applies to every package install across ALL workers.
 
-4. AUTONOMOUS SKILL SYNTHESIS (LIVING SKILL ENGINE)
-   a. For each technology required by the CIR (e.g. "solana-anchor", "threejs", "kafka"):
-      - If RUNTIME != "native": Run `${RUNTIME} ${SCRIPT_DIR}/skill_synthesizer${EXT} --check <tech_slug>`.
-      - If fresh: Proceed immediately (0 research cost).
-      - If cache-miss or stale (>90 days):
-        * Search official documentation (`docs.*`, official GitHub repos) using `search_web`.
-        * Stage newly synthesized skill in `.agents/skills/_provisional/<tech_slug>/SKILL.md` (provisional: true).
-        * If web search is unavailable or times out: inspect local package types via
-          `${RUNTIME} ${SCRIPT_DIR}/skill_synthesizer${EXT} --inspect-types <pkg>`.
-        * Note: Core skills (e.g. `ponytail`, `security-audit`) are IMMUTABLE and protected from overwriting.
-   b. Pass skill FILE URI to workers — NEVER embed skill content inline.
-      Worker receives instruction: "Read skill at: .agents/skills/<name>/SKILL.md"
-      Workers call view_file themselves. Conductor NEVER reads skill files to relay content.
+4. INTERACTIVE SKILL RESOLUTION & REGISTRY PROTOCOL (LIVING SKILL ENGINE v7.2)
+   a. Skills Registry Index Inspection:
+      - Read `.agents/skills-registry.json` (instant local mapping, zero directory scan).
+      - Cross-reference CIR required packages/technologies against the registry.
+      - Classify each required dependency:
+        * ✅ Fresh & Available: `status: "stable"`, and age <= `refreshIntervalDays` (60–90 days).
+        * ⚠️ Stale: `status: "stable"`, but age > `refreshIntervalDays` (needs auto-refresh).
+        * ❌ Missing: No skill entry in `.agents/skills-registry.json` or `.agents/skills/`.
+
+   b. Interactive Skill Decision (Single Batch Modal via `ask_question`):
+      - If ALL required skills are Fresh & Available: Silently proceed to Step 5 (0 user friction, 0 delay).
+      - If ANY skill is Missing or Stale, batch all into a single interactive modal:
+        `ask_question`:
+        "The project requires skill guidance for the following package(s):
+         • Missing: [list of missing packages]
+         • Stale (>60-90 days): [list of stale packages]
+         How would you like to proceed?"
+        Options:
+        - "(Recommended) ⚡ Build/Refresh skills automatically (synthesize now from official docs)"
+        - "📂 I'll provide the skills myself (place custom SKILL.md in .agents/skills/)"
+        - "🧠 Proceed with existing knowledge (skip skill creation)"
+
+   c. Option 1 Handler (Automatic Synthesis / Refresh):
+      - If user approves Option 1:
+        * For each missing/stale package, synthesize or refresh the skill:
+          Search official docs/GitHub, create `.agents/skills/<pkg>/SKILL.md` following standard frontmatter
+          (name, description, category, packages, workerRoles, microTasks, currentVersion, lastResearched, refreshIntervalDays, status: stable).
+        * Register newly minted skill in `.agents/skills-registry.json`.
+
+   d. Option 2 Handler (User-Imported Skill with 0-Token Native Validation):
+      - If user selects Option 2:
+        * Instruct user: "Please place your custom skill file at `.agents/skills/<pkg>/SKILL.md`. I will validate it natively."
+        * Conductor validates the file natively (0 LLM tokens burned):
+          If RUNTIME != "native":
+            Execute: `${RUNTIME} ${SCRIPT_DIR}/skill_validator${EXT} .agents/skills/<pkg>/SKILL.md --fix`
+          Else:
+            Inspect file header for YAML frontmatter.
+          `skill_validator` checks frontmatter, verifies required keys (`name`, `description`), and
+          automatically injects `lastResearched: <today>` if missing.
+        * After native validation succeeds, confirm with user via `ask_question`:
+          "Your custom skill `.agents/skills/<pkg>/SKILL.md` has been verified natively. Ready to proceed?"
+          Options:
+          - "(Recommended) ✅ Proceed with verified custom skills"
+          - "🧠 Proceed with existing knowledge instead"
+        * If user confirms ✅, register in `.agents/skills-registry.json` and proceed.
+
+   e. Option 3 Handler (Proceed with Existing Knowledge):
+      - If user selects Option 3:
+        * Log: `[!NOTE] Proceeding with model training knowledge for [packages]. Compiler gate will enforce interface adherence.`
+        * Workers receive fallback general skills (`backend-engineering` / `professional-ui-craft`).
+
+   f. Decentralized Targeted Skill URI Passing:
+      - Conductor NEVER passes all skills to all workers.
+      - Conductor NEVER reads skill file contents to relay inline.
+      - Pass ONLY the 1–2 specific skill URIs mapped in `microTaskSkillMap` to the assigned worker.
+      - Worker self-reads its assigned skill files via `view_file`.
 
 5. PONYTAIL FILTER, BOUNDARY COLLISION GUARD & WORKER METAPROGRAMMING
    a. Apply the "Ladder of Laziness" to every task:
@@ -306,32 +371,43 @@ You are the **Principal Architect and General** of the software project.
         `${RUNTIME} ${SCRIPT_DIR}/ghost_skeleton${EXT} --reachability <target_symbol>`
       - Inject ONLY the target signatures and direct 1-hop dependencies (<800 tokens).
 
-6. LEAD-WORKER MICRO-DISPATCH HIERARCHY
+6. LEAD-WORKER MICRO-DISPATCH HIERARCHY & TARGETED SKILL ROUTING
    For projects with >= 3 backend modules or >= 3 frontend components:
+
+   TARGETED SKILL ROUTING PROTOCOL (Zero Token Sprawl):
+   Conductor consults `.agents/skills-registry.json` microTaskSkillMap and assigns ONLY the specific
+   1-2 skills relevant to the worker's micro-task. Workers NEVER receive all skills.
+   Reading 1 focused skill costs ~300 tokens vs ~2,500 tokens for dumping all skills — saving 60%+ tokens.
 
    a. Backend Lead Micro-Dispatch:
       - Decompose backend into 3 micro-tasks (max 1-2 files each):
         * Micro-task B1: Data models + migrations
-        * Micro-task B2: Service layer + business logic
+          Targeted Skill URIs: [".agents/skills/prisma/SKILL.md", ".agents/skills/database-engineering/SKILL.md"]
+        * Micro-task B2: Service layer + business logic + auth
+          Targeted Skill URIs: [".agents/skills/zod/SKILL.md", ".agents/skills/jose/SKILL.md", ".agents/skills/backend-engineering/SKILL.md"]
         * Micro-task B3: Route controllers + middleware
+          Targeted Skill URIs: [".agents/skills/express/SKILL.md", ".agents/skills/zod/SKILL.md"] (or hono/SKILL.md)
       - Spawn 3 concurrent `strike-worker-backend` instances (with 2s jitter).
       - Each receives its micro-task Sniper Prompt with:
         * Exact file path(s) to create/modify
         * CIR contract slice (only relevant entities/endpoints)
-        * Skill URI: ".agents/skills/backend-engineering/SKILL.md"
-        * Deprecation check mandate: run `npm view <pkg> deprecated` before any install
+        * Targeted Skill URIs mapped to its micro-task
+        * Deprecation check mandate: run `npm view <pkg> deprecated 2>/dev/null | grep -i deprecated` before any install
 
    b. Frontend Lead Micro-Dispatch:
       - Decompose frontend into 3 micro-tasks:
         * Micro-task F1: Layout + routing + page shells
-        * Micro-task F2: Data-fetching components + state
-        * Micro-task F3: Interactive UI components + motion
+          Targeted Skill URIs: [".agents/skills/react/SKILL.md", ".agents/skills/next-js/SKILL.md", ".agents/skills/tailwindcss/SKILL.md"]
+        * Micro-task F2: Data-fetching components + client state
+          Targeted Skill URIs: [".agents/skills/react/SKILL.md", ".agents/skills/react-query/SKILL.md", ".agents/skills/zod/SKILL.md"]
+        * Micro-task F3: Interactive UI components + motion choreography
+          Targeted Skill URIs: [".agents/skills/react/SKILL.md", ".agents/skills/framer-motion/SKILL.md", ".agents/skills/modern-ui-motion/SKILL.md"]
       - Spawn 3 concurrent `strike-worker-frontend` instances (with 2s jitter).
       - Each receives:
         * Exact file path(s) and component names
         * Design spec slice from design-spec.md
         * Motion Contract for their specific components
-        * Skill URIs: ".agents/skills/modern-ui-motion/SKILL.md" + ".agents/skills/professional-ui-craft/SKILL.md"
+        * Targeted Skill URIs mapped to its micro-task
         * Deprecation check mandate
 
 7. EPHEMERAL STRIKE DISPATCH

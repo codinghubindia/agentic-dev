@@ -14,6 +14,12 @@ skills:
   - ponytail
   - professional-ui-craft
   - modern-ui-motion
+  - react
+  - next-js
+  - framer-motion
+  - tailwindcss
+  - react-query
+  - zod
 ---
 
 # 🎨 Strike Worker: Creative UI/UX & Motion

@@ -607,3 +607,52 @@ By eliminating the multi-manager bureaucracy, enforcing the Ponytail anti-overen
 ### Branch
 Implemented on: `v7.1-package-rich-skills`
 Base: `v7.0-lean-orchestra` (commits: 7b0abab, 4861d22)
+
+---
+
+## Section 11: v7.2 Interactive Skill Library & Terminal Fingerprinting Architecture
+
+### 1. Architectural Motivation
+
+In v7.1, skills were organized into broad umbrella files (e.g. `backend-engineering`, `modern-ui-motion`). While this provided rich guidelines, it introduced two inefficiencies:
+1. **Worker Over-Reading**: A worker responsible only for database schemas was forced to ingest Express routing patterns and JWT authentication rules.
+2. **Static Staleness Risk**: As fast-moving libraries (Next.js, Prisma, Framer Motion) publish breaking changes, static dates and broad files lacked granular version tracking.
+3. **Environment Command Friction**: Cross-platform shell variations (PowerShell 5 vs 7, CMD, Git Bash, Zsh) caused syntax mismatches when executing basic commands.
+
+### 2. Core Pillars of v7.2
+
+#### Pillar 1: Granular Per-Package Skill Library
+Ten dedicated, production-grade package skills were introduced:
+- **Frontend Core**: `react/SKILL.md` (v18.3.1), `next-js/SKILL.md` (v14.2.14 App Router), `tailwindcss/SKILL.md` (v3.4.13), `framer-motion/SKILL.md` (v11.11.11), `react-query/SKILL.md` (v5.59.0 TanStack Query).
+- **Backend & Data Core**: `express/SKILL.md` (v4.21.1 ESM TypeScript), `prisma/SKILL.md` (v5.20.0), `hono/SKILL.md` (v4.6.3), `jose/SKILL.md` (v5.9.6 RFC JWT), `zod/SKILL.md` (v3.23.8).
+
+Each skill carries a strict YAML frontmatter specification including `packages`, `microTasks`, `currentVersion`, `lastResearched`, `refreshIntervalDays` (60–90 days), and `status: "stable"`.
+
+#### Pillar 2: Master Skills Registry (`.agents/skills-registry.json`)
+The central registry acts as an instantaneous in-memory lookup table for the Conductor:
+- Maps npm package names and aliases (e.g. `@tanstack/react-query` → `react-query`, `motion` → `framer-motion`) directly to skill file URIs.
+- Defines `microTaskSkillMap` connecting micro-dispatch roles (B1, B2, B3, F1, F2, F3) to exact skill dependencies.
+- Completely eliminates directory traversal and token-heavy skill searching during session intake.
+
+#### Pillar 3: Interactive Skill Resolution & User Options Protocol
+During intake, the Conductor compares project dependencies against `skills-registry.json`. If missing or stale (>60-90 days) packages are detected, a single batch modal is presented to the user via `ask_question`:
+1. **Option 1 (Auto-Build / Refresh)**: Conductor autonomously synthesizes or refreshes skills from official documentation and registers them into the registry.
+2. **Option 2 (User-Provided Custom Skills)**: Conductor pauses while the user drops custom `SKILL.md` files into `.agents/skills/`. The Conductor then runs native validation via `skill_validator` (0 LLM tokens) which automatically injects `lastResearched` with today's date if missing. Upon native verification, user confirms before proceeding.
+3. **Option 3 (Proceed with Existing Knowledge)**: Conductor bypasses custom skill generation and relies on base model training knowledge with compiler gating.
+
+#### Pillar 4: Targeted Skill Routing (Zero Token Sprawl)
+Workers NEVER receive the entire skill library. Conductor inspects the micro-task and passes only the 1–2 target skill URIs:
+- **B1 (Data Models)**: `prisma` + `database-engineering` (~400 tokens)
+- **B2 (Services & Auth)**: `zod` + `jose` + `backend-engineering` (~500 tokens)
+- **B3 (Routes & Controllers)**: `express` (or `hono`) + `zod` (~450 tokens)
+- **F1 (Layout & Routing)**: `react` + `next-js` + `tailwindcss` (~550 tokens)
+- **F2 (Data Fetching & State)**: `react` + `react-query` + `zod` (~500 tokens)
+- **F3 (Motion & UI Craft)**: `react` + `framer-motion` + `modern-ui-motion` (~600 tokens)
+
+*Result*: Reduces worker skill ingestion from ~2,500 tokens down to ~400–600 tokens, yielding a **60%+ token reduction** while delivering 100% targeted package guidance.
+
+#### Pillar 5: Terminal Fingerprinting & Command Quirk Learning
+- Dual-engine probe scripts (`terminal_probe.py` / `node/terminal_probe.js`) probe the host environment to fingerprint the active shell (`powershell5`, `powershell7`, `bash`, `zsh`, `cmd`).
+- Pre-seeded command table in `.agents/terminal-quirks.json` provides native syntax variants for common intents (`findBinary`, `checkFileExists`, `appendToFile`, `grepInFile`, `sedReplace`, etc.).
+- **Self-Healing Learning Loop**: When any shell command fails due to shell syntax, the Conductor records the quirk via `--learn`. All future commands in that and subsequent sessions use the learned syntax automatically.
+
