@@ -569,3 +569,41 @@ To transition the current repository to the CEST architecture:
 The **Lean Conductor & Ephemeral Strike Team (CEST)** represents the future of autonomous engineering: **a unified principal architect that thinks globally, paired with lightning-fast strike workers that execute locally under ruthless simplicity constraints.**
 
 By eliminating the multi-manager bureaucracy, enforcing the Ponytail anti-overengineering filter, and shifting quality verification left to zero-token compilers, CEST delivers **cleaner code, faster delivery, 75% lower costs, and uncompromised enterprise quality.**
+
+---
+
+## Section 10: v7.1 Package-Rich Skills Architecture
+
+### What Changed in v7.1
+
+| Change | v7.0 Behavior | v7.1 Behavior |
+|---|---|---|
+| Runtime Probe Priority | python → node → native | **bun → node → python → native** (fast-exit) |
+| Skill Reading | Conductor reads skills, relays content to workers | **Workers self-read skills via view_file** (Conductor passes URI only) |
+| Skills | Minimal guidance | **Package-Rich Golden Arsenal** with deprecation-check protocol |
+| Architecture Planning | Jumped to code | **Blueprint Phase**: architecture-blueprint.md + design-spec.md first |
+| Frontend Scaffolding | Handcrafted config files | **Mandatory CLI**: `npm create vite@latest`, `npx create-next-app@latest` |
+| Motion/Animation | Optional | **First-class contract**: Motion Contract in design-spec.md, QA-enforced |
+| Package Installs | Assumed safe | **Deprecation gate**: `npm view <pkg> deprecated` before every install |
+| Worker Dispatch | 3 monolithic workers | **Micro-dispatch**: 3 backend micro-tasks + 3 frontend micro-tasks |
+| Workflow Reference | JSON files only | **SKILL.md equivalents** for all 3 workflows (+ JSON.bak archives) |
+
+### Token Cost Analysis
+
+**Decentralized Skill Reading:**
+- v7.0: Conductor reads all skill files → embeds in worker prompts → high conductor token cost
+- v7.1: Conductor sends skill URI → workers read at execution time → conductor saves 2,000–8,000 tokens per session
+- Worker cost stays same (they were always reading anyway — now they read directly)
+
+**Package-Rich Skills:**
+- Additional skill file size: ~3KB per skill
+- Worker reads skill once at start: ~750 tokens
+- Benefit: Zero deprecated package installs, zero manual config file creation = fewer re-do cycles
+
+**Architecture Blueprint Phase:**
+- Cost: ~500 tokens (conductor writes 2 markdown files)
+- Benefit: Prevents structural rework mid-session (saves 5,000–20,000 tokens on re-do)
+
+### Branch
+Implemented on: `v7.1-package-rich-skills`
+Base: `v7.0-lean-orchestra` (commits: 7b0abab, 4861d22)

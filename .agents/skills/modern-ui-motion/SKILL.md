@@ -1,13 +1,49 @@
 ---
 name: modern-ui-motion
-description: Production-grade web motion choreography, GPU-accelerated micro-interactions, spring physics, FLIP layout animations, and 60/120 FPS runtime optimizations.
+description: Production-grade web motion choreography, GPU-accelerated micro-interactions, spring physics, FLIP layout animations, 60/120 FPS runtime optimizations, and Golden Arsenal package guide with deprecation-safe install commands.
 lastResearched: 2026-10-01
 ---
 
 # ⚡ Modern UI Motion & Kinetic Choreography
 
 > [!IMPORTANT]
-> Motion in software is not decoration—it is **spatial explanation**. Every animation must communicate where an element came from, what triggered it, and where it is going.
+> Motion in software is not decoration—it is **spatial explanation**. Every animation must communicate where an element came from, what triggered it, and where it is going. Motion is a **first-class deliverable**. Static UIs are rejected.
+
+---
+
+## 0. Golden Arsenal — Package Install Protocol
+
+> [!CAUTION]
+> **MANDATORY PRE-INSTALL DEPRECATION CHECK**: Before every `npm install`, run:
+> ```
+> npm view <package-name> deprecated
+> ```
+> If the output is non-empty, the package is deprecated — DO NOT install it. Find a current alternative.
+
+### Approved Motion Packages (Current, Non-Deprecated)
+
+| Package | Purpose | Install Command |
+|---|---|---|
+| `framer-motion` | Spring physics, layout animations, gesture handling | `npm install framer-motion` |
+| `motion` | Lightweight Framer Motion alternative (same API, smaller bundle) | `npm install motion` |
+| `@formkit/auto-animate` | Zero-config list reorder animations | `npm install @formkit/auto-animate` |
+| `tailwindcss-animate` | Tailwind utility animation classes | `npm install tailwindcss-animate` |
+| `react-spring` | Physics-based spring animations (alternative to Framer Motion) | `npm install @react-spring/web` |
+
+> [!WARNING]
+> NEVER install: `react-transition-group` (legacy API), `animejs` v3 (deprecated build system), `velocity-animate` (unmaintained), `react-motion` (superseded). Always verify with `npm view <pkg> deprecated` before installing.
+
+### CLI Scaffold Commands (Use These, NEVER manually edit config files)
+```bash
+# Add Tailwind CSS (if not present)
+npx tailwindcss init -p
+
+# Add Framer Motion
+npm install framer-motion
+
+# Add auto-animate for zero-config list transitions
+npm install @formkit/auto-animate
+```
 
 ---
 
@@ -20,13 +56,14 @@ Never guess animation durations. Use the calibrated scale:
 | **50–100ms** | Micro-interactions | Button press scale (`0.97`), toggle switch slide, checkbox checkmark. |
 | **150–250ms** | Element state transitions | Hover highlights, dropdown menu popover, accordion expand. |
 | **250–350ms** | Component entrances/exits | Modal dialog appearance, drawer slide-out, toast notification. |
-| **>350ms** | BANNED for functional UI | Anything over 350ms feels sluggish and frustrates users. |
+| **350–500ms** | Page/route transitions | Full-page fade/slide between routes. |
+| **>500ms** | BANNED for functional UI | Anything over 500ms feels sluggish in real products. |
 
 ---
 
 ## 2. Spring Physics over Linear Easing
 
-Linear easing (`linear`) looks artificial and robotic. Functional UI must use **damped spring physics** (via Framer Motion / Motion One):
+Linear easing (`linear`) looks artificial and robotic. Functional UI must use **damped spring physics**:
 
 ```tsx
 // The Gold Standard Spring Preset
@@ -37,21 +74,61 @@ const springTransition = {
   mass: 0.8
 };
 
-// Example Modal Entrance
+// Modal Entrance — felt, not just seen
 <motion.div
   initial={{ opacity: 0, scale: 0.95, y: 8 }}
   animate={{ opacity: 1, scale: 1, y: 0 }}
   exit={{ opacity: 0, scale: 0.98, y: 4 }}
   transition={springTransition}
 />
+
+// Drawer slide-in from right
+<motion.aside
+  initial={{ x: '100%' }}
+  animate={{ x: 0 }}
+  exit={{ x: '100%' }}
+  transition={{ type: 'spring', stiffness: 300, damping: 32 }}
+/>
 ```
 
 ---
 
-## 3. Staggered Cascades & FLIP Layouts
+## 3. Mandatory Micro-Interaction Patterns
 
-### Staggered Sequences (50ms Interval)
-When data tables, card grids, or lists render, never allow 20 items to pop onto the screen simultaneously. Stagger children by **50ms (0.05s)** to produce a fluid cascading wave:
+These are **required** on every interactive element — not optional polish:
+
+```tsx
+// Button tactile press (MANDATORY on every button)
+<motion.button
+  whileHover={{ scale: 1.02 }}
+  whileTap={{ scale: 0.97 }}
+  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+  className="..."
+>
+  Click me
+</motion.button>
+
+// Card hover lift (MANDATORY on all interactive cards)
+<motion.div
+  whileHover={{ y: -2, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+  transition={{ duration: 0.2 }}
+  className="rounded-xl p-4 border"
+>
+  {content}
+</motion.div>
+
+// Input focus ring pulse
+<motion.input
+  whileFocus={{ scale: 1.01 }}
+  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+/>
+```
+
+---
+
+## 4. Staggered Cascades & FLIP Layouts
+
+### Staggered List Entrance (50ms Interval — MANDATORY for all lists/grids)
 
 ```tsx
 const containerVariants = {
@@ -66,28 +143,107 @@ const childVariants = {
   hidden: { opacity: 0, y: 6 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: [0, 0, 0.2, 1] } }
 };
+
+// Usage:
+<motion.ul variants={containerVariants} initial="hidden" animate="visible">
+  {items.map(item => (
+    <motion.li key={item.id} variants={childVariants}>
+      <ItemCard item={item} />
+    </motion.li>
+  ))}
+</motion.ul>
 ```
 
-### FLIP Layout Animations
-When elements are reordered, filtered, or expanded, wrap them with Framer Motion's `layout` prop. This executes a GPU-accelerated **FLIP (First, Last, Invert, Play)** transform, preventing harsh layout jumps.
+### FLIP Layout Animations (for reorder/filter)
+```tsx
+// Add layout prop — Framer Motion handles FLIP automatically
+<motion.div layout layoutId={item.id}>
+  <ItemCard item={item} />
+</motion.div>
+```
 
 ---
 
-## 4. GPU Acceleration & 60/120 FPS Optimization
+## 5. Page / Route Transition Pattern
 
-* **Animate ONLY Transform and Opacity:**  
-  Never animate `height`, `width`, `top`, `left`, or `margin`—these trigger expensive browser CPU layout reflows.  
-  Always animate `transform: translate3d(...)`, `scale`, and `opacity` (handled directly by the GPU compositor).
-* **Hardware Acceleration Hint:**
-  Add `will-change: transform` or `transform: translateZ(0)` on continuously moving interactive cards.
+```tsx
+// _app.tsx or layout.tsx wrapper
+import { AnimatePresence, motion } from 'framer-motion';
+
+const pageVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -4 }
+};
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <AnimatePresence mode="wait">
+      <motion.main
+        key={pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{ duration: 0.25, ease: [0.0, 0.0, 0.2, 1] }}
+      >
+        {children}
+      </motion.main>
+    </AnimatePresence>
+  );
+}
+```
 
 ---
 
-## 5. Accessibility Invariant (Mandatory)
+## 6. Skeleton Screen Choreography (Required for all loading states)
 
-Every animated component MUST respect the user's OS preference for reduced motion:
+NEVER use `<Spinner />` for content loading. Use content-matched skeletons:
+
+```tsx
+// Content-matched skeleton with pulse animation
+function CardSkeleton() {
+  return (
+    <div className="rounded-xl border p-4 space-y-3 animate-pulse">
+      <div className="h-4 w-3/4 rounded bg-muted" />
+      <div className="h-3 w-full rounded bg-muted" />
+      <div className="h-3 w-2/3 rounded bg-muted" />
+    </div>
+  );
+}
+
+// Grid skeleton — exact shape match
+function GridSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <CardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+## 7. GPU Acceleration & 60/120 FPS Rules
+
+* **Animate ONLY `transform` and `opacity`** — these are compositor-only, zero layout cost.
+* **NEVER animate** `height`, `width`, `top`, `left`, `margin`, `padding` (trigger layout reflow).
+* **Hardware acceleration hint** for persistent animations:
+  ```css
+  .animated-card { will-change: transform; transform: translateZ(0); }
+  ```
+* Use `transform: translate3d(x, y, 0)` instead of `top/left` for position.
+
+---
+
+## 8. Accessibility Invariant (Mandatory)
+
+Every animated component MUST include reduced-motion fallback:
 
 ```css
+/* Global — add to global.css */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -97,4 +253,33 @@ Every animated component MUST respect the user's OS preference for reduced motio
   }
 }
 ```
-In Framer Motion: Wrap root transitions with `useReducedMotion()`.
+
+```tsx
+// In Framer Motion components
+import { useReducedMotion } from 'framer-motion';
+
+function AnimatedCard({ children }: Props) {
+  const shouldReduce = useReducedMotion();
+  return (
+    <motion.div
+      whileHover={shouldReduce ? {} : { y: -2 }}
+      transition={{ duration: shouldReduce ? 0 : 0.2 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+---
+
+## 9. Anti-Pattern Blacklist
+
+| Anti-Pattern | Why Banned | Alternative |
+|---|---|---|
+| `react-transition-group` | Legacy API, verbose, superseded | `framer-motion` / `motion` |
+| Manually editing `tailwind.config.js` keyframes | Config file sprawl | Use `tailwindcss-animate` npm package |
+| CSS `@keyframes` in component files | Global scope pollution | Tailwind `animate-*` utilities or Framer Motion |
+| `setTimeout` for animation delays | Racey, unreliable | `transition: { delay: 0.1 }` in Framer Motion |
+| `opacity: 0` with `display: none` toggle | Screen reader sees hidden content | Framer Motion `AnimatePresence` handles mount/unmount |
+| Continuous spinning decorative elements | Distracting noise | Progress bars, skeleton screens |

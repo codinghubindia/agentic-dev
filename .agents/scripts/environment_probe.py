@@ -36,6 +36,7 @@ def probe_environment(root_dir: str = ".") -> dict:
     probe_results = {
         "timestamp": None,
         "tools": {
+            "bun": check_command("bun"),
             "node": check_command("node"),
             "npm": check_command("npm"),
             "tsc": check_command("tsc"),
@@ -121,6 +122,12 @@ def probe_environment(root_dir: str = ".") -> dict:
             "strategy": "DIFF_AUDIT_FALLBACK",
             "reason": "No manifest (package.json / requirements.txt / Cargo.toml) detected. Using pure Adversarial Diff Audit."
         }
+
+    # v7.1: Runtime recommendation in priority order: bun → node → python
+    runtime_priority = ["bun", "node", "python"]
+    probe_results["runtimeRecommendation"] = [
+        rt for rt in runtime_priority if probe_results["tools"].get(rt, {}).get("available", False)
+    ]
 
     return probe_results
 

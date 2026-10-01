@@ -39,6 +39,7 @@ function probeEnvironment(rootDir = '.') {
   const probeResults = {
     timestamp: new Date().toISOString(),
     tools: {
+      bun: checkCommand('bun'),
       node: checkCommand('node'),
       npm: checkCommand('npm'),
       tsc: checkCommand('tsc'),
@@ -127,6 +128,12 @@ function probeEnvironment(rootDir = '.') {
       reason: 'No manifest (package.json / requirements.txt / Cargo.toml) detected. Using pure Adversarial Diff Audit.'
     };
   }
+
+  // v7.1: Runtime recommendation in priority order: bun → node → python
+  const runtimePriority = ['bun', 'node', 'python'];
+  probeResults.runtimeRecommendation = runtimePriority.filter(
+    rt => probeResults.tools[rt] && probeResults.tools[rt].available
+  );
 
   return probeResults;
 }
