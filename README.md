@@ -171,10 +171,11 @@ CEST includes 3 adaptive workflows in `.agents/workflows/`:
 
 | Script | Purpose | Token Impact | Mechanics |
 |---|---|---|---|
-| **`ghost_skeleton.py`** | Multi-language AST signature extractor (TS, JS, Python, Go, Rust, Prisma, SQL). | **98% context reduction** | Traverses workspace in <1.5s, strips function bodies, extracts interfaces and route tables. |
+| **`ghost_skeleton.py`** | 3-Tier AST signature & reachability engine (TS, JS, Python, Go, Rust, Prisma, SQL). | **98% context reduction** | Traverses workspace in <1.5s, provides `--topology` (<200t), `--skeleton` (<1,200t), and `--reachability` (<800t) slices. |
 | **`ast_surgery.py`** | Structural code grafting engine. | **Zero formatting bugs** | Performs targeted AST node replacements (`inject_import`, `append_route`, `replace_block`) avoiding full-file overwrites. |
 | **`receipt_swapper.py`** | Content-addressable tool output garbage collection. | **99% output reduction** | Hashes raw stdout/stderr to disk and returns a 35-token structured receipt conforming to `receipt.schema.json`. |
 | **`error_slicer.py`** | Compiler & test stack trace parser. | **95% diagnostic reduction** | Reduces 300-line stack traces to a 90-token Error Tuple `(file, line, column, error_code, message)`. |
+| **`skill_synthesizer.py`** | Autonomous Living Skill Synthesis & Grounding Engine. | **Zero manual research** | Synthesizes missing domain skills from official docs on cache-miss with compiler grounding verification. |
 
 ---
 

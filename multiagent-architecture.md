@@ -201,36 +201,66 @@ If an agentic session is interrupted (e.g., system reboot, token cap, network bl
 
 One of the largest weaknesses of AI agents is taking over existing, messy, half-finished codebases ("Brownfield Takeover"). Typical agents scan every single file in the repository, hitting token limits and blowing up context before writing anything.
 
-### The CEST 3-Second Archaeology Protocol
-When dropped into an ongoing repository, the Conductor performs **Zero-Compounding Archaeology**:
+### The CEST 3-Tier Perceptual Pyramid for Brownfield Takeovers
+When dropped into an ongoing repository of 50,000 to 100,000+ lines, typical agents choke by dumping thousands of lines of raw code. CEST executes a **3-Tier Perceptual Pyramid**:
 
 ```
-                                [ Existing Codebase (50,000+ Lines) ]
-                                                  │
-                                                  ▼
-                               [ .agents/scripts/ghost_skeleton.py ]
-                                                  │
-                                                  ▼
-               ┌──────────────────────────────────┴──────────────────────────────────┐
-               ▼                                                                     ▼
-[ Public Interface Map (1,500 Tokens) ]                             [ Reachability Dependency Graph ]
-• Exported classes, functions, routes                               • Which modules import which files
-• Prisma / TypeORM / SQL schemas                                    • Unused dead files safely ignored
-• Config files & package dependencies                               • 0 tokens wasted on private logic
+                       ▲
+                      / \     Tier 3: Query Reachability Slice (300 - 800 Tokens)
+                     /   \    Only the specific target file + its direct imported type interface.
+                    /─────\
+                   /       \   Tier 2: Public AST Ghost Skeleton (1,200 - 2,000 Tokens)
+                  /         \  Exported routes, DB schemas, public interfaces (Stripped function bodies).
+                 /───────────\
+                /             \ Tier 1: System Topology Vector (<200 Tokens)
+               /               \ Directory tree summary + manifest dependencies (package.json / Cargo.toml).
+              ───────────────────
 ```
 
-### 1. Multi-Language AST Extraction (`ghost_skeleton.py`)
-In < 1.5 seconds, the scanner parses TypeScript, JavaScript, Python, Go, Rust, Prisma, and SQL. It strips away all private implementation logic and function bodies, leaving only:
-* Route declarations (e.g., `app.post('/api/users')`)
-* Database entity models (e.g., `model User { id, email, posts }`)
-* Public interface and type signatures (e.g., `interface PaymentIntent`)
-* Installed package versions
+### 1. Multi-Language 3-Tier AST Engine (`ghost_skeleton.py`)
+In < 1.5 seconds, the scanner parses TypeScript, JavaScript, Python, Go, Rust, Prisma, and SQL:
+* **Tier 1 (`--topology`):** Scans manifest files and root folders, outputting stack identification in <200 tokens.
+* **Tier 2 (`--skeleton`):** Strips away all private implementation logic and function bodies, leaving only public export signatures, route declarations, and database entity models (<1,200 tokens).
+* **Tier 3 (`--reachability <target>`):** Given a specific route or function, computes the exact 1-hop dependency graph, returning only the target file and its direct imported types (<800 tokens).
 
 ### 2. Targeted Surgical Grafting (`ast_surgery.py`)
 When adding a feature to an ongoing project, workers **never rewrite entire legacy files**. Instead, they use structural AST node surgery:
 * `INJECT_IMPORT`: Adds missing imports cleanly at the top without duplicates.
 * `APPEND_ROUTE`: Mounts a new route controller into an existing Express/FastAPI router.
 * `GRAFT_COMPONENT`: Injects a child component into an existing React tree without altering surrounding formatting or comments.
+
+---
+
+## 4.5. The Autonomous Living Skill Engine ("Autonomous Skill Synthesis")
+
+To achieve true universal domain expertise without manual human authoring, CEST implements a **Self-Updating Living Skill Engine** (`.agents/scripts/skill_synthesizer.py`):
+
+```
+                           [ Incoming User Request ]
+                                       │
+                                       ▼
+                   [ Conductor: Domain Capability Check ]
+                                       │
+                    ┌──────────────────┴──────────────────┐
+                    ▼                                     ▼
+        [ Known Domain Skill ]                [ "Skill-Cache Miss" ]
+        (e.g., React, Express, Postgres)      (e.g., "Solana Anchor", "LangGraph")
+                    │                                     │
+                    ▼                                     ▼
+           Direct JIT Slicing                 [ Autonomous Skill Synthesizer ]
+                                                          │
+                                                          ├─► 1. Web Search Official Docs
+                                                          ├─► 2. Filter via Priority Matrix
+                                                          ├─► 3. Compiler Grounding Verifier
+                                                          └─► 4. Save to .agents/skills/
+```
+
+### Core Autonomous Mechanisms & Mitigations:
+1. **Cache-Miss & Freshness Trigger:** If a technology is missing from `.agents/skills/` or if `lastResearched` is >90 days old, Conductor triggers autonomous synthesis.
+2. **Authority Priority Matrix:** Prioritizes official documentation (`docs.*`, official GitHub repos); strictly bans tutorial aggregators and SEO content farms.
+3. **Compiler Grounding Verifier (Mitigation for Skill Drift):** The synthesizer runs a 10-line scratch snippet (`repro.ts` / `python -c`) through the local compiler to verify that syntax and imports are valid before saving.
+4. **Immutability Protection:** Foundational skills like `ponytail` are marked as **IMMUTABLE** and cannot be overwritten or diluted by automated synthesis.
+5. **Ephemeral Role Morphing:** Conductor uses synthesized skills to morph base strike workers into specialized domain experts on the fly, keeping `.agents/agents/` strictly locked to the Core 6.
 
 ---
 
@@ -406,6 +436,12 @@ CEST operates on a **Strict Negative-Knowledge Mandate**:
   "tags": ["stripe", "express", "webhook"]
 }
 ```
+
+### AST Domain-Noun Sanitization Filter (Zero Contamination)
+To prevent project-specific proprietary concepts or client terms from polluting the global evolutionary knowledge base, `chief-of-staff` executes the **AST Domain-Noun Sanitizer**:
+1. **Strip Project Specifics:** Removes all application names, client identities, database table specifics (e.g. `ShoeCart`, `PatientHealthRecord`).
+2. **Abstract to Technical Pattern:** Replaces domain nouns with generic architectural terminology (e.g. `order_items nullable join` $\rightarrow$ `relational join on nullable foreign key`).
+3. **Verify Universal Generality:** An invariant is only persisted if it applies to ANY future software engineering project using that tech stack.
 
 ### Self-Evolution via Chief-of-Staff Invariant Distillation
 During project retrospectives, the background `chief-of-staff` agent reads accumulated entries from `event-queue.jsonl`:
