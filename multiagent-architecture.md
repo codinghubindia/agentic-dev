@@ -537,6 +537,13 @@ CEST Architecture:   [███████░░░░░░░░░░░░�
 * **Deterministic Mitigation:**
   - **Zero-Worker Fast-Path (`workflows/cest-quick-fix.json`):** When Conductor detects a low-complexity single-file edit ($\le 25$ lines), it executes the edit directly using native file editing tools and runs the targeted compiler test, bypassing worker dispatch entirely and matching single-agent speed with orchestra-grade compiler safety.
 
+### 9. Host Python Absence & Tiered Runtime Resilience
+* **Risk:** The developer workstation or CI environment lacks Python in PATH (e.g. pure Node.js/frontend developers, air-gapped containers, or locked-down corporate Windows setups). Attempting to run `.agents/scripts/*.py` crashes with `python: command not found`.
+* **Deterministic Mitigation:**
+  - **Dual-Engine Architecture (Python + Vanilla Node.js Mirror):** Every deterministic script is mirrored in `.agents/scripts/node/*.js` using 100% native Node.js standard libraries (`node:fs`, `node:path`, `node:child_process`). If Python is absent but Node is detected, the Conductor seamlessly executes the `.js` mirrors with zero prompt friction and identical speed (<1.2s).
+  - **Interactive Auto-Install Permission Protocol:** If *neither* Python nor Node.js is present in PATH, the Conductor presents an interactive `ask_question` modal offering to auto-install Python 3 via the detected OS package manager (`winget`, `brew`, `apt`).
+  - **Graceful Pure-Native Degradation:** If the user declines installation or lacks administrator privileges, the framework shifts to **Mode 3: Pure Native Tooling Mode** (relying on Antigravity's native `view_file`, `replace_file_content`, and `qa-auditor` diff auditing), ensuring work proceeds without crashes or halting hazards.
+
 ---
 
 ## 12. Complete Migration Blueprint & Implementation Plan
