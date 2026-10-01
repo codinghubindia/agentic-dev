@@ -45,3 +45,4 @@ test-results/
 
 # Agent Execution artifacts
 .agent_execution/
+scratch/

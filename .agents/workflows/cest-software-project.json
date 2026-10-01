@@ -18,9 +18,9 @@
   "phases": [
     {
       "id": "phase_1_intake_and_architecture",
-      "name": "Direct Intake & Ponytail Architecture",
+      "name": "Direct Intake, Environment Probe & Preflight Architecture",
       "lead": "conductor",
-      "description": "Conductor conducts interactive intake, confirms feature manifest & skippable phases, ingests AST skeleton, and emits CIR contract.",
+      "description": "Conductor executes environment probe, interactive intake, confirms feature manifest & skippable phases, ingests AST skeleton with dynamic DI detection, emits CIR contract, and runs preflight contract validation.",
       "requiredArtifacts": [
         ".agent_execution/cir.json",
         ".agent_execution/workflow-state.json"
@@ -37,7 +37,7 @@
         "strike-worker-infra"
       ],
       "parallel": true,
-      "description": "Stateless strike workers execute concurrent implementation tasks under strict Ponytail constraints and JIT skill slices.",
+      "description": "Stateless strike workers execute concurrent implementation tasks under strict Ponytail constraints, boundary collision guards, and JIT skill slices.",
       "requiredArtifacts": [
         ".agent_execution/receipts/"
       ],
@@ -50,7 +50,7 @@
       "agents": [
         "qa-auditor"
       ],
-      "description": "Executes 0-token Pass 1 local compiler gate (tsc/pytest) followed by Pass 2 adversarial diff inspection for OWASP and Anti-Vibe-Code compliance.",
+      "description": "Executes 0-token Pass 1 local compiler gate (tsc/pytest) or diff-audit fallback, followed by Pass 2 adversarial diff inspection for OWASP, Anti-Vibe-Code, and Ponytail compliance.",
       "requiredArtifacts": [
         ".agent_execution/audit-report.md"
       ],

@@ -487,39 +487,55 @@ CEST Architecture:   [███████░░░░░░░░░░░░�
 
 ## 11. Comprehensive Edge Cases, Pitfalls, & Deterministic Mitigations
 
-### Edge Case 1: Monolithic Files Exceeding Context Limits (>5,000 Lines)
-* **Risk:** Legacy codebases often contain massive 5,000-line monolithic files. Reading or rewriting the whole file exceeds tool buffers (e.g. `view_file` 46KB cap) and causes corrupted overwrites.
-* **Mitigation:** CEST workers are forbidden from performing full-file writes on files >300 lines. Instead, they use **`ast_surgery.py`** or targeted line-range edits (`replace_file_content`) using concrete character anchors.
+### 1. The Conductor Cognitive Bottleneck & Single Point of Failure
+* **Risk:** In CEST, Conductor single-handedly produces the CIR contract. A flawed relational model or type discrepancy in `cir.json` cascades down to all parallel workers simultaneously.
+* **Deterministic Mitigation:**
+  - **Preflight Contract Validation Script (`.agents/scripts/preflight_contract_validator.py`):** Deterministically parses and validates `cir.json` against `cir.schema.json`, verifies cross-entity foreign key integrity, ensures endpoint schemas are typed, and audits file boundary disjointness before workers are spawned.
+  - **Dual-Pass Contract Self-Audit:** For complex architectures ($\ge 5$ entities or $\ge 15$ endpoints), Conductor is mandated to execute an internal sanity check pass before dispatching strike teams.
 
-### Edge Case 2: Parallel Worker File Contention & Race Conditions
-* **Risk:** Worker A (Backend API) and Worker B (Analytics) both attempt to modify `src/server.ts` or `src/index.ts` simultaneously, causing clobbered code or merge conflicts.
-* **Mitigation:** **Strict Disjoint Ownership Boundaries.** During task decomposition, Conductor locks file assignments. If two workers require access to the same barrel file, the barrel updates are deferred to a post-merge Conductor pass.
+### 2. Monolithic Coupling & Boundary Collisions in Legacy Repos
+* **Risk:** In legacy monolithic architectures, centralized God-files (e.g. `routes.ts`, `models.py`, `schema.prisma`) are shared across features. Parallel workers modifying the same file cause Git merge conflicts or destructive overwrites.
+* **Deterministic Mitigation:**
+  - **Boundary Collision Detection (`.agents/scripts/ast_surgery.py detect_collisions`):** Before worker dispatch, file boundaries are inspected for intersections.
+  - **Dynamic Concurrency Collapse:** If two workers require access to the same code file, Conductor automatically collapses execution mode from `PARALLEL` to `SEQUENTIAL`.
+  - **AST Structural Merging (`ast_surgery.py merge_model / append_route`):** Structural code grafting safely appends routes, models, and imports without overwriting whole files.
 
-### Edge Case 3: Flaky Network & Provider Rate Limits (HTTP 429)
-* **Risk:** Spawning 4 parallel workers simultaneously triggers model provider TPM (Tokens Per Minute) rate limits.
-* **Mitigation:** **2-Second Jittered Stagger.** The Conductor introduces an automatic 2000ms delay with randomized jitter between subagent spawns, flattening the API request spike.
+### 3. Ghost Skeleton Static Analysis Blindspots (Dynamic Imports & Runtime DI)
+* **Risk:** Pure lexical AST regexes miss dynamic imports (`import(`./plugins/${p}`)`), dynamic require calls, and runtime Dependency Injection containers (NestJS `@Injectable()`, `@Module()`, Angular `@Component()`, FastAPI `Depends()`).
+* **Deterministic Mitigation:**
+  - **Enhanced Ghost Skeleton Engine (`.agents/scripts/ghost_skeleton.py`):** Automatically detects dynamic import expressions and runtime DI decorators, inspecting `package.json#exports` and `tsconfig.json#paths`.
+  - **Confidence Scoring & Advisory Flags:** Outputs a `confidence: "high" | "medium" | "low"` rating and alerts the Conductor whenever dynamic wiring is detected so module entrypoints are explicitly resolved.
 
-### Edge Case 4: Broken Syntax in Brownfield Source Code
-* **Risk:** Taking over a legacy codebase that currently has unclosed brackets, syntax errors, or Git conflict markers (`<<<<<<< HEAD`). Standard AST parsers crash with fatal exceptions.
-* **Mitigation:** **Defensive Parse Isolation.** `ghost_skeleton.py` wraps file scans in try-except blocks. If a file fails to parse, it emits an empty signature with `/* parse-fallback */` and continues indexing the rest of the codebase without halting.
+### 4. Ephemeral Worker Fragility on Wide-Area Refactors
+* **Risk:** Stateless 1-shot workers excel at localized feature additions, but fail or timeout when tasked with cross-cutting structural refactorings touching dozens of files (e.g., renaming a core domain entity or remapping import paths).
+* **Deterministic Mitigation:**
+  - **Deterministic Codemod Engine (`.agents/scripts/codemod_engine.py`):** When a refactor touches $> 5$ files, Conductor avoids spawning dozens of LLM workers. Instead, it runs `codemod_engine.py rename-symbol` or `re-import` to execute exact word-boundary symbol replacements across the entire codebase in milliseconds with dry-run verification.
 
-### Edge Case 5: Circular Dependency Loops
-* **Risk:** Module A imports Module B, which imports Module A. Recursive dependency reachability scans enter an infinite loop.
-* **Mitigation:** **Cycle-Safe Traversal.** Graph traversal maintains a `visited_paths` canonical set and enforces a strict 3-hop recursion ceiling.
+### 5. Living Skill Synthesizer Quality & Latency Hazard
+* **Risk:** Web-synthesized skills can suffer from documentation drift (mixing legacy and current library versions) or search rate limiting/timeouts, leading to hallucinated API calls.
+* **Deterministic Mitigation:**
+  - **Provisional Staging (`.agents/skills/_provisional/`):** New living skills are marked as `provisional: true` and staged separately.
+  - **Compiler Verification Gate & Quarantine (`skill_synthesizer.py --promote / --quarantine`):** If code written with a provisional skill passes Pass 1 compiler verification, it is promoted to production. If it fails twice, it is quarantined to `_quarantined/` and an error is logged.
+  - **Local Type Definition Fallback (`skill_synthesizer.py --inspect-types`):** If web search is unavailable, the synthesizer reads type signatures directly from installed `node_modules/@types` or package `.d.ts` files for 100% verified ground truth.
 
-### Edge Case 6: Human Approval Deadlock (User Away from Keyboard)
-* **Risk:** Conductor pauses for user approval on the live browser checkpoint. If aggressive liveness timers are running, the system kills the session as "timed out".
-* **Mitigation:** **Human-Waiting Grace State.** When entering `[APPROVAL_REQUIRED]`, the Conductor switches to a passive 30-minute keep-alive mode that consumes 0 tokens while awaiting the user's return.
+### 6. Host Environment Toolchain Dependencies for Machine Gates
+* **Risk:** Pass 1 Shift-Left QA relies on zero-token host compilers (`tsc`, `pytest`, `cargo check`). If the host machine lacks the runtime or `npm install` hasn't run, the compiler gate fails erroneously.
+* **Deterministic Mitigation:**
+  - **Preflight Environment Probe (`.agents/scripts/environment_probe.py`):** Automatically detects installed compilers, package managers, and container runtimes, checking dependency readiness (`package.json` vs `node_modules`).
+  - **Graceful High-Rigor Diff Audit Fallback:** When compilers are unavailable, the framework logs an alert: `[!WARNING] Host compiler unavailable; falling back to High-Rigor Diff Audit.` and delegates to `qa-auditor` for rigorous manual type and null-safety verification.
 
-### Edge Case 7: Iterative UI Rejection Circuit Breaker
-* **Risk:** User gets trapped in an endless cycle of requesting micro-tweaks to UI styling, burning tokens indefinitely.
-* **Mitigation:** **3-Cycle Circuit Breaker.** If the user submits feedback more than 3 consecutive times on the same component, the Conductor pauses and presents an iteration summary modal:
-  ```
-  "3 feedback cycles reached for [Component]. Would you like to:
-   1. Finalize current state and proceed to QA.
-   2. Consolidate all remaining style adjustments into a single batch list.
-   3. Reset to initial design contract."
-  ```
+### 7. Chief-of-Staff Memory Pollution & Domain Overfitting
+* **Risk:** Learning from transient network outages (e.g. 503 Service Unavailable, rate limits) or overfitting project-specific business nouns into global invariants creates corrupted system prompts.
+* **Deterministic Mitigation:**
+  - **Memory Guardian (`.agents/scripts/memory_guardian.py`):** Enforces a strict **Recurrence Threshold** ($\ge 3$ occurrences across sessions) before an invariant becomes active.
+  - **Transient Error Filter:** Regex-filters out network timeouts, 502/503/504 errors, socket hang-ups, and 429 rate limits.
+  - **AST Domain-Noun Sanitization:** Replaces project-specific entities (`CryptoWallet`, `PatientRecord`) with generic architectural concepts (`account`, `user`, `transaction`).
+  - **Structured Invariant Ledger:** Maintains `.agents/memory/invariants.json` with active, provisional, and revoked tracking.
+
+### 8. Trivial Task Over-Orchestration (The Micro-Edit Fast Path)
+* **Risk:** For single-line typo fixes, configuration tweaks, or minor doc edits, running the full multi-phase orchestration pipeline burns unnecessary tokens and introduces multi-turn latency.
+* **Deterministic Mitigation:**
+  - **Zero-Worker Fast-Path (`workflows/cest-quick-fix.json`):** When Conductor detects a low-complexity single-file edit ($\le 25$ lines), it executes the edit directly using native file editing tools and runs the targeted compiler test, bypassing worker dispatch entirely and matching single-agent speed with orchestra-grade compiler safety.
 
 ---
 

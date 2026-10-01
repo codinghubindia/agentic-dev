@@ -3,6 +3,7 @@
 ghost_skeleton.py - Multi-Language 3-Tier AST Signature & Reachability Engine
 Extracts public interfaces, exported functions, routes, and schemas across
 TypeScript, JavaScript, Python, Go, Rust, Prisma, and SQL in < 1.5s.
+Includes Dynamic Import & Runtime DI Decorator detection for full framework reachability.
 
 Modes:
   --topology               : Tier 1 System Topology Vector (<200 tokens)
@@ -33,15 +34,22 @@ IGNORE_DIRS = {
 }
 
 def extract_signatures(file_path: str, lang: str) -> dict:
-    """Extracts public signatures and imports from a source file while skipping private bodies."""
+    """Extracts public signatures, static imports, dynamic imports, and DI decorators."""
     try:
         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
     except Exception as e:
-        return {"signatures": f"/* Error reading file: {e} */\n", "imports": []}
+        return {
+            "signatures": f"/* Error reading file: {e} */\n",
+            "imports": [],
+            "dynamic_imports": [],
+            "di_decorators": []
+        }
 
     signatures = []
     imports = []
+    dynamic_imports = []
+    di_decorators = []
     
     if lang in ["typescript", "javascript"]:
         in_interface = False
@@ -49,7 +57,19 @@ def extract_signatures(file_path: str, lang: str) -> dict:
         
         for line in lines:
             stripped = line.strip()
-            # Capture imports and dependency reachability
+            
+            # Detect dynamic imports: import(...) or dynamic require
+            if re.search(r"\bimport\s*\(", stripped) and not stripped.startswith("import "):
+                dynamic_imports.append(stripped)
+                signatures.append(f"// Dynamic Import: {stripped}")
+
+            # Detect Runtime Dependency Injection Decorators (NestJS / Angular)
+            di_match = re.search(r"@([A-Z][A-Za-z0-9_]+)\s*\(", stripped)
+            if di_match and di_match.group(1) in ["Injectable", "Module", "Controller", "Service", "Component", "Inject"]:
+                di_decorators.append(di_match.group(1))
+                signatures.append(stripped)
+
+            # Capture static imports and dependency reachability
             if stripped.startswith("import ") or "require(" in stripped:
                 signatures.append(stripped)
                 match = re.search(r"from\s+['\"`]([^'\"`]+)['\"`]|require\(['\"`]([^'\"`]+)['\"`]\)", stripped)
@@ -81,6 +101,11 @@ def extract_signatures(file_path: str, lang: str) -> dict:
     elif lang == "python":
         for line in lines:
             stripped = line.strip()
+            # Detect dynamic imports (__import__, importlib)
+            if "importlib.import_module" in stripped or "__import__" in stripped:
+                dynamic_imports.append(stripped)
+                signatures.append(f"# Dynamic Import: {stripped}")
+
             if stripped.startswith("import ") or stripped.startswith("from "):
                 signatures.append(stripped)
                 mod_match = re.search(r"from\s+([^\s]+)\s+import|import\s+([^\s]+)", stripped)
@@ -92,6 +117,11 @@ def extract_signatures(file_path: str, lang: str) -> dict:
                 sig = stripped.split(":")[0].strip()
                 signatures.append(f"{sig}: ...")
             elif re.match(r"^@(app|router)\.(get|post|put|delete|patch)\(", stripped):
+                signatures.append(stripped)
+            elif stripped.startswith("@"):
+                # Detect dependency injection or decorator in python (FastAPI Depends)
+                if "Depends(" in stripped:
+                    di_decorators.append("Depends")
                 signatures.append(stripped)
 
     elif lang == "prisma":
@@ -117,7 +147,9 @@ def extract_signatures(file_path: str, lang: str) -> dict:
 
     return {
         "signatures": "\n".join(signatures),
-        "imports": imports
+        "imports": imports,
+        "dynamic_imports": dynamic_imports,
+        "di_decorators": list(set(di_decorators))
     }
 
 def get_topology(root_dir: str = ".") -> dict:
@@ -126,21 +158,44 @@ def get_topology(root_dir: str = ".") -> dict:
         "tier": "Tier 1: System Topology Vector",
         "manifests": {},
         "rootDirs": [],
-        "primaryStack": "unknown"
+        "primaryStack": "unknown",
+        "manifestExports": {},
+        "pathAliases": {}
     }
     
-    if os.path.exists(os.path.join(root_dir, "package.json")):
+    # Inspect package.json
+    pkg_path = os.path.join(root_dir, "package.json")
+    if os.path.exists(pkg_path):
         try:
-            with open(os.path.join(root_dir, "package.json"), "r", encoding="utf-8") as f:
+            with open(pkg_path, "r", encoding="utf-8") as f:
                 pkg = json.load(f)
                 deps = list(pkg.get("dependencies", {}).keys())
                 dev_deps = list(pkg.get("devDependencies", {}).keys())
                 topology["manifests"]["package.json"] = {
                     "name": pkg.get("name", ""),
-                    "keyDeps": [d for d in deps if d in ["next", "react", "express", "fastify", "prisma", "tailwindcss", "framer-motion", "vue", "svelte"]],
+                    "keyDeps": [d for d in deps if d in ["next", "react", "express", "fastify", "nestjs", "@nestjs/core", "prisma", "tailwindcss", "framer-motion", "vue", "svelte"]],
                     "totalDeps": len(deps) + len(dev_deps)
                 }
                 topology["primaryStack"] = "Node.js / TypeScript"
+                if "exports" in pkg:
+                    topology["manifestExports"] = pkg["exports"]
+                if "main" in pkg:
+                    topology["manifestExports"]["main"] = pkg["main"]
+        except Exception:
+            pass
+
+    # Inspect tsconfig.json for path aliases
+    ts_path = os.path.join(root_dir, "tsconfig.json")
+    if os.path.exists(ts_path):
+        try:
+            with open(ts_path, "r", encoding="utf-8") as f:
+                # Basic comment stripping for json
+                raw_ts = f.read()
+                cleaned_ts = re.sub(r"//.*$", "", raw_ts, flags=re.MULTILINE)
+                ts_cfg = json.loads(cleaned_ts)
+                paths = ts_cfg.get("compilerOptions", {}).get("paths", {})
+                if paths:
+                    topology["pathAliases"] = paths
         except Exception:
             pass
 
@@ -163,13 +218,18 @@ def get_topology(root_dir: str = ".") -> dict:
     return topology
 
 def scan_codebase(root_dir: str = ".") -> dict:
-    """Tier 2: Traverses codebase in <1.5s, returning public AST signature table."""
+    """Tier 2: Traverses codebase in <1.5s, returning public AST signature table with confidence score."""
     skeleton = {
         "tier": "Tier 2: Public AST Ghost Skeleton",
         "scanned_files": 0,
+        "confidence": "high",
+        "dynamicConstructsDetected": [],
+        "runtimeDiModules": [],
         "modules": {}
     }
     
+    total_dynamic_constructs = 0
+
     for dirpath, dirnames, filenames in os.walk(root_dir):
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and (not d.startswith(".") or d == ".agents")]
         
@@ -179,13 +239,39 @@ def scan_codebase(root_dir: str = ".") -> dict:
                 rel_path = os.path.relpath(os.path.join(dirpath, file), root_dir).replace("\\", "/")
                 lang = SUPPORTED_EXTENSIONS[ext]
                 extracted = extract_signatures(os.path.join(dirpath, file), lang)
+                
                 if extracted["signatures"].strip():
                     skeleton["modules"][rel_path] = {
                         "lang": lang,
                         "signatures": extracted["signatures"],
                         "imports": extracted["imports"]
                     }
+                    if extracted["dynamic_imports"]:
+                        skeleton["modules"][rel_path]["dynamic_imports"] = extracted["dynamic_imports"]
+                        skeleton["dynamicConstructsDetected"].append({
+                            "file": rel_path,
+                            "patterns": extracted["dynamic_imports"]
+                        })
+                        total_dynamic_constructs += len(extracted["dynamic_imports"])
+
+                    if extracted["di_decorators"]:
+                        skeleton["modules"][rel_path]["di_decorators"] = extracted["di_decorators"]
+                        skeleton["runtimeDiModules"].append({
+                            "file": rel_path,
+                            "decorators": extracted["di_decorators"]
+                        })
+
                     skeleton["scanned_files"] += 1
+
+    # Calculate overall confidence
+    if total_dynamic_constructs > 5:
+        skeleton["confidence"] = "medium"
+        skeleton["advisory"] = "Dynamic imports detected across multiple modules. Verify runtime entrypoints."
+    elif skeleton["runtimeDiModules"]:
+        skeleton["confidence"] = "medium"
+        skeleton["advisory"] = "Runtime Dependency Injection detected. Module bindings established at runtime."
+    else:
+        skeleton["confidence"] = "high"
 
     return skeleton
 
@@ -218,8 +304,12 @@ def reachability_slice(target_path_or_symbol: str, root_dir: str = ".") -> dict:
         "tier": "Tier 3: Reachability Slice",
         "primaryTarget": matched_file,
         "primarySignatures": target_data["signatures"],
+        "confidence": "high" if "dynamic_imports" not in target_data else "medium",
         "directDependencies": {}
     }
+
+    if "dynamic_imports" in target_data:
+        resolved_slice["dynamicImports"] = target_data["dynamic_imports"]
 
     for imp in target_data["imports"]:
         clean_imp = os.path.basename(imp).split(".")[0]

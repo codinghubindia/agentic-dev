@@ -10,7 +10,15 @@
       "strike-worker-backend": "flash",
       "strike-worker-frontend": "flash"
     },
-    "parallelismLimit": 1
+    "parallelismLimit": 1,
+    "fastPath": {
+      "enabled": true,
+      "maxTouchedFiles": 1,
+      "maxLinesChanged": 25,
+      "bypassWorkerSpawn": true,
+      "allowDirectConductorEdit": true,
+      "description": "For single-file surgical fixes or documentation/config tweaks, Conductor performs direct edit and compiler verification with 0 worker dispatch overhead."
+    }
   },
   "phases": [
     {

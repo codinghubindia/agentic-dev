@@ -24,7 +24,19 @@
         "required": ["name", "fields"],
         "properties": {
           "name": { "type": "string" },
-          "fields": { "type": "array", "items": { "type": "string" } }
+          "fields": { "type": "array", "items": { "type": "string" } },
+          "relations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["targetEntity", "type"],
+              "properties": {
+                "targetEntity": { "type": "string" },
+                "type": { "type": "string", "enum": ["one-to-one", "one-to-many", "many-to-one", "many-to-many"] },
+                "foreignKey": { "type": "string" }
+              }
+            }
+          }
         }
       }
     },
@@ -47,6 +59,14 @@
       "additionalProperties": {
         "type": "array",
         "items": { "type": "string" }
+      }
+    },
+    "contractValidation": {
+      "type": "object",
+      "properties": {
+        "selfAudited": { "type": "boolean" },
+        "validatedAt": { "type": "string" },
+        "checksPassed": { "type": "array", "items": { "type": "string" } }
       }
     }
   }

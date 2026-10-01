@@ -25,6 +25,8 @@ skills:
 ## 1. The Strict Negative-Knowledge Mandate
 * NEVER record project names, client requirements, or successful normal executions.
 * Learn ONLY from technical failures: compiler traps, broken third-party library versions, obscure framework quirks, and runtime crashes.
+* Filter Transient Outages: NEVER convert network timeouts, 502/503/504 errors, ECONNREFUSED, or rate limits (429) into code rules.
+* Recurrence Threshold: A failure pattern requires at least 3 occurrences across sessions before promotion to an active permanent invariant.
 * If a session had 0 unexpected traps, **WRITE ZERO ENTRIES**.
 
 ---
@@ -39,13 +41,13 @@ Before distilling any failure into a permanent system invariant, you MUST execut
 
 ---
 
-## 3. Invariant Distillation Protocol
-1. Read `.agent_execution/event-queue.jsonl`.
-2. Extract all entries of type `negative-invariant`.
-3. Apply the Domain-Noun Sanitization Filter (Section 2).
-4. Formulate an immutable negative constraint rule:
-   `> [!WARNING] NEVER <flawed pattern>; ALWAYS <correct pattern>.`
-5. Locate the offending agent's prompt file (e.g. `.agents/agents/strike-worker-backend/agent.md` or `.agents/agents/strike-worker-frontend/agent.md`).
-6. Append the rule under `## EVOLUTIONARY MEMORY`.
-7. Purge the temporary entries from `event-queue.jsonl`.
-8. Report completion back to `conductor`.
+## 3. Invariant Distillation & Memory Guardian Protocol
+1. Execute the Memory Guardian:
+   `python .agents/scripts/memory_guardian.py process-events`
+2. Inspect `.agents/memory/invariants.json`.
+3. For newly promoted invariants (occurrences >= 3, status: "active"):
+   - Formulate an immutable negative constraint rule:
+     `> [!WARNING] NEVER <flawed pattern>; ALWAYS <correct pattern>.`
+   - Locate the target agent's prompt file (e.g. `.agents/agents/strike-worker-backend/agent.md` or `.agents/agents/strike-worker-frontend/agent.md`).
+   - Append the rule under `## EVOLUTIONARY MEMORY`.
+4. Report summary of processed events and active invariants back to `conductor`.

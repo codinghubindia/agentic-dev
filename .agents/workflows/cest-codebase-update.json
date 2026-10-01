@@ -18,7 +18,7 @@
       "id": "phase_1_archaeology_and_graft_plan",
       "name": "Brownfield Archaeology & Graft Planning",
       "lead": "conductor",
-      "description": "Scans repository with ghost_skeleton.py in <1.5s, maps existing exports, and plans surgical changes without rewriting legacy files.",
+      "description": "Scans repository with ghost_skeleton.py in <1.5s, maps existing exports and dynamic DI patterns, runs environment_probe.py, and plans surgical changes without rewriting legacy files.",
       "requiredArtifacts": [
         ".agent_execution/graft-plan.md"
       ],
@@ -26,14 +26,14 @@
     },
     {
       "id": "phase_2_surgical_implementation",
-      "name": "Targeted AST Surgical Grafting",
+      "name": "Targeted AST Surgical Grafting & Codemods",
       "lead": "conductor",
       "agents": [
         "strike-worker-backend",
         "strike-worker-frontend"
       ],
       "parallel": true,
-      "description": "Workers graft code into existing files using ast_surgery.py and line replacements, preserving legacy structure.",
+      "description": "Workers graft code into existing files using ast_surgery.py, run codemod_engine.py for wide-area refactors, and enforce boundary collision serialization.",
       "requiredArtifacts": [
         ".agent_execution/receipts/"
       ],

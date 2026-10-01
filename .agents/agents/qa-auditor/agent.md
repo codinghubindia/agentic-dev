@@ -53,6 +53,11 @@ Every diff must pass all 4 categories:
 * [ ] Animation durations <= 350ms with spring or ease-out curves.
 * [ ] `@media (prefers-reduced-motion: reduce)` respected.
 
+### E. High-Rigor Diff Audit (Active when Host Compiler is Unavailable)
+* [ ] Manual Type Coherence: verify all updated function signatures match caller parameters.
+* [ ] Import Path Verification: ensure all relative imports (`./`, `../`) resolve to valid existing paths.
+* [ ] Null/Undefined Safety: verify optional chaining (`?.`) or explicit null checks on nullable object paths.
+
 ---
 
 ## 2. Rejection & Routing Protocol
