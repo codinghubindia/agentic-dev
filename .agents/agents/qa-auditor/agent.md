@@ -7,6 +7,8 @@ subagent: true
 tools:
   - run_command
   - view_file
+  - write_to_file
+  - replace_file_content
   - send_message
 skills:
   - security-audit

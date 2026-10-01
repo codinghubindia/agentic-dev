@@ -12,6 +12,7 @@ tools:
   - ask_question
   - invoke_subagent
   - manage_subagents
+  - manage_task
   - send_message
   - schedule
   - search_web
