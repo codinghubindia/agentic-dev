@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/workflow-state.schema.json",
+  "id": "cest-software-project",
+  "name": "CEST Adaptive Fullstack Software Pipeline",
+  "description": "Next-generation adaptive software delivery pipeline: Direct Intake -> Ponytail Architecture -> Ephemeral Strike -> Shift-Left QA & Live Browser Checkpoint",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "conductor": "pro",
+      "qa-auditor": "pro",
+      "chief-of-staff": "pro",
+      "strike-worker-backend": "flash",
+      "strike-worker-frontend": "flash",
+      "strike-worker-infra": "flash"
+    },
+    "parallelismLimit": 4
+  },
+  "phases": [
+    {
+      "id": "phase_1_intake_and_architecture",
+      "name": "Direct Intake & Ponytail Architecture",
+      "lead": "conductor",
+      "description": "Conductor conducts interactive intake, confirms feature manifest & skippable phases, ingests AST skeleton, and emits CIR contract.",
+      "requiredArtifacts": [
+        ".agent_execution/cir.json",
+        ".agent_execution/workflow-state.json"
+      ],
+      "hardGate": true
+    },
+    {
+      "id": "phase_2_parallel_strike_execution",
+      "name": "Ephemeral Parallel Strike Execution",
+      "lead": "conductor",
+      "agents": [
+        "strike-worker-backend",
+        "strike-worker-frontend",
+        "strike-worker-infra"
+      ],
+      "parallel": true,
+      "description": "Stateless strike workers execute concurrent implementation tasks under strict Ponytail constraints and JIT skill slices.",
+      "requiredArtifacts": [
+        ".agent_execution/receipts/"
+      ],
+      "hardGate": true
+    },
+    {
+      "id": "phase_3_shift_left_verification_and_audit",
+      "name": "Deterministic Compiler Gate & Adversarial Audit",
+      "lead": "conductor",
+      "agents": [
+        "qa-auditor"
+      ],
+      "description": "Executes 0-token Pass 1 local compiler gate (tsc/pytest) followed by Pass 2 adversarial diff inspection for OWASP and Anti-Vibe-Code compliance.",
+      "requiredArtifacts": [
+        ".agent_execution/audit-report.md"
+      ],
+      "hardGate": true
+    },
+    {
+      "id": "phase_4_live_approval_and_delivery",
+      "name": "Live Browser Checkpoint & Evolutionary Memory",
+      "lead": "conductor",
+      "description": "Presents running application to user for live browser review. chief-of-staff distills evolutionary memory from session errors.",
+      "requiredArtifacts": [
+        ".agent_execution/delivery-signoff.md"
+      ],
+      "hardGate": true
+    }
+  ]
+}

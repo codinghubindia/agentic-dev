@@ -1,77 +1,52 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "CompactIntermediateRepresentation",
-  "description": "Ultra-dense semantic specification for fullstack features, enabling 0-token deterministic scaffolding and eliminating LLM boilerplate typing.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Compact Intermediate Representation (CIR)",
+  "description": "Dense schema defining feature contracts, entities, and endpoints without token bloat",
   "type": "object",
-  "required": ["feature", "version", "entities", "operations"],
+  "required": ["version", "projectName", "techStack", "entities", "endpoints", "fileBoundaries"],
   "properties": {
-    "feature": {
-      "type": "string",
-      "description": "Name of the feature or module"
-    },
-    "version": {
-      "type": "string",
-      "default": "1.0"
+    "version": { "type": "string", "default": "7.0" },
+    "projectName": { "type": "string" },
+    "techStack": {
+      "type": "object",
+      "required": ["backend", "frontend", "database"],
+      "properties": {
+        "backend": { "type": "string" },
+        "frontend": { "type": "string" },
+        "database": { "type": "string" },
+        "infra": { "type": "string" }
+      }
     },
     "entities": {
-      "type": "object",
-      "description": "Entity models with fields and constraints",
-      "additionalProperties": {
+      "type": "array",
+      "items": {
         "type": "object",
-        "required": ["fields"],
+        "required": ["name", "fields"],
         "properties": {
-          "fields": {
-            "type": "object",
-            "additionalProperties": { "type": "string" },
-            "description": "Field name to compact type notation (e.g. uuid!, string!unique, datetime, int?)"
-          },
-          "relations": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          },
-          "indexes": {
-            "type": "array",
-            "items": { "type": "string" }
-          }
+          "name": { "type": "string" },
+          "fields": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
-    "operations": {
-      "type": "object",
-      "description": "API mutations, queries, or RPCs",
-      "additionalProperties": {
+    "endpoints": {
+      "type": "array",
+      "items": {
         "type": "object",
-        "required": ["type", "input", "output", "action"],
+        "required": ["method", "path", "ownerWorker"],
         "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["query", "mutation", "subscription", "job"]
-          },
-          "auth": {
-            "type": "string",
-            "description": "Auth guard or permission (e.g. public, authenticated, admin)"
-          },
-          "input": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          },
-          "output": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          },
-          "guards": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "action": {
-            "type": "string",
-            "description": "Compact high-level semantic execution description"
-          },
-          "sideEffects": {
-            "type": "array",
-            "items": { "type": "string" }
-          }
+          "method": { "type": "string", "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+          "path": { "type": "string" },
+          "auth": { "type": "boolean" },
+          "ownerWorker": { "type": "string" },
+          "contract": { "type": "object" }
         }
+      }
+    },
+    "fileBoundaries": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
       }
     }
   }

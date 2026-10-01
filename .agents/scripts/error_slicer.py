@@ -1,62 +1,61 @@
 #!/usr/bin/env python3
 """
-Error Slicer: Deterministic Compiler & Test Error Parser
-Reduces 300-line stack traces (4,500 tokens) to a 90-token Error Tuple.
+error_slicer.py - Deterministic Compiler & Test Stack Trace Parser
+Reduces 300-line stack traces down to a 90-token Error Tuple:
+(file, line, column, error_code, culprit, message)
 """
 
 import sys
 import re
 import json
 
-def slice_compiler_error(raw_stderr: str) -> dict:
-    lines = raw_stderr.splitlines()
+def slice_trace(raw_trace: str) -> dict:
+    """Parses compiler output (tsc, python, rustc, vitest) to extract actionable error tuples."""
     error_tuple = {
         "file": "unknown",
         "line": 0,
         "column": 0,
         "errorCode": "",
         "message": "",
-        "culpritSnippet": "",
-        "filteredLinesCount": len(lines)
+        "culprit": ""
     }
-    
-    # 1. Check TypeScript / ESLint error patterns (file.ts:line:col - error TSxxxx: message)
-    ts_match = re.search(r'([A-Za-z0-9_\-\.\/]+\.(?:ts|tsx|js|jsx)):(\d+):(\d+)\s*-\s*error\s*([A-Za-z0-9]+):\s*([^\n]+)', raw_stderr)
+
+    # TypeScript / ESLint pattern: file.ts(12,34): error TS1234: Message
+    ts_match = re.search(r"([a-zA-Z0-9_\-\.\/]+\.tsx?)\((\d+),(\d+)\):\s*error\s*(TS\d+)?:\s*(.+)", raw_trace)
     if ts_match:
-        error_tuple["file"] = ts_match.group(1).replace("\\", "/")
+        error_tuple["file"] = ts_match.group(1)
         error_tuple["line"] = int(ts_match.group(2))
         error_tuple["column"] = int(ts_match.group(3))
-        error_tuple["errorCode"] = ts_match.group(4)
+        error_tuple["errorCode"] = ts_match.group(4) or ""
         error_tuple["message"] = ts_match.group(5).strip()
-        
-    # 2. Check Python Traceback (File "...", line X, in ...)
-    py_match = re.findall(r'File "([^"]+)", line (\d+), in ([^\n]+)\n\s*([^\n]+)', raw_stderr)
+        return error_tuple
+
+    # Python Traceback pattern: File "app.py", line 42, in <module>
+    py_match = re.search(r'File "([^"]+)", line (\d+)', raw_trace)
     if py_match:
-        # Get the last non-library frame
-        app_frames = [f for f in py_match if 'site-packages' not in f[0] and 'lib/python' not in f[0]]
-        target_frame = app_frames[-1] if app_frames else py_match[-1]
-        error_tuple["file"] = target_frame[0].replace("\\", "/")
-        error_tuple["line"] = int(target_frame[1])
-        error_tuple["message"] = f"In {target_frame[2]}: {target_frame[3]}"
-        error_tuple["culpritSnippet"] = target_frame[3].strip()
-        
-    # 3. Check Rust / Cargo errors (error[Exxxx]: ... --> file.rs:line:col)
-    rust_match = re.search(r'error(?:\[([A-Za-z0-9]+)\])?:\s*([^\n]+)\n\s*-->\s*([A-Za-z0-9_\-\.\/]+\.rs):(\d+):(\d+)', raw_stderr)
-    if rust_match:
-        error_tuple["errorCode"] = rust_match.group(1) or ""
-        error_tuple["message"] = rust_match.group(2).strip()
-        error_tuple["file"] = rust_match.group(3).replace("\\", "/")
-        error_tuple["line"] = int(rust_match.group(4))
-        error_tuple["column"] = int(rust_match.group(5))
+        error_tuple["file"] = py_match.group(1)
+        error_tuple["line"] = int(py_match.group(2))
+        lines = [l.strip() for l in raw_trace.strip().splitlines() if l.strip()]
+        error_tuple["message"] = lines[-1] if lines else "Python Exception"
+        return error_tuple
 
-    # If no structured pattern matched, grab the first 3 lines containing 'error'
-    if error_tuple["file"] == "unknown":
-        err_lines = [l.strip() for l in lines if re.search(r'\b(error|fail|cannot find|exception)\b', l, re.IGNORECASE)]
-        error_tuple["message"] = " | ".join(err_lines[:3]) if err_lines else lines[0][:150] if lines else "Unknown error"
+    # Vitest / Jest pattern: FAIL path/to/file.test.ts > suite > test
+    test_match = re.search(r"FAIL\s+([^\s]+\.test\.[a-z]+)", raw_trace)
+    if test_match:
+        error_tuple["file"] = test_match.group(1)
+        error_tuple["message"] = "Test assertion failed"
+        # Find AssertionError line
+        assert_line = re.search(r"AssertionError: (.+)", raw_trace)
+        if assert_line:
+            error_tuple["message"] = assert_line.group(1).strip()
+        return error_tuple
 
+    # Fallback: Extract first 3 non-empty lines
+    lines = [l.strip() for l in raw_trace.strip().splitlines() if l.strip()][:3]
+    error_tuple["message"] = " | ".join(lines)
     return error_tuple
 
 if __name__ == "__main__":
-    raw_input = sys.stdin.read()
-    tuple_result = slice_compiler_error(raw_input)
-    print(json.dumps(tuple_result, indent=2))
+    raw_input = sys.argv[1] if len(sys.argv) > 1 else sys.stdin.read()
+    result = slice_trace(raw_input)
+    print(json.dumps(result, indent=2))

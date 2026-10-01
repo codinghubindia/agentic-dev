@@ -1,46 +1,24 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "ToolExecutionReceipt",
-  "description": "Compact O(1) semantic receipt replacing raw tool outputs in message history, preventing O(N^2) trajectory compounding.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ephemeral Strike Worker Receipt",
+  "description": "Dense <50 token semantic receipt returned by ephemeral workers upon completion",
   "type": "object",
-  "required": ["status", "action", "timestamp", "receiptRef"],
+  "required": ["status", "exit_code", "action", "target", "receiptRef", "timestamp"],
   "properties": {
-    "status": {
-      "type": "string",
-      "enum": ["success", "failure", "warning", "info"]
-    },
-    "action": {
-      "type": "string",
-      "description": "Tool name executed (view_file, run_command, grep_search, etc.)"
-    },
-    "target": {
-      "type": "string",
-      "description": "Target file or command executed"
-    },
-    "summary": {
-      "type": "string",
-      "description": "Dense, single-sentence summary of the execution outcome (< 30 words)"
-    },
-    "symbolsFound": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "Key symbols, exports, or functions extracted"
-    },
-    "diagnostics": {
+    "status": { "type": "string", "enum": ["success", "failed"] },
+    "exit_code": { "type": "integer" },
+    "action": { "type": "string" },
+    "target": { "type": "string" },
+    "summary": { "type": "string" },
+    "metrics": {
       "type": "object",
       "properties": {
-        "exitCode": { "type": "integer" },
-        "culprit": { "type": "string" },
-        "errorType": { "type": "string" }
+        "lines": { "type": "integer" },
+        "bytes": { "type": "integer" }
       }
     },
-    "receiptRef": {
-      "type": "string",
-      "description": "Path to the raw content-addressable log on disk (.agent_execution/receipts/<hash>.log)"
-    },
-    "timestamp": {
-      "type": "string",
-      "format": "date-time"
-    }
+    "receiptRef": { "type": "string" },
+    "timestamp": { "type": "string" },
+    "diagnostics": { "type": "object" }
   }
 }

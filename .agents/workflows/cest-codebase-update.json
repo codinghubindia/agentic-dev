@@ -1,0 +1,56 @@
+{
+  "$schema": "../schemas/workflow-state.schema.json",
+  "id": "cest-codebase-update",
+  "name": "CEST Brownfield Takeover & Feature Grafting Pipeline",
+  "description": "Rapid incremental feature implementation on existing codebases using ghost skeleton archaeology and AST surgical grafting",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "conductor": "pro",
+      "qa-auditor": "pro",
+      "strike-worker-backend": "flash",
+      "strike-worker-frontend": "flash"
+    },
+    "parallelismLimit": 3
+  },
+  "phases": [
+    {
+      "id": "phase_1_archaeology_and_graft_plan",
+      "name": "Brownfield Archaeology & Graft Planning",
+      "lead": "conductor",
+      "description": "Scans repository with ghost_skeleton.py in <1.5s, maps existing exports, and plans surgical changes without rewriting legacy files.",
+      "requiredArtifacts": [
+        ".agent_execution/graft-plan.md"
+      ],
+      "hardGate": true
+    },
+    {
+      "id": "phase_2_surgical_implementation",
+      "name": "Targeted AST Surgical Grafting",
+      "lead": "conductor",
+      "agents": [
+        "strike-worker-backend",
+        "strike-worker-frontend"
+      ],
+      "parallel": true,
+      "description": "Workers graft code into existing files using ast_surgery.py and line replacements, preserving legacy structure.",
+      "requiredArtifacts": [
+        ".agent_execution/receipts/"
+      ],
+      "hardGate": true
+    },
+    {
+      "id": "phase_3_verification_and_delivery",
+      "name": "Compiler Verification & Adversarial Audit",
+      "lead": "conductor",
+      "agents": [
+        "qa-auditor"
+      ],
+      "description": "Ensures no regressions were introduced to existing test suites before delivery.",
+      "requiredArtifacts": [
+        ".agent_execution/audit-report.md"
+      ],
+      "hardGate": true
+    }
+  ]
+}

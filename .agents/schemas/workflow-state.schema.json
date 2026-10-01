@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CEST Workflow Execution State",
+  "description": "State tracking schema supporting crash recovery, phase skipping, and adaptability",
+  "type": "object",
+  "required": ["version", "workflowId", "status", "currentPhase", "completedPhases", "skipConditions", "startedAt"],
+  "properties": {
+    "version": { "type": "string", "default": "7.0" },
+    "workflowId": { "type": "string" },
+    "status": { "type": "string", "enum": ["in_progress", "completed", "failed", "paused"] },
+    "projectOrigin": { "type": "string", "enum": ["greenfield", "brownfield"] },
+    "presentationLayer": { "type": "string", "enum": ["headless", "micro-ui", "full-ui"] },
+    "currentPhase": { "type": "string" },
+    "completedPhases": { "type": "array", "items": { "type": "string" } },
+    "skipConditions": { "type": "array", "items": { "type": "string" } },
+    "fileManifest": { "type": "object" },
+    "startedAt": { "type": "string" },
+    "lastUpdatedAt": { "type": "string" }
+  }
+}

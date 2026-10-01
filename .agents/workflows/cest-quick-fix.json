@@ -1,0 +1,37 @@
+{
+  "$schema": "../schemas/workflow-state.schema.json",
+  "id": "cest-quick-fix",
+  "name": "CEST Single-Turn Surgical Bugfix Pipeline",
+  "description": "Ultra-fast bugfix pipeline: stack trace slicing -> single worker dispatch -> local test verification -> commit",
+  "execution": {
+    "defaultModel": "inherit",
+    "modelOverrides": {
+      "conductor": "pro",
+      "strike-worker-backend": "flash",
+      "strike-worker-frontend": "flash"
+    },
+    "parallelismLimit": 1
+  },
+  "phases": [
+    {
+      "id": "phase_1_error_slice_and_fix",
+      "name": "Error Slicing & Surgical Fix",
+      "lead": "conductor",
+      "description": "error_slicer.py reduces stack trace to file:line tuple. Conductor dispatches 1 worker to patch the offending line.",
+      "requiredArtifacts": [
+        ".agent_execution/receipts/"
+      ],
+      "hardGate": true
+    },
+    {
+      "id": "phase_2_compiler_verification",
+      "name": "Compiler & Test Re-verification",
+      "lead": "conductor",
+      "description": "Runs targeted test command to verify fix passes with 0 regressions.",
+      "requiredArtifacts": [
+        ".agent_execution/fix-verified.md"
+      ],
+      "hardGate": true
+    }
+  ]
+}
