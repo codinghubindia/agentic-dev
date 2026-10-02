@@ -1,150 +1,127 @@
 ---
 name: zod
-description: Zod v3 schema validation — composition, transforms, refinements, discriminated unions, and React Hook Form integration.
-category: shared
-packages: [zod]
-workerRoles: [strike-worker-backend, strike-worker-frontend]
-microTasks: [B2, B3, F2]
-currentVersion: 3.23.8
-lastResearched: 2026-10-01
-refreshIntervalDays: 90
-status: stable
+description: Zod schema validation best practices for type safety, parsing, and error handling. This skill should be used when defining z.object schemas, using z.string validations, safeParse, or z.infer. This skill does NOT cover React Hook Form integration patterns (use react-hook-form skill) or OpenAPI client generation (use orval skill).
 ---
 
-> [!NOTE]
-> **Skill Freshness**: Managed by skill synthesizer. Do not manually bump lastResearched.
+# Zod Best Practices
 
-# 🛡️ Zod v3 — Schema Validation
+Comprehensive schema validation guide for Zod in TypeScript applications. Contains 43 rules across 8 categories, prioritized by impact to guide automated refactoring and code generation.
 
-## 0. Install
-```bash
-npm view zod deprecated 2>/dev/null | grep -i deprecated
-npm install zod
-```
+## When to Apply
 
----
+Reference these guidelines when:
+- Writing new Zod schemas
+- Choosing between parse() and safeParse()
+- Implementing type inference with z.infer
+- Handling validation errors for user feedback
+- Composing complex object schemas
+- Using refinements and transforms
+- Optimizing bundle size and validation performance
+- Reviewing Zod code for best practices
 
-## 1. Core Schema Patterns
+## Rule Categories by Priority
 
-```typescript
-import { z } from 'zod';
+| Priority | Category | Impact | Prefix |
+|----------|----------|--------|--------|
+| 1 | Schema Definition | CRITICAL | `schema-` |
+| 2 | Parsing & Validation | CRITICAL | `parse-` |
+| 3 | Type Inference | HIGH | `type-` |
+| 4 | Error Handling | HIGH | `error-` |
+| 5 | Object Schemas | MEDIUM-HIGH | `object-` |
+| 6 | Schema Composition | MEDIUM | `compose-` |
+| 7 | Refinements & Transforms | MEDIUM | `refine-` |
+| 8 | Performance & Bundle | LOW-MEDIUM | `perf-` |
 
-// Primitive schemas
-const emailSchema = z.string().email('Invalid email format');
-const passwordSchema = z.string().min(8).max(64);
-const ageSchema = z.number().int().min(0).max(120);
-const roleSchema = z.enum(['user', 'admin', 'moderator']).default('user');
+## Quick Reference
 
-// Object schema with TypeScript inference
-export const CreateUserSchema = z.object({
-  email: emailSchema,
-  password: passwordSchema,
-  name: z.string().min(2).max(100).trim(),
-  role: roleSchema,
-  birthYear: z.number().int().min(1900).max(2010).optional(),
-});
+### 1. Schema Definition (CRITICAL)
 
-export type CreateUserInput = z.infer<typeof CreateUserSchema>;
-// TypeScript type is automatically derived — no duplication
-```
+- `schema-use-primitives-correctly` - Use correct primitive schemas for each type
+- `schema-use-unknown-not-any` - Use z.unknown() instead of z.any() for type safety
+- `schema-avoid-optional-abuse` - Avoid overusing optional fields
+- `schema-string-validations` - Apply string validations at schema definition
+- `schema-use-enums` - Use enums for fixed string values
+- `schema-coercion-for-form-data` - Use coercion for form and query data
 
----
+### 2. Parsing & Validation (CRITICAL)
 
-## 2. Schema Composition
+- `parse-use-safeparse` - Use safeParse() for user input
+- `parse-async-for-async-refinements` - Use parseAsync for async refinements
+- `parse-handle-all-issues` - Handle all validation issues not just first
+- `parse-validate-early` - Validate at system boundaries
+- `parse-avoid-double-validation` - Avoid validating same data twice
+- `parse-never-trust-json` - Never trust JSON.parse output
 
-```typescript
-// Base schema — extend for variations
-const BaseProductSchema = z.object({
-  name: z.string().min(1),
-  price: z.number().positive(),
-  currency: z.enum(['USD', 'EUR', 'GBP']).default('USD'),
-});
+### 3. Type Inference (HIGH)
 
-// Extend for create vs update
-export const CreateProductSchema = BaseProductSchema;
-export const UpdateProductSchema = BaseProductSchema.partial(); // all fields optional
-export const ProductResponseSchema = BaseProductSchema.extend({
-  id: z.string().uuid(),
-  createdAt: z.coerce.date(), // coerce: converts string to Date automatically
-});
+- `type-use-z-infer` - Use z.infer instead of manual types
+- `type-input-vs-output` - Distinguish z.input from z.infer for transforms
+- `type-export-schemas-and-types` - Export both schemas and inferred types
+- `type-branded-types` - Use branded types for domain safety
+- `type-enable-strict-mode` - Enable TypeScript strict mode
 
-// Pick / Omit
-const PublicUserSchema = CreateUserSchema.omit({ password: true });
-const LoginSchema = CreateUserSchema.pick({ email: true, password: true });
-```
+### 4. Error Handling (HIGH)
 
----
+- `error-custom-messages` - Provide custom error messages
+- `error-use-flatten` - Use flatten() for form error display
+- `error-path-for-nested` - Use issue.path for nested error location
+- `error-i18n` - Implement internationalized error messages
+- `error-avoid-throwing-in-refine` - Return false instead of throwing in refine
 
-## 3. Transform Pipeline
+### 5. Object Schemas (MEDIUM-HIGH)
 
-```typescript
-// Transform input values during validation
-const SlugSchema = z
-  .string()
-  .min(1)
-  .transform(s => s.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''));
+- `object-strict-vs-strip` - Choose strict() vs strip() for unknown keys
+- `object-partial-for-updates` - Use partial() for update schemas
+- `object-pick-omit` - Use pick() and omit() for schema variants
+- `object-extend-for-composition` - Use extend() for adding fields
+- `object-optional-vs-nullable` - Distinguish optional() from nullable()
+- `object-discriminated-unions` - Use discriminated unions for type narrowing
 
-const DateRangeSchema = z.object({
-  start: z.coerce.date(),
-  end: z.coerce.date(),
-}).refine(d => d.end > d.start, {
-  message: 'End date must be after start date',
-  path: ['end'], // which field to attach the error to
-});
-```
+### 6. Schema Composition (MEDIUM)
 
----
+- `compose-shared-schemas` - Extract shared schemas into reusable modules
+- `compose-intersection` - Use intersection() for type combinations
+- `compose-lazy-recursive` - Use z.lazy() for recursive schemas
+- `compose-preprocess` - Use preprocess() for data normalization
+- `compose-pipe` - Use pipe() for multi-stage validation
 
-## 4. Discriminated Unions
+### 7. Refinements & Transforms (MEDIUM)
 
-```typescript
-// For payloads with different shapes based on a type field
-const NotificationSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('email'), to: z.string().email(), subject: z.string() }),
-  z.object({ type: z.literal('sms'), phone: z.string(), message: z.string() }),
-  z.object({ type: z.literal('push'), deviceId: z.string(), title: z.string() }),
-]);
-```
+- `refine-vs-superrefine` - Choose refine() vs superRefine() correctly
+- `refine-transform-coerce` - Distinguish transform() from refine() and coerce()
+- `refine-add-path` - Add path to refinement errors
+- `refine-defaults` - Use default() for optional fields with defaults
+- `refine-catch` - Use catch() for fault-tolerant parsing
 
----
+### 8. Performance & Bundle (LOW-MEDIUM)
 
-## 5. Safe Parse Pattern (for all request validation)
+- `perf-cache-schemas` - Cache schema instances
+- `perf-zod-mini` - Use Zod Mini for bundle-sensitive applications
+- `perf-avoid-dynamic-creation` - Avoid dynamic schema creation in hot paths
+- `perf-lazy-loading` - Lazy load large schemas
+- `perf-arrays` - Optimize large array validation
 
-```typescript
-// safeParse never throws — returns success/error discriminated union
-app.post('/users', async (req, res) => {
-  const result = CreateUserSchema.safeParse(req.body);
-  if (!result.success) {
-    return res.status(400).json({
-      type: 'https://api.example.com/errors/validation',
-      title: 'Validation Error',
-      status: 400,
-      errors: result.error.flatten().fieldErrors, // clean field-level errors
-    });
-  }
-  // result.data is fully typed and validated
-  const user = await userService.create(result.data);
-  return res.status(201).json(user);
-});
+## How to Use
 
-// Middleware factory for reuse
-function validate<T>(schema: z.ZodSchema<T>) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ errors: result.error.flatten().fieldErrors });
-    req.body = result.data;
-    next();
-  };
-}
-```
+Read individual reference files for detailed explanations and code examples:
 
----
+- [Section definitions](references/_sections.md) - Category structure and impact levels
+- [Rule template](assets/templates/_template.md) - Template for adding new rules
+- Individual rules: `references/{prefix}-{slug}.md`
 
-## 6. Anti-Patterns Blacklist
+## Full Compiled Document
 
-| Anti-Pattern | Fix |
-|---|---|
-| `schema.parse()` in request handlers | Use `safeParse()` — parse throws, breaks middleware flow |
-| Re-defining TypeScript types manually | Use `z.infer<typeof Schema>` |
-| Defining schemas inside components/handlers | Define at module level — stable reference |
-| Using `z.any()` | Define the actual shape — `any` defeats the purpose |
+For the complete guide with all rules expanded: `AGENTS.md`
+
+## Related Skills
+
+- For React Hook Form integration, see `react-hook-form` skill
+- For API client generation, see `orval` skill
+
+## Sources
+
+- [Zod Official Documentation](https://zod.dev/)
+- [Zod v4 Release Notes](https://zod.dev/v4)
+- [Zod GitHub Repository](https://github.com/colinhacks/zod)
+- [Zod Mini](https://zod.dev/packages/mini)
+- [Total TypeScript Zod Tutorial](https://www.totaltypescript.com/tutorials/zod)

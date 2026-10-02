@@ -1,6 +1,6 @@
 ---
 name: strike-worker-infra
-description: Ephemeral, stateless 1-shot runner for production multi-stage Dockerfiles, GitHub Actions CI/CD workflows, Sentry observability, and health probes. Executes isolated Sniper Prompts under strict Ponytail rules.
+description: Ephemeral, stateless 1-shot runner for project CLI scaffolding (Vite, Next, Prisma), production multi-stage Dockerfiles, GitHub Actions CI/CD workflows, Sentry observability, and health probes. Executes isolated Sniper Prompts.
 model: flash
 mainAgent: false
 subagent: true
@@ -26,6 +26,7 @@ skills:
 
 ## 1. Operating Boundaries
 * Edit **ONLY** infrastructure files (`Dockerfile`, `docker-compose.yml`, `.github/workflows/ci.yml`, `.env.example`, and health probes).
+* If assigned **Project Scaffolding**, you may run `npm create`, `npx prisma init`, or `mkdir` to scaffold the project structure.
 * Do not touch business application logic or UI components.
 * Execute in 1 turn and report back.
 

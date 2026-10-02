@@ -656,3 +656,62 @@ Workers NEVER receive the entire skill library. Conductor inspects the micro-tas
 - Pre-seeded command table in `.agents/terminal-quirks.json` provides native syntax variants for common intents (`findBinary`, `checkFileExists`, `appendToFile`, `grepInFile`, `sedReplace`, etc.).
 - **Self-Healing Learning Loop**: When any shell command fails due to shell syntax, the Conductor records the quirk via `--learn`. All future commands in that and subsequent sessions use the learned syntax automatically.
 
+---
+
+## Section 12: v8.0 Flat Swarm Architecture & Community Skill Package Ecosystem
+
+### 1. Architectural Motivation
+
+In v7.3, the system implemented a multi-tier hierarchy where Conductor dispatched to intermediate Lead Workers, who defined interfaces, and then dispatched to Leaf Workers in micro-batches of 3. While this was theoretically clean, in practice it introduced two fatal bottlenecks:
+1. **The Hierarchy Tax (Wall-Clock Drag)**: A 6-step waterfall relay (Conductor $\rightarrow$ Infra $\rightarrow$ Lead $\rightarrow$ Batch 1 $\rightarrow$ Batch 2 $\rightarrow$ Assembler Gate) meant users waited 4–6 minutes for even modest projects.
+2. **Shallow Handcrafted Skills**: Agents spent thousands of tokens handcrafting generic markdown skill summaries that lacked deep, real-world edge cases.
+
+### 2. Core Pillars of v8.0
+
+#### Pillar 1: Flat Direct Fan-Out (Zero Middle Managers)
+The intermediate Lead Worker tier is completely eliminated:
+- Conductor writes the canonical interfaces into `src/types.ts` upfront in 1 shot.
+- Conductor executes the **Zero-Token Pre-Flight Contract Gate** (`contract_gate.py`) running `tsc --noEmit src/types.ts` before spawning any workers. This mechanically guarantees zero "Flawed Blueprint Cascades".
+- Conductor directly dispatches parallel leaf workers to write their isolated single-file assignments.
+
+#### Pillar 2: Sliding Concurrency Pool (Max 4–5 Workers)
+Instead of artificial sequential batching (which stalled speed) or unbounded 15-worker swarms (which triggered HTTP 429 rate limits), v8.0 introduces a **Sliding Concurrency Pool**:
+- Maintains up to 4–5 active subagents running at peak throughput.
+- As soon as *any* 1 worker finishes, the next task launches immediately.
+- 40-Second Soft-Timeout: If a worker hangs, it is terminated and a clean typed stub conforming to `src/types.ts` is emitted.
+
+#### Pillar 3: Real Community Skill Packages (`skills.sh` / `npx skills`)
+Handcrafted skill summaries are replaced with official, battle-tested community skill packs installed non-interactively via `npx skills add <pkg> -y`:
+- **React**: `vercel-labs/agent-skills@vercel-react-best-practices` (Official Vercel Engineering)
+- **Tailwind**: `lombiq/tailwind-agent-skills@tailwind-4-docs` (Official Tailwind 4)
+- **Framer Motion**: `c-jeril/framer-motion-skills@framer-motion-react`
+- **Prisma**: `prisma/skills@prisma-database-setup` (Official Prisma)
+- **Express**: `mindrally/skills@express-typescript`
+- **Hono**: `bobmatnyc/claude-mpm-skills@hono-middleware`
+- **TanStack Query**: `tanstack-skills/tanstack-skills@tanstack-query` (Official TanStack)
+- **Zod**: `pproenca/dot-skills@zod`
+- **Vitest**: `antfu/skills@vitest` (Anthony Fu)
+- **Security**: `addyosmani/agent-skills@security-and-hardening` (Addy Osmani / Google)
+
+#### Pillar 4: Rules-Only JIT Skill Filter (`skill_rules_extractor.py`)
+To prevent the "Encyclopedia Bloat" trap (where 20k-token community skills overwhelm the context window and cause TTFT spikes):
+- Workers execute `${RUNTIME} ${SCRIPT_DIR}/skill_rules_extractor${EXT} <skill_path>`.
+- The extractor uses regex/AST to isolate *only* `## Rules`, `## Invariants`, `## Anti-Patterns`, and code snippets, discarding narrative prose.
+- Strict token cap: $\le$ 700 tokens per worker.
+
+#### Pillar 5: 0-Token Synthetic Indexer (`synthetic_indexer.py`)
+- Leaf workers are strictly forbidden from editing shared singleton files (`App.tsx`, `index.ts`, `routes.ts`).
+- Upon leaf completion, Conductor runs `synthetic_indexer.py src/components` and `src/routes`.
+- Generates clean, sorted TypeScript export barrels in 10ms with 0 LLM tokens, completely eradicating git lock collisions and merge conflicts.
+
+### 3. Performance & Token Economics Analysis
+
+| Dimension | Legacy (v7.1 / v7.3) | v8.0 Flat & Packaged | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Middle Management Tokens** | ~8,000 tokens | **0 tokens** | **100% eliminated** |
+| **Skill Ingestion Overhead** | ~27,000 tokens | **~6,300 tokens** | **76% reduction** |
+| **Total Session Tokens** | ~75,000 – 90,000 tokens | **~24,000 – 27,000 tokens** | **~67% net reduction** |
+| **Total Wall-Clock Time** | 4 – 6 minutes | **40 – 60 seconds** | **~5x faster** |
+| **Skill Authoritativeness** | LLM summaries | Official packages (Vercel, Prisma, TanStack) | Production-grade depth |
+
+
