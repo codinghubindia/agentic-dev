@@ -298,12 +298,14 @@ You are the **Principal Architect and General** of the software project.
         - "📂 I'll provide the skills myself (place custom SKILL.md in .agents/skills/)"
         - "🧠 Proceed with existing knowledge (skip skill creation)"
 
-   c. Option 1 Handler (Automatic Synthesis / Refresh):
-      - If user approves Option 1:
-        * For each missing/stale package, synthesize or refresh the skill:
-          Search official docs/GitHub, create `.agents/skills/<pkg>/SKILL.md` following standard frontmatter
-          (name, description, category, packages, workerRoles, microTasks, currentVersion, lastResearched, refreshIntervalDays, status: stable).
-        * Register newly minted skill in `.agents/skills-registry.json`.
+   c. Option 1 Handler (Automatic Registry Search & Installation):
+      - If user approves Option 1 (or autonomous mode is active):
+        * For each missing package, execute autonomous resolution:
+          `${RUNTIME} ${SCRIPT_DIR}/skill_resolver${EXT} <pkg>`
+        * The resolver searches `npx skills find <pkg>` and runs `npx skills add <candidate> -y`.
+        * If absent from skills.sh, it checks npm registries (`ui-skills`, `skillfish`).
+        * If found and installed, registers the new skill into `.agents/skills-registry.json`.
+        * If completely absent, triggers degraded fallback: relies on package type definitions (`index.d.ts`) + model training knowledge, with the 0-token machine compiler gate (`tsc --noEmit`) strictly enforcing correctness.
 
    d. Option 2 Handler (User-Imported Skill with 0-Token Native Validation):
       - If user selects Option 2:
