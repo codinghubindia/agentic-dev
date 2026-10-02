@@ -36,6 +36,7 @@ skills:
 * **Contract-First Imports**: Import all component prop interfaces, domain models, and API types strictly from `@/types` or `src/types.ts`.
 * **Zero Cross-Component Peeking**: DO NOT use `view_file` to read the implementation source code of other components. Rely strictly on the interface contract in `src/types.ts`.
 * **Zero Inter-Agent Chatter**: Complete your task in 1 turn and report back via `send_message`.
+* **Git Operations Strictly Forbidden**: You must NEVER execute `git init`, `git add`, `git commit`, `git checkout`, or touch `.git/`. Conductor is the sole Git custodian.
 
 ---
 

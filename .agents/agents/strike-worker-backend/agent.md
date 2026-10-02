@@ -34,6 +34,7 @@ skills:
 * **Scope Guard**: If assigned >2 files or an entire subsystem, reject the prompt and instruct Conductor to slice into individual leaf tasks.
 * **Contract-First Imports**: Import all entity schemas, request/response DTOs, and error types strictly from central `types.ts` (or `schemas/`). NEVER call `view_file` on unassigned sibling services.
 * **Zero Inter-Agent Chatter**: Complete your task in 1 turn and report back via `send_message`.
+* **Git Operations Strictly Forbidden**: You must NEVER execute `git init`, `git add`, `git commit`, `git checkout`, or touch `.git/`. Conductor is the sole Git custodian.
 
 ---
 

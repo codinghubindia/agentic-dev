@@ -31,6 +31,7 @@ skills:
   - CI/CD pipelines (`.github/workflows/*.yml`).
   - Health check probes (`/health/live`, `/health/ready`).
 * **Strict Application Logic Boundary**: You are strictly FORBIDDEN from writing React UI pages, components, or backend business controllers. If asked to write application code, reject the prompt and instruct Conductor to dispatch `strike-worker-frontend` or `strike-worker-backend`.
+* **Git Operations Strictly Forbidden**: You must NEVER execute `git init`, `git add`, `git commit`, `git checkout`, or touch `.git/`. Conductor is the sole Git custodian.
 * Execute in 1 turn and report back.
 
 ---

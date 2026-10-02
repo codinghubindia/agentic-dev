@@ -254,16 +254,18 @@ The `.agents/scripts/` directory houses deterministic, zero-token automation too
 ├── contract_gate.py             # Pre-flight AST type verification engine
 ├── error_slicer.py              # Stderr compiler parser reducing errors to 90-token tuples
 ├── ghost_skeleton.py            # AST topology, skeleton, and reachability extractor
+├── gitignore_generator.py       # 0-token deterministic .gitignore scaffolder
 ├── memory_guardian.py           # Domain-noun sanitizer and negative-knowledge filter
 ├── receipt_swapper.py           # Content-addressable stdout/stderr garbage collector
 ├── skill_resolver.py            # Dynamic community skill resolver and installer
 ├── skill_rules_extractor.py     # JIT rule extractor capping skill tokens at <= 700
-├── synthetic_indexer.py         # 0-token deterministic barrel generator
+├── synthetic_indexer.py         # 0-token deterministic barrel & router generator
 └── node/                        # Identical high-performance Node.js / Bun mirrors
     ├── ast_surgery.js
     ├── contract_gate.js
     ├── error_slicer.js
     ├── ghost_skeleton.js
+    ├── gitignore_generator.js
     ├── receipt_swapper.js
     ├── skill_resolver.js
     ├── skill_rules_extractor.js
@@ -289,6 +291,7 @@ Every feature or project handled by CEST advances through six deterministic phas
 3. MANDATORY CLI SCAFFOLDING & GIT BASELINE
    Initializes skeletons strictly through official CLIs (npm create vite@latest,
    npx create-next-app, npx prisma init). Manual configuration drafting is banned.
+   Generates comprehensive .gitignore via gitignore_generator (.agent_execution/, .agents/, .env, node_modules/, dist/).
    Immediately establishes zero-diff Git baseline (git init && git commit -m "chore: scaffold").
 
 4. FLAT PARALLEL STRIKE SWARM & PAGE CLUSTERING

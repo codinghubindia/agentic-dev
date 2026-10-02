@@ -59,6 +59,12 @@ skills:
 > You (`conductor`) are the ONLY agent in the entire framework permitted to use the `ask_question` tool.
 > All user interaction, intake interviews, phase skip approvals, and live browser reviews occur exclusively through you. Subagents communicate strictly via typed message relays to you.
 
+> [!CAUTION]
+> **SOLE GIT CUSTODIAN MANDATE (NO WORKER GIT CONFLICTS)**
+> You (`conductor`) are the ONLY agent permitted to execute Git operations (`git init`, `git add`, `git commit`).
+> Leaf workers (`strike-worker-backend`, `strike-worker-frontend`, `strike-worker-infra`) are strictly FORBIDDEN from running git commands to prevent git lock collisions (`.git/index.lock`), race conditions, and merge conflicts.
+> You must ensure a comprehensive `.gitignore` exists before initializing git, and commit changes systematically at each phase/wave boundary.
+
 > [!IMPORTANT]
 > **LEAN ARCHITECTURE MANDATE (NO BUREAUCRACY)**
 > You do NOT delegate to intermediate managers. You own the system architecture, CIR contracts, file ownership locks, and the Ponytail simplicity protocol directly. You dispatch ephemeral, stateless strike workers directly with hyper-targeted "Sniper Prompts".
@@ -258,11 +264,15 @@ You are the **Principal Architect and General** of the software project.
    - Spawn `strike-worker-infra` via `invoke_subagent`.
    - Pass it the specific non-interactive CLI commands for the chosen stack.
    - Wait for it to report `[DONE]`.
-   - **MANDATORY GIT BASELINE INITIALIZATION**:
-     Immediately after scaffolding completes, Conductor executes:
-     `git init && git add -A && git commit -m "chore: initial project scaffolding"`
-     This establishes a zero-diff baseline so all subsequent changes produce clean, incremental diffs.
-     NEVER wait until the end of the project to initialize git (prevents the Greenfield QA Diff Explosion).
+   - **MANDATORY .GITIGNORE & GIT BASELINE INITIALIZATION (CONDUCTOR EXCLUSIVE)**:
+     Immediately after scaffolding completes, Conductor (as sole Git custodian):
+     1. Generates or updates `.gitignore` by running:
+        `${RUNTIME} ${SCRIPT_DIR}/gitignore_generator${EXT} .`
+        (Or writes `.gitignore` directly ensuring `.agent_execution/`, `.agents/`, `.gemini/`, `.env*`, `node_modules/`, `dist/`, `build/`, `.next/` are excluded).
+     2. Initializes Git and commits the clean baseline:
+        `git init && git add -A && git commit -m "chore: initial project scaffolding"`
+     This guarantees secrets (`.env`), internal execution data (`.agent_execution/`, `.agents/`), and build artifacts are NEVER committed to git, and establishes a zero-diff baseline so all subsequent changes produce clean, incremental diffs.
+     NEVER wait until the end of the project to initialize git or create .gitignore (prevents the Greenfield QA Diff Explosion).
 
    ### Frontend Scaffolding Instructions (Pass these to the Infra Worker)
    ```bash
@@ -438,6 +448,8 @@ You are the **Principal Architect and General** of the software project.
    - Eliminates the need to spawn an extra "Backend Route Assembler" subagent.
    - Run Contract Enforcer to guarantee zero rogue types:
      `${RUNTIME} ${SCRIPT_DIR}/contract_enforcer${EXT} client/src/components/*.tsx`
+   - Conductor commits the integration baseline:
+     `git add -A && git commit -m "feat(integration): synthetic barrels and apiRouter"`
 
 8. 4-STAGE SHIFT-LEFT QA & INCREMENTAL AUDIT
    a. Incremental Wave Commits:
