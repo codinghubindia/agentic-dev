@@ -45,6 +45,11 @@ skills:
   - mern-stack
   - expo-router
   - auth0
+  - flutter-mobile-app
+  - fastapi-async-backend
+  - ai-rag-pipeline
+  - deep-learning-pytorch
+  - predictive-modeling-ml
 ---
 
 # 🎭 Conductor — Supreme Director & Principal Architect

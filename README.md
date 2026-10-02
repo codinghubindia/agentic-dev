@@ -4,7 +4,7 @@
 
 [![Architecture](https://img.shields.io/badge/Architecture-CEST_Flat_Swarm_v8.0-4f46e5?style=flat-square)](#system-architecture-the-flat-swarm-model)
 [![Agents](https://img.shields.io/badge/Agents-6_Core_Specialists-0284c7?style=flat-square)](#core-agent-roster)
-[![Skills](https://img.shields.io/badge/Skills-40+_Production_Modules-059669?style=flat-square)](#packaged-skills-library)
+[![Skills](https://img.shields.io/badge/Skills-60+_Production_Modules-059669?style=flat-square)](#packaged-skills-library)
 [![Token Economics](https://img.shields.io/badge/Context_Compounding-Zero_O(1)-16a34a?style=flat-square)](#quantitative-token-economics-and-latency-benchmarks)
 [![Engine Runtime](https://img.shields.io/badge/Runtime-Bun_%7C_Node_%7C_Python-d97706?style=flat-square)](#tiered-runtime-resilience)
 [![License](https://img.shields.io/badge/License-MIT-475569?style=flat-square)](./LICENSE)
@@ -169,7 +169,7 @@ The CEST framework strictly limits its core configuration to six specialized age
 
 ## Packaged Skills Library
 
-CEST utilizes 40+ curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
+CEST utilizes 60+ curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
 
 ### React, Next.js, and Modern Bundling
 - **`react-vite-postcss`**: Vite bundler configuration, HMR Fast Refresh stability, PostCSS preset-env pipeline, CSS Modules, asset aliasing, and development reverse proxying.
@@ -181,7 +181,11 @@ CEST utilizes 40+ curated, community-backed skill packages installed in `.agents
 - **`hono-middleware`**: Lightweight, edge-compatible HTTP routing and middleware architectures.
 - **`prisma-database-setup`**: Idempotent migrations, schema modeling, relation indexing, and connection pool optimization.
 
-### Mobile & Cross-Platform Development (React Native & Expo)
+### High-Performance Python & Async Backends
+- **`fastapi-async-backend`**: High-throughput asynchronous Python microservices using FastAPI, Pydantic v2 data modeling and validation, SQLAlchemy 2.0 AsyncSession with asyncpg, dependency injection, and non-blocking I/O patterns.
+
+### Mobile & Cross-Platform Development (React Native, Expo, and Flutter)
+- **`flutter-mobile-app`**: Production Flutter 3.x and Dart 3 architecture, Riverpod 2.x asynchronous state management, Clean Architecture (presentation, domain, data), GoRouter declarative routing, and Dio HTTP networking with interceptors.
 - **`expo-router`**: File-based native routing for iOS and Android, stack/tab layouts, dynamic segments, and deep linking.
 - **`expo-ui` & `expo-native-ui`**: Cross-platform native component styling and platform-specific primitives.
 - **`expo-animation`**: Native 60/120 FPS animations powered by React Native Reanimated.
@@ -206,6 +210,11 @@ CEST utilizes 40+ curated, community-backed skill packages installed in `.agents
 - **`upstash-workflow-js`**: Durable distributed execution, fault-tolerant long-running multi-step workflows with zero background server infrastructure.
 - **`upstash-vector-js`**: High-performance vector embeddings, semantic search, and AI RAG pipelines.
 - **`upstash-blob-js`**: Edge-compatible cloud object storage.
+
+### Artificial Intelligence, Deep Learning, and Predictive Modeling
+- **`ai-rag-pipeline`**: Production Retrieval-Augmented Generation with semantic token chunking, hybrid dense/sparse search, Reciprocal Rank Fusion (RRF), cross-encoder re-ranking, and strict context budget management with citation attribution.
+- **`deep-learning-pytorch`**: PyTorch 2.x neural network training pipelines featuring `torch.compile` graph optimization, automatic mixed precision (`torch.autocast`), pinned-memory DataLoaders, Distributed Data Parallel (DDP), and deterministic checkpointing.
+- **`predictive-modeling-ml`**: Tabular machine learning workflows utilizing scikit-learn `ColumnTransformer` pipelines, gradient boosted trees (XGBoost, LightGBM, CatBoost), Optuna Bayesian hyperparameter tuning, and leak-free cross-validation.
 
 ### Design Systems, Accessibility, and UI Craft
 - **`impeccable`**: Production visual hierarchy, 60-30-10 color theory, brand-tinted surfaces, typographic rhythm, and micro-interactions.
