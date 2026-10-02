@@ -4,7 +4,7 @@
 
 [![Architecture](https://img.shields.io/badge/Architecture-CEST_Flat_Swarm_v8.0-4f46e5?style=flat-square)](#system-architecture-the-flat-swarm-model)
 [![Agents](https://img.shields.io/badge/Agents-6_Core_Specialists-0284c7?style=flat-square)](#core-agent-roster)
-[![Skills](https://img.shields.io/badge/Skills-31_Production_Modules-059669?style=flat-square)](#packaged-skills-library)
+[![Skills](https://img.shields.io/badge/Skills-40+_Production_Modules-059669?style=flat-square)](#packaged-skills-library)
 [![Token Economics](https://img.shields.io/badge/Context_Compounding-Zero_O(1)-16a34a?style=flat-square)](#quantitative-token-economics-and-latency-benchmarks)
 [![Engine Runtime](https://img.shields.io/badge/Runtime-Bun_%7C_Node_%7C_Python-d97706?style=flat-square)](#tiered-runtime-resilience)
 [![License](https://img.shields.io/badge/License-MIT-475569?style=flat-square)](./LICENSE)
@@ -169,7 +169,25 @@ The CEST framework strictly limits its core configuration to six specialized age
 
 ## Packaged Skills Library
 
-CEST utilizes 31 curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
+CEST utilizes 40+ curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
+
+### React, Next.js, and Modern Bundling
+- **`react-vite-postcss`**: Vite bundler configuration, HMR Fast Refresh stability, PostCSS preset-env pipeline, CSS Modules, asset aliasing, and development reverse proxying.
+- **`nextjs-app-router`**: Next.js 14 and 15 App Router architecture, React Server Components (RSC), secure Server Actions with Zod validation, async route segments, and revalidation strategies.
+
+### Fullstack & MERN Architecture
+- **`mern-stack`**: End-to-end MongoDB, Express, React, and Node.js architecture with Mongoose connection pooling singletons, typed schema indexes, secure httpOnly JWT auth, and typed REST API integration.
+- **`express-typescript`**: Robust Express.js patterns, middleware chaining, and TypeScript route typing.
+- **`hono-middleware`**: Lightweight, edge-compatible HTTP routing and middleware architectures.
+- **`prisma-database-setup`**: Idempotent migrations, schema modeling, relation indexing, and connection pool optimization.
+
+### Mobile & Cross-Platform Development (React Native & Expo)
+- **`expo-router`**: File-based native routing for iOS and Android, stack/tab layouts, dynamic segments, and deep linking.
+- **`expo-ui` & `expo-native-ui`**: Cross-platform native component styling and platform-specific primitives.
+- **`expo-animation`**: Native 60/120 FPS animations powered by React Native Reanimated.
+- **`expo-data-fetching`**: Mobile data synchronization, offline caching, and network resilience.
+- **`expo-project-structure`**: Standard Expo configuration, app.json manifests, and TypeScript structure.
+- **`eas-workflows`**: Automated mobile app builds, OTA updates, and app store deployment automation.
 
 ### Rate Limiting, Throttling, and Traffic Protection
 - **`upstash-ratelimit-js`**: Inbound distributed rate limiting for Next.js, Express, Hono, and Edge runtimes with sliding window, token bucket, fixed window, Redis counters, deny lists, and RFC-compliant HTTP 429 response handling.
@@ -207,10 +225,7 @@ CEST utilizes 31 curated, community-backed skill packages installed in `.agents/
 - **`ponytail-help`**: Quick reference for simplicity commands and lazy-path patterns.
 - **`ponytail-review`**: Code review module evaluating PR diffs exclusively for over-engineering.
 
-### Backend, Data, and Quality Assurance
-- **`express-typescript`**: Robust Express.js patterns, middleware chaining, and TypeScript route typing.
-- **`hono-middleware`**: Lightweight, edge-compatible HTTP routing and middleware architectures.
-- **`prisma-database-setup`**: Idempotent migrations, schema modeling, relation indexing, and connection pool optimization.
+### Validation, Testing, and Quality Assurance
 - **`tanstack-query`**: Asynchronous server state management, query caching, invalidation, and optimistic updates.
 - **`zod`**: Runtime schema parsing, type inference, and input boundary validation.
 - **`vitest`**: Fast unit and integration testing, mocking patterns, and coverage validation.

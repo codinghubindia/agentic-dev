@@ -40,6 +40,10 @@ skills:
   - upstash-redis-js
   - upstash-qstash-js
   - upstash-workflow-js
+  - react-vite-postcss
+  - nextjs-app-router
+  - mern-stack
+  - expo-router
   - auth0
 ---
 
