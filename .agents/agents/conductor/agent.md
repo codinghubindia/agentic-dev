@@ -32,6 +32,14 @@ skills:
   - zod
   - vitest
   - security-and-hardening
+  - security-review
+  - secret-serialization
+  - gha-security-review
+  - upstash-ratelimit-js
+  - api-rate-limit-handler
+  - upstash-redis-js
+  - upstash-qstash-js
+  - upstash-workflow-js
   - auth0
 ---
 

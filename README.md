@@ -4,7 +4,7 @@
 
 [![Architecture](https://img.shields.io/badge/Architecture-CEST_Flat_Swarm_v8.0-4f46e5?style=flat-square)](#system-architecture-the-flat-swarm-model)
 [![Agents](https://img.shields.io/badge/Agents-6_Core_Specialists-0284c7?style=flat-square)](#core-agent-roster)
-[![Skills](https://img.shields.io/badge/Skills-23_Packaged_Modules-059669?style=flat-square)](#packaged-skills-library)
+[![Skills](https://img.shields.io/badge/Skills-31_Production_Modules-059669?style=flat-square)](#packaged-skills-library)
 [![Token Economics](https://img.shields.io/badge/Context_Compounding-Zero_O(1)-16a34a?style=flat-square)](#quantitative-token-economics-and-latency-benchmarks)
 [![Engine Runtime](https://img.shields.io/badge/Runtime-Bun_%7C_Node_%7C_Python-d97706?style=flat-square)](#tiered-runtime-resilience)
 [![License](https://img.shields.io/badge/License-MIT-475569?style=flat-square)](./LICENSE)
@@ -169,11 +169,25 @@ The CEST framework strictly limits its core configuration to six specialized age
 
 ## Packaged Skills Library
 
-CEST utilizes 23 curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
+CEST utilizes 31 curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
 
-### Security, Authentication, and Identity
-- **`auth0`**: Production authentication patterns, JWT signing and verification, JWKs management, session tokens, and route protection.
-- **`security-and-hardening`**: Threat modeling, SQL injection defense, parameterized queries, input sanitization, timing-safe equality, and OWASP Top 10 mitigation.
+### Rate Limiting, Throttling, and Traffic Protection
+- **`upstash-ratelimit-js`**: Inbound distributed rate limiting for Next.js, Express, Hono, and Edge runtimes with sliding window, token bucket, fixed window, Redis counters, deny lists, and RFC-compliant HTTP 429 response handling.
+- **`api-rate-limit-handler`**: Bounded outbound API throttling, exponential backoff with full jitter, `Retry-After` and `x-ratelimit-reset` parsing, and idempotency protection preventing duplicate mutations.
+
+### Security, Auditing, and Secrets Defense
+- **`security-review`**: Sentry's systematic OWASP Top 10 vulnerability review engine (injection, XSS, auth/authz, SSRF, IDOR, and cryptography).
+- **`secret-serialization`**: Prevents credential, token, and API key leakage across serialization boundaries (JSON.stringify, Pydantic model_dump, dataclass repr, logging, and telemetry tracing spans).
+- **`gha-security-review`**: GitHub Actions CI/CD security auditing, protecting against script injection, untrusted PR checkouts, and secrets exfiltration.
+- **`security-and-hardening`**: Defensive hardening patterns, input sanitization, timing-safe equality checks, and data privacy safeguards.
+- **`auth0`**: Enterprise-grade identity architecture, JWT signing and verification, JWKs management, session tokens, and route protection.
+
+### Distributed Caching, Queues, and Durable Execution
+- **`upstash-redis-js`**: Distributed Redis caching, distributed locks (Redlock), session storage, and atomic pipeline transactions.
+- **`upstash-qstash-js`**: Asynchronous message queues, background worker jobs, scheduled cron triggers, dead-letter queues (DLQ), and automated retry backoff.
+- **`upstash-workflow-js`**: Durable distributed execution, fault-tolerant long-running multi-step workflows with zero background server infrastructure.
+- **`upstash-vector-js`**: High-performance vector embeddings, semantic search, and AI RAG pipelines.
+- **`upstash-blob-js`**: Edge-compatible cloud object storage.
 
 ### Design Systems, Accessibility, and UI Craft
 - **`impeccable`**: Production visual hierarchy, 60-30-10 color theory, brand-tinted surfaces, typographic rhythm, and micro-interactions.
@@ -201,6 +215,8 @@ CEST utilizes 23 curated, community-backed skill packages installed in `.agents/
 - **`zod`**: Runtime schema parsing, type inference, and input boundary validation.
 - **`vitest`**: Fast unit and integration testing, mocking patterns, and coverage validation.
 - **`vercel-react-best-practices`**: React Server Components, hydration optimization, and bundle minimization rules.
+- **`find-bugs`**: Systematic edge-case bug detection.
+- **`document-api-endpoint`**: Production OpenAPI and REST endpoint documentation specifications.
 
 ---
 
