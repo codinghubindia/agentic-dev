@@ -131,12 +131,48 @@
     },
     "ponytail": {
       "uri": ".agents/skills/ponytail/SKILL.md",
-      "source": "core-framework-invariant",
+      "source": "npx skills add DietrichGebert/ponytail",
       "category": "global",
       "packages": [],
       "workerRoles": ["strike-worker-backend", "strike-worker-frontend", "strike-worker-infra"],
       "microTasks": ["B1", "B2", "B3", "F1", "F2", "F3"],
-      "status": "protected"
+      "status": "installed"
+    },
+    "auth0": {
+      "uri": ".agents/skills/auth0/SKILL.md",
+      "source": "npx skills add auth0/agent-skills",
+      "category": "backend",
+      "packages": ["@auth0/nextjs-auth0", "auth0"],
+      "workerRoles": ["strike-worker-backend"],
+      "microTasks": ["B2"],
+      "status": "installed"
+    },
+    "impeccable": {
+      "uri": ".agents/skills/impeccable/SKILL.md",
+      "source": "npx skills add pbakaus/impeccable",
+      "category": "frontend",
+      "packages": [],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F1", "F3"],
+      "status": "installed"
+    },
+    "baseline-ui": {
+      "uri": ".agents/skills/baseline-ui/SKILL.md",
+      "source": "npx ui-skills",
+      "category": "frontend",
+      "packages": [],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F1"],
+      "status": "installed"
+    },
+    "fixing-motion-performance": {
+      "uri": ".agents/skills/fixing-motion-performance/SKILL.md",
+      "source": "npx ui-skills",
+      "category": "frontend",
+      "packages": ["motion", "framer-motion"],
+      "workerRoles": ["strike-worker-frontend"],
+      "microTasks": ["F3"],
+      "status": "installed"
     }
   },
   "packageAliases": {
