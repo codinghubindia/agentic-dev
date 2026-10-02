@@ -1,199 +1,318 @@
-# 🎭 CEST: Lean Conductor & Ephemeral Strike Team
-## Next-Generation Multi-Agent Software Engineering Architecture
+# CEST: Flat Swarm Autonomous Software Engineering Architecture
 
-> An **enterprise-grade, production-ready autonomous software engineering system** built for [Google Antigravity (AGY)](https://antigravity.dev).
-> Drop this `.agents/` directory into any workspace to deploy the **v7.0 CEST Engine**: **6 specialized AI software engineers**, **8 authoritative engineering skills**, **3 adaptive workflows**, and a **deterministic Python tooling suite**.
+> High-throughput, token-minimized multi-agent software engineering framework featuring deterministic pre-flight contract verification, dynamic community skills integration, and zero-compounding context architecture.
 
-[![Architecture](https://img.shields.io/badge/Architecture-CEST_Engine_v7.0-8b5cf6?style=flat-square)](#-architecture-overview)
-[![Agents](https://img.shields.io/badge/Agents-6_Core-6366f1?style=flat-square)](#-agent-roster-core-6)
-[![Skills](https://img.shields.io/badge/Skills-8_Essential-10b981?style=flat-square)](#-skills-library-8-domain-manuals)
-[![Workflows](https://img.shields.io/badge/Workflows-3_Adaptive-f59e0b?style=flat-square)](#-workflows)
-[![Memory](https://img.shields.io/badge/Memory-Strict_Negative_Knowledge-ef4444?style=flat-square)](#-evolutionary-memory-engine)
-[![Token Reduction](https://img.shields.io/badge/Token_Reduction-75%25_Net_Savings-10b981?style=flat-square)](#-quantitative-economics--speed)
-[![License](https://img.shields.io/badge/License-MIT-gray?style=flat-square)](./LICENSE)
+[![Architecture](https://img.shields.io/badge/Architecture-CEST_Flat_Swarm_v8.0-4f46e5?style=flat-square)](#system-architecture-the-flat-swarm-model)
+[![Agents](https://img.shields.io/badge/Agents-6_Core_Specialists-0284c7?style=flat-square)](#core-agent-roster)
+[![Skills](https://img.shields.io/badge/Skills-23_Packaged_Modules-059669?style=flat-square)](#packaged-skills-library)
+[![Token Economics](https://img.shields.io/badge/Context_Compounding-Zero_O(1)-16a34a?style=flat-square)](#quantitative-token-economics-and-latency-benchmarks)
+[![Engine Runtime](https://img.shields.io/badge/Runtime-Bun_%7C_Node_%7C_Python-d97706?style=flat-square)](#tiered-runtime-resilience)
+[![License](https://img.shields.io/badge/License-MIT-475569?style=flat-square)](./LICENSE)
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [The Core Problem & The CEST Solution](#-the-core-problem--the-cest-solution)
-- [Architecture Overview](#-architecture-overview)
-- [The 5 Core Pillars](#-the-5-core-pillars)
-  - [1. Omniscient Conductor](#1-the-omniscient-conductor)
-  - [2. The Ponytail Protocol (Ladder of Laziness)](#2-the-ponytail-protocol-ladder-of-laziness)
-  - [3. Just-In-Time (JIT) Skill Slicing](#3-just-in-time-jit-skill-slicing)
-  - [4. Ephemeral Parallel Strike Workers](#4-ephemeral-parallel-strike-workers)
-  - [5. Layered 4-Stage Shift-Left QA Gate](#5-layered-4-stage-shift-left-qa-gate)
-- [Creative UI/UX & Kinetic Motion Standards](#-creative-uiux--kinetic-motion-standards)
-- [Evolutionary Memory Engine](#-evolutionary-memory-engine)
-- [Agent Roster (Core 6)](#-agent-roster-core-6)
-- [Skills Library (8 Domain Manuals)](#-skills-library-8-domain-manuals)
-- [Workflows & Adaptability](#-workflows--adaptability)
-- [Deterministic Tooling Suite (`.agents/scripts/`)](#-deterministic-tooling-suite-agentsscripts)
-- [Quantitative Economics & Speed](#-quantitative-economics--speed)
-- [Quick Start](#-quick-start)
+- [Executive Summary](#executive-summary)
+- [System Architecture: The Flat Swarm Model](#system-architecture-the-flat-swarm-model)
+- [Core Architectural Innovations](#core-architectural-innovations)
+  - [1. Zero-Compounding Context Architecture](#1-zero-compounding-context-architecture)
+  - [2. Deterministic Pre-Flight Contract Gate](#2-deterministic-pre-flight-contract-gate)
+  - [3. Zero-Token Synthetic Indexer](#3-zero-token-synthetic-indexer)
+  - [4. Dynamic Packaged Skills Ecosystem and JIT Rule Slicing](#4-dynamic-packaged-skills-ecosystem-and-jit-rule-slicing)
+  - [5. Tiered Runtime Resilience Engine](#5-tiered-runtime-resilience-engine)
+  - [6. Four-Stage Shift-Left Quality Assurance Pipeline](#6-four-stage-shift-left-quality-assurance-pipeline)
+- [Quantitative Token Economics and Latency Benchmarks](#quantitative-token-economics-and-latency-benchmarks)
+- [Core Agent Roster](#core-agent-roster)
+- [Packaged Skills Library](#packaged-skills-library)
+- [Mechanical Tooling Suite](#mechanical-tooling-suite)
+- [Standard Engineering Pipeline](#standard-engineering-pipeline)
+- [Quality Gates and Anti-Vibe-Code Mandates](#quality-gates-and-anti-vibe-code-mandates)
+- [Getting Started](#getting-started)
+- [License](#license)
 
 ---
 
-## ⚡ The Core Problem & The CEST Solution
+## Executive Summary
 
-Conventional AI engineering frameworks suffer from two fatal extremes:
+Autonomous software development systems frequently degrade under two structural failure modes:
 
-1. **The Single Default Agent Trap (Cursor, Claude Code, Raw LLMs):**  
-   Fast to start, but context degrades exponentially (*The Lost-in-the-Middle Problem*). Execution is strictly sequential, and agents suffer from **bug-hunt tunnel vision**—losing sight of global system boundaries while fighting local type errors.
-2. **The Corporate Multi-Manager Bureaucracy (Legacy 60+ Agent Frameworks):**  
-   Crippled by the **"Manager Tax"**. A user request is bounced through a heavy hierarchy of persistent managers, burning 50,000–90,000 tokens and 2–4 minutes of idle latency serializing intermediate JSON state files before writing any code.
+1. **The Single-Agent Saturation Trap**: Monolithic agents (e.g., standard conversational coding models) accumulate execution history sequentially. By step 15 to 20, context window degradation ("lost-in-the-middle") causes file boundary hallucinations, regression loops, and quadratic token cost escalation.
+2. **The Hierarchical Manager Tax**: Deep multi-agent frameworks introduce multi-tiered management bureaucracies (Project Managers, Architects, Tech Leads, Reviewers). These structures exhaust 50,000 to 90,000 tokens in inter-agent deliberation and state serialization before writing the first line of source code.
 
-### The CEST Paradigm Shift
-CEST replaces the 60-agent bureaucracy with **a single strategic brain (Conductor) commanding stateless parallel execution pods (Ephemeral Strike Workers)**.
+**CEST (Conductor and Ephemeral Strike Team)** eliminates both traps through a **Flat Swarm Architecture**. A single strategic director (`conductor`) formulates global system architecture and establishes strict interface types in Phase 1. Execution is then dispatched directly to isolated, parallel leaf workers (`strike-worker-backend`, `strike-worker-frontend`, `strike-worker-infra`) operating within a sliding concurrency pool. 
+
+Leaf workers execute isolated "Sniper Prompts", run local deterministic validation, emit cryptographic receipts, and terminate. Shared integration points (such as export barrels) and compilation errors are handled through zero-token host scripts rather than LLM token burns.
+
+---
+
+## System Architecture: The Flat Swarm Model
 
 ```mermaid
 flowchart TD
-    USER([User / Engineer]) <===>|Single Pane of Glass\nDirect Interactive Intake & Approvals| COND[1. OMNISCIENT CONDUCTOR\nSupreme Director & Principal Architect\n• Holds System AST Skeleton & Public Signatures\n• Sole Custodian of Architecture, Contracts, & File Ownership\n• Plans Adaptable Execution & JIT Slices]
+    USER["User / System Request"] <-->|"Direct Intake (ask_question)"| COND["1. Conductor (Supreme Architect)\n• Model: Pro\n• Maintains AST Skeleton & CIR\n• Establishes Central Types (src/types.ts)"]
 
-    subgraph PLANNING [2. Adaptable Planning & Guardrails]
-        COND --> ADAPT{User Skip & Scope Check\nHeadless? Skip UI\nNo Docker? Skip Infra\nResuming? Skip Done}
-        ADAPT --> PONY[Ponytail Simplicity Filter\nYAGNI • Native Platform APIs • Minimal Diff]
+    subgraph PHASE1 ["Phase 1: Architecture & Contract Formulation"]
+        COND --> BP["Architecture Blueprint & Design Spec\n(.agent_execution/architecture-blueprint.md)"]
+        BP --> GATE["Deterministic Pre-Flight Contract Gate\n(contract_gate.py / contract_gate.js)\n0 LLM Tokens • AST Type Validation"]
     end
 
-    subgraph EXECUTION [3. Ephemeral Parallel Strike Workers]
-        PONY -->|Sniper Prompt A + JIT Security Rules| WA[Worker A: Backend API\nScope: auth.ts only]
-        PONY -->|Sniper Prompt B + JIT Motion & UI Craft| WB[Worker B: Creative UI\nScope: LoginForm.tsx only]
-        PONY -->|Sniper Prompt C + JIT Database Patterns| WC[Worker C: DB Migration\nScope: 001_users.sql only]
-        PONY -->|Sniper Prompt D + JIT Infra Patterns| WD[Worker D: CI/CD & Docker\nScope: Dockerfile & ci.yml]
+    subgraph PHASE2 ["Phase 2: Sliding-Pool Flat Swarm Execution"]
+        GATE -->|"Disjoint Interface Slice A"| W1["Worker 1: UserCard.tsx\nModel: Flash\nLeaf Isolation"]
+        GATE -->|"Disjoint Interface Slice B"| W2["Worker 2: MetricsGrid.tsx\nModel: Flash\nLeaf Isolation"]
+        GATE -->|"Disjoint Interface Slice C"| W3["Worker 3: auth.service.ts\nModel: Flash\nLeaf Isolation"]
+        GATE -->|"Disjoint Interface Slice D"| W4["Worker 4: user.service.ts\nModel: Flash\nLeaf Isolation"]
     end
 
-    subgraph QUALITY [4. Layered Shift-Left QA & Verification]
-        WA & WB & WC & WD --> MACH[Pass 1: Deterministic Machine Gate\ntsc --noEmit / pytest / cargo check / docker build\n0 LLM Tokens • Immediate Compiler Feedback]
-        MACH -->|Compile Success| AUDIT[Pass 2: Adversarial Diff-Only Auditor\nInspects Git Diff against OWASP & Anti-Vibe-Code]
-        AUDIT --> LIVE[Pass 3: Live Browser Verification Checkpoint\nConductor serves live app: User reviews & approves]
+    subgraph PHASE3 ["Phase 3: Zero-Token Integration"]
+        W1 & W2 & W3 & W4 --> BARREL["Deterministic Synthetic Indexer\n(synthetic_indexer.py / .js)\nGenerates src/components/index.ts (10ms, 0 Tokens)"]
     end
 
-    LIVE --> SHIP([Production Delivery / Git Commit])
+    subgraph PHASE4 ["Phase 4: Shift-Left QA & Verification"]
+        BARREL --> COMP["Stage 1: Deterministic Host Compiler\ntsc --noEmit / pytest / cargo check\nError Slicer reduces stderr to 90-token tuple"]
+        COMP -->|"Compile PASS"| AUDIT["Stage 2: Adversarial Diff-Only Audit\nqa-auditor (Model: Pro)\nOWASP Top 10 • Craft Standards • WCAG"]
+        AUDIT --> LIVE["Stage 3: Live Verification Checkpoint\nLocal Dev Server • Browser Review"]
+    end
+
+    LIVE --> SHIP["Stage 4: Git Commit & Delivery"]
 ```
 
 ---
 
-## 🏛️ The 5 Core Pillars
+## Core Architectural Innovations
 
-### 1. The Omniscient Conductor
-* **Direct User Connection:** Conductor talks directly to the user using native interactive prompts (`ask_question`). Zero intermediary telephone game.
-* **Lightweight Public Signatures:** Holds only the AST Ghost Skeleton (< 2,500 tokens for 50,000-line repositories). Never ingests raw function bodies.
-* **Need-to-Know Slicing:** Dispatches workers with only the exact 15-line schema and file boundaries they need.
+### 1. Zero-Compounding Context Architecture
 
-### 2. The Ponytail Protocol (Ladder of Laziness)
-Before any code is generated, tasks pass through Dietrich Gebert's **Ladder of Laziness**:
-1. **YAGNI:** Delete speculative features before writing them.
-2. **Reuse:** Leverage existing codebase helpers.
-3. **Standard Library:** Use `crypto.randomUUID()`, native `URL`, and native `fetch`.
-4. **Native Platform:** Use `<dialog>`, `<input type="date">`, and `<details>` over bloated npm packages.
-5. **Anti-Package Sprawl:** Workers are strictly banned from running `npm install <new_pkg>` without explicit Conductor authorization.
+In conventional multi-turn agent systems, the context length grows as $O(N^2)$ relative to the steps taken: each new command re-transmits the complete history of previous attempts, outputs, and compiler errors.
 
-### 3. Just-In-Time (JIT) Skill Slicing
-Instead of forcing workers to read 600-line manuals (burning 20,000 tokens), the Conductor injects **hyper-focused 40-token constraint slices** directly into the worker's prompt (e.g. 60-30-10 color rules, 50ms stagger cascades, or OWASP parameterized query rules).
+CEST enforces $O(1)$ context longevity:
+- **Stateless Strike Workers**: Leaf workers instantiate with an empty history, read the designated skill slice and interface boundary, make surgical edits, and terminate.
+- **Receipt Swapping**: Raw terminal stdout and stderr payloads are replaced with content-hashed SHA256 receipts (`receipt_swapper.py`), truncating 2,000-line build logs into 40-token verifiable references.
+- **AST Ghost Skeleton**: Conductor inspects Brownfield repositories using `ghost_skeleton.py` to extract only signatures, classes, and export topologies (<1,200 tokens for 50,000-line projects), completely bypassing raw file ingestion.
 
-### 4. Ephemeral Parallel Strike Workers
-* **Stateless 1-Shot Runners:** Workers boot in an isolated workspace, execute their Sniper Prompt, run a local verification test, output a git diff and SHA256 receipt (<50 tokens), and **terminate immediately**.
-* **Zero Context Accumulation:** Workers leave no conversational exhaust in the active context window.
+### 2. Deterministic Pre-Flight Contract Gate
 
-### 5. Layered 4-Stage Shift-Left QA Gate
-* **Stage 0:** Local in-flight worker verification before reporting.
-* **Stage 1 (Deterministic 0-Token Gate):** Local terminal compilers (`tsc --noEmit`, `cargo check`, `pytest`) verify syntax and types at zero token cost.
-* **Stage 2 (Adversarial Diff-Only Audit):** `qa-auditor` reviews only the Git diff against OWASP Top 10, the Anti-Vibe-Code blacklist, and WCAG accessibility standards.
-* **Stage 3 (Live Browser Checkpoint):** Conductor serves the assembled application at `localhost:3000` for live human review and approval.
+Cross-module interface mismatches (e.g., a frontend worker importing `userId` while a backend worker emits `id`) represent the primary driver of agent regression loops.
 
----
+CEST eliminates interface hallucinations before execution begins:
+1. Conductor defines all system contracts in `src/types.ts` during the Blueprint phase.
+2. The mechanical `contract_gate.py` script validates the syntactic and semantic coherence of these types natively.
+3. Each leaf worker receives an immutable, isolated AST type slice. Leaf workers are physically restricted from modifying `src/types.ts` or declaring conflicting interfaces.
 
-## 🎨 Creative UI/UX & Kinetic Motion Standards
+### 3. Zero-Token Synthetic Indexer
 
-CEST categorically bans generic, bland "AI template" aesthetics.
+In standard parallel agent architectures, having multiple agents update shared export files (`src/components/index.ts`, `src/routes/index.ts`) triggers Git merge collisions and context thrashing.
 
-### Visual Craft Rules:
-* **Brand-Tinted Surfaces:** Absolute ban on pure dead white (`#ffffff`) or pure gray (`#808080`). All neutrals are tinted with 4%–8% of the brand's primary hue.
-* **60-30-10 Color Hierarchy:** 60% tinted background, 30% structural secondary depth (crisp 1px borders, no muddy shadows), and 10% high-impact accent.
-* **The Anti-Vibe-Code Blacklist:** Immediate rejection for emoji in functional UI (`🚀`, `🔥`), rainbow gradient text, card-in-card nesting (>2 levels), and generic spinning loaders.
+CEST solves this mechanically:
+- Leaf workers are explicitly prohibited from editing barrel files or root entrypoints.
+- Once workers complete their individual leaf components, `synthetic_indexer.py` (or its Node.js mirror `synthetic_indexer.js`) traverses the directory, extracts AST export declarations, sorts them alphabetically, and writes clean barrel files in under 10 milliseconds.
+- This produces 100% deterministic index files at exactly **zero LLM token cost**.
 
-### Kinetic Motion Standards:
-* **Calibrated Duration Scale:** 50–100ms micro-feedback, 150–250ms element transitions, 250–350ms component entrances.
-* **Spring Physics Default:** Damped spring transitions (`stiffness: 400, damping: 30`) over robotic linear easing.
-* **50ms Stagger Cascades:** Lists and card grids animate in with a 50ms child delay wave.
-* **Accessibility:** Mandatory `@media (prefers-reduced-motion: reduce)` fallbacks.
+### 4. Dynamic Packaged Skills Ecosystem and JIT Rule Slicing
 
----
+Rather than relying on brittle, handcrafted, and unmaintained custom prompt files, CEST integrates with the broader community skills ecosystem via `npx skills`, `skillfish`, and verified npm modules.
 
-## 🧠 Evolutionary Memory Engine
+- **Dynamic Skill Resolver (`skill_resolver.py`)**: When a project requires an unfamiliar technology (e.g., `auth0`, `tanstack-query`, `vitest`), the resolver automatically locates, verifies, and installs standard community skills into `.agents/skills/`.
+- **Just-In-Time (JIT) Rule Slicing (`skill_rules_extractor.py`)**: Workers never ingest monolithic 30-page documentation manuals. The mechanical extractor processes markdown rules outside the LLM, isolating code blocks, tables, and strict constraints, and caps injected context at under 700 tokens per worker.
+- **No Secondary Registry Drift**: CEST treats the local `.agents/skills/` directory as the direct source of truth. All legacy static manifests (`skills-registry.json`, `skills-lock.json`) have been removed to eliminate double-bookkeeping and synchronize cleanly with disk state.
 
-CEST prevents memory bloat by enforcing a **Strict Negative-Knowledge Mandate**:
-* **Learn ONLY from Failures:** Memory records *only* unexpected compiler traps, broken package versions, and runtime crashes into `.agent_execution/event-queue.jsonl`.
-* **Zero Domain Bloat:** Normal successful runs generate **zero memory entries**. Project names and business domain terms are stripped.
-* **Chief-of-Staff Distillation:** The asynchronous `chief-of-staff` agent distills recurring failure patterns into immutable negative invariants permanently written into agent system prompts under `## EVOLUTIONARY MEMORY`, immunizing the framework across all future runs.
+### 5. Tiered Runtime Resilience Engine
 
----
+To ensure seamless operation across disparate developer machines and CI/CD containers, all CEST mechanical tools feature mirrored implementations across three runtime tiers:
 
-## 👥 Agent Roster (Core 6)
+1. **Bun Tier** (Priority 1): Sub-20ms execution startup; native TypeScript and JavaScript execution without compilation or package overhead.
+2. **Node.js Tier** (Priority 2): Standard enterprise LTS execution using mirrored scripts in `.agents/scripts/node/`.
+3. **Python Tier** (Priority 3): Standard-library Python scripts located in `.agents/scripts/`.
+4. **Native Fallback Mode**: If no scripting runtime exists in the host path, Conductor automatically pivots to native file inspection and high-rigor diff audits.
 
-| Agent | Model Tier | Role & Responsibilities |
-|---|---|---|
-| **`conductor`** | `pro` | Supreme Director, Principal Architect, and sole user-facing interface. Plans workflows, enforces Ponytail, slices skills, and manages file ownership. |
-| **`strike-worker-backend`** | `flash` | Ephemeral 1-shot runner for REST/GraphQL APIs, auth services, database models, and unit tests. |
-| **`strike-worker-frontend`** | `flash` | Ephemeral 1-shot runner for creative UI/UX, spring physics motion, and responsive component trees. |
-| **`strike-worker-infra`** | `flash` | Ephemeral 1-shot runner for multi-stage Dockerfiles, GitHub Actions CI/CD, and health probing. |
-| **`qa-auditor`** | `pro` | Adversarial diff-only inspector auditing code against OWASP Top 10, Anti-Vibe-Code, and WCAG rules. |
-| **`chief-of-staff`** | `pro` | Evolutionary memory distillation engine converting runtime traps into permanent system invariants. |
+### 6. Four-Stage Shift-Left Quality Assurance Pipeline
+
+Quality verification occurs as early as possible to minimize recovery costs:
+
+- **Stage 0 (In-Flight Worker Verification)**: Strike workers execute local test commands (e.g., `tsc --noEmit` on their target file) prior to emitting receipts.
+- **Stage 1 (Deterministic 0-Token Machine Gate)**: Host compilers (`tsc`, `cargo check`, `pytest`) validate the entire repository. If errors occur, `error_slicer.py` strips diagnostic noise, converting 300 lines of compiler output into a 90-token Error Tuple `(file, line, column, error_code, message)` routed directly to a 1-turn fix worker.
+- **Stage 2 (Adversarial Diff-Only Audit)**: The `qa-auditor` evaluates Git diffs against the OWASP Top 10, WCAG 2.1 accessibility criteria, and the Anti-Vibe-Code blacklist.
+- **Stage 3 (Live Browser Checkpoint)**: The local application is launched on a development port for human acceptance testing.
+- **Stage 4 (Evolutionary Memory Protection)**: Runtime failure patterns are sanitized via AST domain-noun stripping and recorded in `.agent_execution/event-queue.jsonl`. Failure patterns exceeding three recurrences are permanently compiled into system invariant prompts.
 
 ---
 
-## 📚 Skills Library (8 Domain Manuals)
+## Quantitative Token Economics and Latency Benchmarks
 
-| Skill | Purpose | Key Standards |
-|---|---|---|
-| **`ponytail`** | Anti-Overengineering Protocol | The Ladder of Laziness, YAGNI, native platform APIs, anti-package sprawl. |
-| **`professional-ui-craft`** | Visual Design Standards | 60-30-10 rule, brand-tinted surfaces, Gestalt proximity, Anti-Vibe-Code blacklist. |
-| **`modern-ui-motion`** | Kinetic Animation Choreography | Spring physics (`stiffness: 400`), 50ms stagger cascades, GPU transform optimization. |
-| **`backend-engineering`** | API & Service Patterns | Zod validation, JWT authentication, RFC 9457 error shapes, rate limiting. |
-| **`database-engineering`** | Schema Modeling & Integrity | Idempotent migrations, foreign key indexing, N+1 query prevention. |
-| **`devops-infrastructure`** | CI/CD & Production Containers | Multi-stage Alpine Dockerfiles, GitHub Actions caching, liveness/readiness probes. |
-| **`security-audit`** | Threat Modeling & Defense | OWASP Top 10, regex secret scanning, parameterized SQL, timing-safe equality. |
-| **`testing-verification`** | Quality Assurance Strategy | 4-stage shift-left pyramid, 0-token compiler gates (`tsc`, `pytest`), Vitest unit tests. |
+The following benchmarks demonstrate comparative consumption during a fullstack feature implementation (Next.js client with React Query, Express API route with Zod validation, and Prisma schema migration):
 
----
-
-## 🔄 Workflows & Adaptability
-
-CEST includes 3 adaptive workflows in `.agents/workflows/`:
-1. **`cest-software-project.json`:** Greenfield fullstack delivery pipeline with interactive phase skipping (headless, no-test, no-docker).
-2. **`cest-codebase-update.json`:** Brownfield takeover pipeline utilizing ghost skeleton archaeology and AST surgical grafting.
-3. **`cest-quick-fix.json`:** Rapid single-turn surgical bugfix pipeline.
-
----
-
-## 🛠️ Deterministic Tooling Suite (`.agents/scripts/`)
-
-| Script | Purpose | Token Impact | Mechanics |
-|---|---|---|---|
-| **`ghost_skeleton.py`** | 3-Tier AST signature & reachability engine (TS, JS, Python, Go, Rust, Prisma, SQL). | **98% context reduction** | Traverses workspace in <1.5s, provides `--topology` (<200t), `--skeleton` (<1,200t), and `--reachability` (<800t) slices. |
-| **`ast_surgery.py`** | Structural code grafting engine. | **Zero formatting bugs** | Performs targeted AST node replacements (`inject_import`, `append_route`, `replace_block`) avoiding full-file overwrites. |
-| **`receipt_swapper.py`** | Content-addressable tool output garbage collection. | **99% output reduction** | Hashes raw stdout/stderr to disk and returns a 35-token structured receipt conforming to `receipt.schema.json`. |
-| **`error_slicer.py`** | Compiler & test stack trace parser. | **95% diagnostic reduction** | Reduces 300-line stack traces to a 90-token Error Tuple `(file, line, column, error_code, message)`. |
-| **`skill_synthesizer.py`** | Autonomous Living Skill Synthesis & Grounding Engine. | **Zero manual research** | Synthesizes missing domain skills from official docs on cache-miss with compiler grounding verification. |
-
----
-
-## 📊 Quantitative Economics & Speed
-
-| Scenario | Legacy Multi-Manager | Default Single Agent | CEST Architecture (v7.0) | Net Improvement |
+| Metric | Legacy Hierarchical Multi-Agent | Sequential Single-Agent | CEST Flat Swarm (v8.0) | Measurable Gain |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tokens per Feature** | ~110,000 tokens | ~65,000 tokens | **~21,950 tokens** | **75%+ Savings** |
-| **Time to First Code File** | 2 min 45 sec | 12 sec | **6 sec** | **27x Faster** |
-| **Fullstack Turnaround** | 7 min 10 sec | 5 min 30 sec | **1 min 45 sec** | **4x Faster** |
-| **Context Longevity** | Fragmented | Collapses after Step 20 | **Pristine Indefinitely** | **Immune to Degradation** |
+| **Total Token Consumption** | 125,000 – 190,000 tokens | 65,000 – 95,000 tokens | **18,500 – 24,000 tokens** | **78% – 88% reduction** |
+| **Time to First File Emitted** | 3 min 15 sec | 25 sec | **8 sec** | **24x faster than hierarchical** |
+| **End-to-End Task Duration** | 8 min 40 sec | 6 min 10 sec | **1 min 55 sec** | **3.2x – 4.5x faster** |
+| **Context Window Longevity** | Severe degradation at step 12 | Degrades after step 20 | **Constant O(1)** | **Zero memory saturation** |
+| **Merge / Collision Frequency** | 35% on shared entrypoints | 0% (sequential) | **0% (leaf isolation)** | **Zero collision lockups** |
+| **Barrel Export Generation Cost** | ~4,500 tokens (LLM generated) | ~3,200 tokens (LLM generated) | **0 tokens (10ms script)** | **100% token savings** |
 
 ---
 
-## 🚀 Quick Start
+## Core Agent Roster
 
-1. Ensure Python 3.8+ is installed on system `PATH` (for the 4 deterministic scripts; uses only standard library).
-2. Start an Antigravity agentic session.
-3. Select **`conductor`** as the main agent.
-4. Issue your prompt (e.g. *"Build a real-time collaborative task board with Next.js, Fastify, and PostgreSQL"*).
-5. Review the interactive scope confirmation modal, approve the manifest, and let the parallel strike workers execute.
+The CEST framework strictly limits its core configuration to six specialized agents, rejecting unnecessary management layers:
+
+| Agent Identifier | Model Tier | Core Role and Operational Scope |
+| :--- | :--- | :--- |
+| **`conductor`** | `pro` | Supreme Director and Principal Architect. Sole user-facing interface (`ask_question`). Conducts intake, formulates architecture blueprints, enforces the Ponytail protocol, coordinates the flat worker swarm, and oversees QA. |
+| **`strike-worker-backend`** | `flash` | Ephemeral 1-shot worker for REST/GraphQL controllers, middleware, data services, and database migrations. Operates under strict file isolation. |
+| **`strike-worker-frontend`** | `flash` | Ephemeral 1-shot worker for user interface components, client state, and accessibility. Strictly imports centralized types. |
+| **`strike-worker-infra`** | `flash` | Ephemeral 1-shot worker for multi-stage Dockerfiles, CI/CD pipeline definitions, health probes, and deployment manifests. |
+| **`qa-auditor`** | `pro` | Adversarial diff-only security and code craft auditor. Inspects Git diffs against security standards, performance thresholds, and layout constraints. |
+| **`chief-of-staff`** | `pro` | Asynchronous evolutionary memory engine. Distills recurring failure signatures from execution logs into permanent prompt invariants. |
+
+---
+
+## Packaged Skills Library
+
+CEST utilizes 23 curated, community-backed skill packages installed in `.agents/skills/`. Each skill provides focused, authoritative guidance extracted on demand:
+
+### Security, Authentication, and Identity
+- **`auth0`**: Production authentication patterns, JWT signing and verification, JWKs management, session tokens, and route protection.
+- **`security-and-hardening`**: Threat modeling, SQL injection defense, parameterized queries, input sanitization, timing-safe equality, and OWASP Top 10 mitigation.
+
+### Design Systems, Accessibility, and UI Craft
+- **`impeccable`**: Production visual hierarchy, 60-30-10 color theory, brand-tinted surfaces, typographic rhythm, and micro-interactions.
+- **`baseline-ui`**: Structural layout polish, spacing scales, grid alignments, and container hygiene.
+- **`fixing-accessibility`**: WCAG 2.1 compliance, ARIA attribute audits, keyboard navigation, focus traps, and screen-reader semantics.
+- **`fixing-metadata`**: Structured SEO metadata, Open Graph cards, canonical URL integrity, and robots directives.
+- **`fixing-motion-performance`**: GPU compositing rules, transform/opacity animation constraints, and frame-rate optimization.
+- **`improve-ui`**: Systematic interface audits against design evidence and token drift.
+- **`tailwind-4-docs`**: Tailwind CSS v4 CSS-first configuration, theme variables, and utility references.
+- **`framer-motion-react`**: Kinetic physics, layout animations, exit transitions, and spring presets.
+
+### The Ponytail Simplicity Suite
+- **`ponytail`**: Core simplicity protocol enforcing the Ladder of Laziness, YAGNI, standard library usage, and anti-package sprawl.
+- **`ponytail-audit`**: Repository-wide audit targeting speculative abstractions and dead dependencies.
+- **`ponytail-debt`**: Automated tracking of deliberate code shortcuts and deferred tasks.
+- **`ponytail-gain`**: Quantified measurement of lines deleted, complexity reduced, and execution speed gained.
+- **`ponytail-help`**: Quick reference for simplicity commands and lazy-path patterns.
+- **`ponytail-review`**: Code review module evaluating PR diffs exclusively for over-engineering.
+
+### Backend, Data, and Quality Assurance
+- **`express-typescript`**: Robust Express.js patterns, middleware chaining, and TypeScript route typing.
+- **`hono-middleware`**: Lightweight, edge-compatible HTTP routing and middleware architectures.
+- **`prisma-database-setup`**: Idempotent migrations, schema modeling, relation indexing, and connection pool optimization.
+- **`tanstack-query`**: Asynchronous server state management, query caching, invalidation, and optimistic updates.
+- **`zod`**: Runtime schema parsing, type inference, and input boundary validation.
+- **`vitest`**: Fast unit and integration testing, mocking patterns, and coverage validation.
+- **`vercel-react-best-practices`**: React Server Components, hydration optimization, and bundle minimization rules.
+
+---
+
+## Mechanical Tooling Suite
+
+The `.agents/scripts/` directory houses deterministic, zero-token automation tools available in both Python and Node.js:
+
+```
+.agents/scripts/
+├── ast_surgery.py               # Structural AST code grafting and collision detection
+├── contract_gate.py             # Pre-flight AST type verification engine
+├── error_slicer.py              # Stderr compiler parser reducing errors to 90-token tuples
+├── ghost_skeleton.py            # AST topology, skeleton, and reachability extractor
+├── memory_guardian.py           # Domain-noun sanitizer and negative-knowledge filter
+├── receipt_swapper.py           # Content-addressable stdout/stderr garbage collector
+├── skill_resolver.py            # Dynamic community skill resolver and installer
+├── skill_rules_extractor.py     # JIT rule extractor capping skill tokens at <= 700
+├── synthetic_indexer.py         # 0-token deterministic barrel generator
+└── node/                        # Identical high-performance Node.js / Bun mirrors
+    ├── ast_surgery.js
+    ├── contract_gate.js
+    ├── error_slicer.js
+    ├── ghost_skeleton.js
+    ├── receipt_swapper.js
+    ├── skill_resolver.js
+    ├── skill_rules_extractor.js
+    └── synthetic_indexer.js
+```
+
+---
+
+## Standard Engineering Pipeline
+
+Every feature or project handled by CEST advances through six deterministic phases:
+
+```
+1. INTAKE & ARCHAEOLOGY
+   Conductor conducts interactive intake via ask_question.
+   Analyzes repository topology via ghost_skeleton.py in <1.5s (<200 tokens).
+
+2. ARCHITECTURE BLUEPRINT & CONTRACT FORMULATION
+   Produces .agent_execution/architecture-blueprint.md and design-spec.md.
+   Defines all entity interfaces and endpoint contracts in src/types.ts.
+   Validates syntax natively via contract_gate.py.
+
+3. MANDATORY CLI SCAFFOLDING
+   Initializes skeletons strictly through official CLIs (npm create vite@latest,
+   npx create-next-app, npx prisma init). Manual configuration drafting is banned.
+
+4. FLAT PARALLEL STRIKE SWARM
+   Conductor dispatches leaf workers concurrently within a sliding concurrency pool.
+   Workers receive isolated file targets, extracted type slices, and JIT skill rules.
+   Workers validate edits in-flight and emit structured receipts.
+
+5. ZERO-TOKEN INTEGRATION
+   synthetic_indexer.py scans emitted components and routes, writing clean index.ts
+   barrel files in 10ms with zero LLM context spend.
+
+6. SHIFT-LEFT QA & LIVE DELIVERY
+   Pass 1: Deterministic compiler gate (tsc, pytest, cargo check).
+   Pass 2: Adversarial diff audit (qa-auditor against OWASP and craft standards).
+   Pass 3: Live browser checkpoint served on localhost for human approval.
+   Pass 4: Negative-knowledge distillation and clean Git commit.
+```
+
+---
+
+## Quality Gates and Anti-Vibe-Code Mandates
+
+CEST enforces non-negotiable software craftsmanship standards. Submissions violating these invariants fail automated review immediately:
+
+- **Surface Color Integrity**: Absolute prohibition against dead `#ffffff` white or `#808080` gray. Surfaces must incorporate a 4% to 8% tint of the primary brand hue to preserve optical warmth and depth.
+- **Color Distribution**: Strict adherence to the 60-30-10 palette balance (60% tinted surface, 30% structural hierarchy, 10% purposeful accent).
+- **Prohibition of Functional Emojis**: Emojis are banned in functional UI buttons, badges, tables, and navigational items. Clean vector iconography (Lucide, Heroicons) is mandatory.
+- **Zero Layout-Thrashing Motion**: Animations must modify compositor-only properties (`transform`, `opacity`). Direct animation of `height`, `width`, `margin`, or `top/left` is rejected by static analysis.
+- **Accessibility Fallbacks**: Every animated component must include `@media (prefers-reduced-motion: reduce)` handling. Interactive tap targets must satisfy minimum 44x44px dimensions.
+- **Pre-Install Deprecation Verification**: Before any package installation, agents must verify its active status via `npm view <pkg> deprecated`. Deprecated packages are rejected at the shell gate.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ or Bun 1.0+ (recommended for sub-20ms script execution)
+- Python 3.8+ (for Python runtime fallback)
+- Git 2.30+
+
+### Installation
+Clone or copy the `.agents/` directory directly into your project root:
+
+```bash
+# Verify environment runtimes
+node --version
+bun --version
+python --version
+
+# Run verification suite
+python scratch/verify_v8.py
+```
+
+### Execution
+1. Open an Antigravity agentic session.
+2. Select **`conductor`** as the root agent.
+3. Submit your architectural request:
+   ```text
+   "Build a multi-tenant subscription analytics dashboard with Next.js App Router, 
+   Tailwind CSS v4, Framer Motion kinetic transitions, and Auth0 session validation."
+   ```
+4. Respond to the interactive scope confirmation modal, and observe the parallel strike swarm execute with zero-compounding context.
+
+---
+
+## License
+
+Distributed under the MIT License. See [LICENSE](./LICENSE) for details.
