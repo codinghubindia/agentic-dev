@@ -286,24 +286,27 @@ Every feature or project handled by CEST advances through six deterministic phas
    Defines all entity interfaces and endpoint contracts in src/types.ts.
    Validates syntax natively via contract_gate.py.
 
-3. MANDATORY CLI SCAFFOLDING
+3. MANDATORY CLI SCAFFOLDING & GIT BASELINE
    Initializes skeletons strictly through official CLIs (npm create vite@latest,
    npx create-next-app, npx prisma init). Manual configuration drafting is banned.
+   Immediately establishes zero-diff Git baseline (git init && git commit -m "chore: scaffold").
 
-4. FLAT PARALLEL STRIKE SWARM
-   Conductor dispatches leaf workers concurrently within a sliding concurrency pool.
-   Workers receive isolated file targets, extracted type slices, and JIT skill rules.
-   Workers validate edits in-flight and emit structured receipts.
+4. FLAT PARALLEL STRIKE SWARM & PAGE CLUSTERING
+   Conductor dispatches leaf workers concurrently within a sliding concurrency pool (4-6 workers).
+   Multi-page applications partition into 2-3 file page clusters (Marketing, Catalog, Commerce, Portals).
+   Workers receive isolated file targets, extracted type slices, and JIT skill rules (<= 700 tokens).
+   Strict leaf isolation: workers import centralized types, avoid reading sibling source files,
+   validate edits in-flight, and emit structured receipts.
 
-5. ZERO-TOKEN INTEGRATION
-   synthetic_indexer.py scans emitted components and routes, writing clean index.ts
-   barrel files in 10ms with zero LLM context spend.
+5. ZERO-TOKEN MECHANICAL INTEGRATION
+   synthetic_indexer scans emitted components and routes, writing clean index.ts
+   barrel files and assembling Express/Hono apiRouter in 10ms with zero LLM context spend.
 
-6. SHIFT-LEFT QA & LIVE DELIVERY
-   Pass 1: Deterministic compiler gate (tsc, pytest, cargo check).
-   Pass 2: Adversarial diff audit (qa-auditor against OWASP and craft standards).
+6. SHIFT-LEFT QA & INCREMENTAL AUDIT
+   Pass 1: Deterministic compiler gate (tsc, pytest, cargo check) with 90-token error slicing.
+   Pass 2: Targeted adversarial diff audit (qa-auditor with <600 line diff budget on security paths).
    Pass 3: Live browser checkpoint served on localhost for human approval.
-   Pass 4: Negative-knowledge distillation and clean Git commit.
+   Pass 4: Negative-knowledge distillation and clean Git commit per wave.
 ```
 
 ---
