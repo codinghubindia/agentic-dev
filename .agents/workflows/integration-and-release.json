@@ -1,53 +1,59 @@
 {
-  "workflowId": "integration-and-release",
-  "name": "Integration and Release Workflow",
+  "name": "integration-and-release",
+  "version": "5.0",
+  "architecture": "Neural Orchestra v5 Contract-First Vertical Slicing",
   "description": "Standard operating procedure for merging parallel code streams, resolving conflicts, validating builds, running comprehensive test suites, and signing off on release.",
   "execution": {
-    "defaultModel": "inherit",
-    "modelOverrides": {
-      "security-lead": "pro",
-      "integration-manager": "pro",
-      "release-notes-worker": "flash"
-    },
-    "parallelismLimit": 2
+    "defaultModel": "pro",
+    "parallelismLimit": 2,
+    "qualityGateCommand": "node .agents/bin/quality-gate.mjs",
+    "maxGateRetries": 3,
+    "stateManager": "node .agents/bin/orchestra-state.mjs"
   },
-  "steps": [
+  "phases": [
     {
-      "step": 1,
-      "name": "Source Tree Harmonization",
-      "leadAgent": "integration-manager",
-      "action": "Inspect branches/changes, check ownership adherence, detect file clashes",
-      "requiredArtifacts": []
+      "id": "phase_1_deterministic_quality_gate",
+      "name": "Zero-Token Deterministic Quality Gate",
+      "agents": ["conductor"],
+      "requiredArtifacts": [
+        ".agent_execution/quality-gate-report.json"
+      ],
+      "hardGate": true,
+      "instructions": "Execute node .agents/bin/quality-gate.mjs to verify conflict markers, TypeScript compiler checks, professional-ui-craft rules, and dependency audits."
     },
     {
-      "step": 2,
-      "name": "Integration Build & Unit Tests",
-      "leadAgent": "integration-manager",
-      "action": "Execute build scripts and run core unit tests",
-      "requiredArtifacts": []
+      "id": "phase_2_qa_and_security_audit",
+      "name": "E2E Validation & Security Sign-Off",
+      "agents": ["qa-security-verifier"],
+      "requiredArtifacts": [
+        ".agent_execution/qa-verification-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_1_deterministic_quality_gate"],
+      "instructions": "Run automated browser E2E test suites, security penetration scans, and git diff audits."
     },
     {
-      "step": 3,
-      "name": "E2E and Regression Suite",
-      "leadAgent": "qa-lead",
-      "delegates": ["browser-e2e-tester"],
-      "action": "Run full regression and browser end-to-end tests",
-      "requiredArtifacts": []
+      "id": "phase_3_observability_and_health",
+      "name": "Runtime Observability & Health Probes Verification",
+      "agents": ["devops-release-engineer"],
+      "requiredArtifacts": [
+        "Dockerfile"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_2_qa_and_security_audit"],
+      "instructions": "Verify /health and /ready probe endpoints, structured logging format, and metric outputs."
     },
     {
-      "step": 4,
-      "name": "Security & Architecture Review",
-      "leadAgent": "security-lead",
-      "collaborators": ["code-reviewer", "technical-architect"],
-      "action": "Audit codebase for vulnerabilities, secrets, and architecture compliance",
-      "requiredArtifacts": []
-    },
-    {
-      "step": 5,
-      "name": "Release Packaging & Deployment",
-      "leadAgent": "devops-release-lead",
-      "artifacts": ["release-report.json", "CHANGELOG.md"],
-      "requiredArtifacts": ["release-report.json", "CHANGELOG.md"]
+      "id": "phase_4_release_packaging",
+      "name": "Semantic Versioning & Release Packaging",
+      "agents": ["devops-release-engineer"],
+      "requiredArtifacts": [
+        "CHANGELOG.md",
+        "release-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_3_observability_and_health"],
+      "instructions": "Bump semantic version, generate CHANGELOG.md, and package release artifacts."
     }
   ]
 }

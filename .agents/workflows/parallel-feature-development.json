@@ -1,43 +1,77 @@
 {
-  "workflowId": "parallel-feature-development",
-  "name": "Parallel Feature Development Workflow",
-  "description": "Guides parallel execution across backend, frontend, database, and security streams based on defined contracts and ownership boundaries.",
+  "name": "parallel-feature-development",
+  "version": "5.0",
+  "architecture": "Neural Orchestra v5 Contract-First Vertical Slicing",
+  "description": "Guides high-throughput concurrent feature execution across Macro Vertical Engineers against locked executable contracts.",
   "execution": {
-    "defaultModel": "inherit",
-    "modelOverrides": {
-      "security-lead": "pro",
-      "integration-manager": "pro"
-    },
-    "parallelismLimit": 4
+    "defaultModel": "pro",
+    "parallelismLimit": 4,
+    "qualityGateCommand": "node .agents/bin/quality-gate.mjs",
+    "maxGateRetries": 3,
+    "stateManager": "node .agents/bin/orchestra-state.mjs"
   },
-  "prerequisites": ["architecture.json", "api-contract.json", "ownership-map.json"],
   "phases": [
     {
-      "phase": 1,
-      "name": "Parallel Implementation Streams",
-      "executionMode": "PARALLEL",
-      "agents": ["backend-lead", "frontend-lead", "data-lead", "security-lead"],
-      "streams": [
-        {"name": "backend", "owner": "backend-lead", "scope": ["backend/", "server/"], "contract": "api-contract.json"},
-        {"name": "frontend", "owner": "frontend-lead", "scope": ["frontend/", "src/", "public/"], "contract": "api-contract.json"},
-        {"name": "database", "owner": "data-lead", "scope": ["database/", "migrations/", "models/"], "contract": "architecture.json"},
-        {"name": "security", "owner": "security-lead", "scope": ["security/", "auth/"], "contract": "architecture.json"}
+      "id": "phase_1_contract_lock",
+      "name": "Executable Contract Lock & Stream Scoping",
+      "skipConditions": [],
+      "agents": ["principal-architect"],
+      "requiredArtifacts": [
+        "src/contracts/contracts.ts",
+        ".agent_execution/file-responsibility-index.json"
       ],
-      "requiredArtifacts": ["backend-handoff-report.json", "frontend-handoff-report.json"]
+      "hardGate": true,
+      "instructions": "Lock executable TypeScript contracts and assign vertical slice file ownership."
     },
     {
-      "phase": 2,
-      "name": "Integration & Synchronization",
-      "executionMode": "SEQUENTIAL",
-      "leadAgent": "integration-manager",
-      "requiredArtifacts": ["integration-report.json"]
+      "id": "phase_2_parallel_vertical_streams",
+      "name": "Parallel Vertical Slice Execution",
+      "executionMode": "PARALLEL",
+      "agents": [
+        "fullstack-backend-engineer",
+        "fullstack-frontend-engineer",
+        "data-platform-engineer",
+        "mobile-engineer"
+      ],
+      "requiredArtifacts": [
+        "implementation_complete_flag"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_1_contract_lock"],
+      "instructions": "Run independent vertical streams concurrently against locked contracts.ts. Each engineer runs node .agents/bin/quality-gate.mjs locally."
     },
     {
-      "phase": 3,
-      "name": "Validation",
-      "executionMode": "SEQUENTIAL",
-      "leadAgent": "qa-lead",
-      "requiredArtifacts": ["qa-report.json"]
+      "id": "phase_3_deterministic_verification",
+      "name": "Zero-Token Deterministic Quality Gate",
+      "agents": ["conductor"],
+      "requiredArtifacts": [
+        ".agent_execution/quality-gate-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_2_parallel_vertical_streams"],
+      "instructions": "Run node .agents/bin/quality-gate.mjs. If failed, map-failures and dispatch back to owning vertical engineers (capped at 3 retries)."
+    },
+    {
+      "id": "phase_4_qa_verification",
+      "name": "Multi-Stream Integration & E2E Validation",
+      "agents": ["qa-security-verifier"],
+      "requiredArtifacts": [
+        ".agent_execution/qa-verification-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_3_deterministic_verification"],
+      "instructions": "Validate end-to-end integration across merged streams and verify git diff."
+    },
+    {
+      "id": "phase_5_release",
+      "name": "Release Packaging",
+      "agents": ["devops-release-engineer"],
+      "requiredArtifacts": [
+        "CHANGELOG.md"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_4_qa_verification"],
+      "instructions": "Package release and update changelog."
     }
   ]
 }

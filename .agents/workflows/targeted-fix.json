@@ -1,0 +1,66 @@
+{
+  "name": "targeted-fix",
+  "version": "5.0",
+  "architecture": "Neural Orchestra v5 Contract-First Vertical Slicing",
+  "description": "Fast-path surgical bug fix and hotfix workflow: Skeleton Triage -> Single Vertical Fix -> Shift-Left Gate -> QA Regression Check.",
+  "execution": {
+    "defaultModel": "pro",
+    "parallelismLimit": 2,
+    "qualityGateCommand": "node .agents/bin/quality-gate.mjs",
+    "maxGateRetries": 3,
+    "stateManager": "node .agents/bin/orchestra-state.mjs"
+  },
+  "projectTypes": ["bugfix", "hotfix", "targeted-fix"],
+  "phases": [
+    {
+      "id": "phase_1_triage_and_skeleton",
+      "name": "Target File Skeleton Extraction & Triage",
+      "skipConditions": [],
+      "agents": ["principal-architect"],
+      "requiredArtifacts": [
+        "context-skeleton.d.ts"
+      ],
+      "hardGate": true,
+      "instructions": "Run node .agents/bin/extract-skeleton.mjs <target-files> to extract exact type signatures without loading implementation bloat. Isolate root cause."
+    },
+    {
+      "id": "phase_2_targeted_fix_execution",
+      "name": "Surgical Vertical Fix Execution",
+      "skipConditions": [],
+      "agents": [
+        "fullstack-backend-engineer",
+        "fullstack-frontend-engineer",
+        "data-platform-engineer",
+        "mobile-engineer"
+      ],
+      "requiredArtifacts": [
+        "fix_complete_flag"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_1_triage_and_skeleton"],
+      "instructions": "Owning engineer implements fix and adds regression test. Must run node .agents/bin/quality-gate.mjs locally before submitting."
+    },
+    {
+      "id": "phase_3_deterministic_verification",
+      "name": "Zero-Token Deterministic Quality Gate",
+      "agents": ["conductor"],
+      "requiredArtifacts": [
+        ".agent_execution/quality-gate-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_2_targeted_fix_execution"],
+      "instructions": "Run node .agents/bin/quality-gate.mjs. If failed, map-failures and dispatch back (max 3 retries)."
+    },
+    {
+      "id": "phase_4_regression_signoff",
+      "name": "Regression Test & Git Diff Sign-Off",
+      "agents": ["qa-security-verifier"],
+      "requiredArtifacts": [
+        ".agent_execution/qa-verification-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_3_deterministic_verification"],
+      "instructions": "Run affected test suite, verify fix in isolation, and confirm no side-effects in git diff."
+    }
+  ]
+}

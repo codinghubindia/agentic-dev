@@ -1,24 +1,26 @@
 {
   "companyName": "AgenticDev: Autonomous AI Software Company",
-  "version": "3.0.0",
-  "lastUpdated": "2026-09-22",
-  "totalAgents": 49,
+  "version": "5.0.0",
+  "architecture": "Neural Orchestra v5 (Deterministic Control Plane + 8 Macro Vertical Engineers + Contract-First AST Context)",
+  "lastUpdated": "2026-10-19",
+  "totalAgents": 9,
+  "controlPlane": {
+    "extractSkeleton": ".agents/bin/extract-skeleton.mjs",
+    "qualityGate": ".agents/bin/quality-gate.mjs",
+    "orchestraState": ".agents/bin/orchestra-state.mjs"
+  },
   "agents": [
     {
-      "name": "project-manager",
-      "role": "Project Manager",
+      "name": "conductor",
+      "role": "Supreme Director",
       "type": "orchestrator",
       "scope": "workspace",
-      "location": ".agents/agents/project-manager/agent.md",
+      "location": ".agents/agents/conductor/agent.md",
       "capabilities": [
-        "planning",
-        "task-decomposition",
-        "orchestration",
-        "milestone-tracking",
-        "sprint-management",
-        "project-type-detection",
-        "adaptive-pipeline",
-        "workflow-execution"
+        "intent-classification",
+        "deterministic-control-plane-orchestration",
+        "vertical-slice-dispatch",
+        "user-escalation-relay"
       ],
       "model": "pro",
       "mainAgent": true,
@@ -27,1140 +29,309 @@
       "skills": [
         "software-project-management"
       ],
-      "description": "Smart orchestrator \u2014 detects project type (fullstack/ai-rag/mobile/automation/game), interviews user, routes to correct leads/workers, executes workflow pipelines, tracks milestones with schedule-based liveness monitoring."
+      "description": "The ultra-thin Supreme Director of Neural Orchestra v5 — the single user-facing entry point. Classifies intent, drives the deterministic control plane (.agents/bin/), dispatches to 8 Macro Vertical Engineers, and handles user escalation relays."
     },
     {
-      "name": "workflow-manager",
-      "role": "Workflow Manager",
-      "type": "orchestrator",
+      "name": "principal-architect",
+      "role": "Principal Architect",
+      "type": "macro-vertical-lead",
       "scope": "workspace",
-      "location": ".agents/agents/workflow-manager/agent.md",
+      "location": ".agents/agents/principal-architect/agent.md",
       "capabilities": [
-        "workflow-execution",
-        "phase-gate-enforcement",
-        "parallel-stream-coordination",
-        "workflow-resumption"
+        "technical-intake",
+        "contract-first-design",
+        "executable-contracts-ts",
+        "zod-schema-modeling",
+        "module-boundaries"
       ],
       "model": "pro",
-      "mainAgent": true,
+      "mainAgent": false,
       "subagent": true,
-      "can_delegate": true,
+      "can_delegate": false,
       "skills": [
-        "software-project-management",
-        "git-integration"
-      ],
-      "reads": [
-        ".agents/workflows/*.json"
-      ]
-    },
-    {
-      "name": "technical-architect",
-      "role": "Technical Architect",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/technical-architect/agent.md",
-      "capabilities": [
         "architecture-design",
-        "api-contract-definition",
-        "tech-stack-selection",
-        "ownership-mapping"
+        "api-design",
+        "software-project-management"
       ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "architecture-design"
-      ]
+      "subRoles": [
+        ".agents/skills/sub-roles/architecture/code-contracts.md",
+        ".agents/skills/sub-roles/architecture/intake-interview.md"
+      ],
+      "description": "Principal Architect of Neural Orchestra v5. Conducts intake and produces executable code contracts (contracts.ts, Zod schemas, OpenAPI specs, Prisma schemas) and bootstraps project scaffolding."
     },
     {
-      "name": "uiux-lead",
-      "role": "UI/UX Lead",
-      "type": "lead",
+      "name": "fullstack-frontend-engineer",
+      "role": "Fullstack Frontend Engineer",
+      "type": "macro-vertical-engineer",
       "scope": "workspace",
-      "location": ".agents/agents/uiux-lead/agent.md",
+      "location": ".agents/agents/fullstack-frontend-engineer/agent.md",
       "capabilities": [
-        "user-journey-mapping",
-        "design-system",
-        "component-specs",
-        "accessibility-standards",
-        "design-handoff"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "uiux-design",
-        "frontend-development"
-      ],
-      "workers": [
-        "mockup-wireframe-worker"
-      ]
-    },
-    {
-      "name": "mockup-wireframe-worker",
-      "role": "Mockup & Wireframe Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/mockup-wireframe-worker/agent.md",
-      "capabilities": [
-        "wireframe-generation",
-        "ui-inspiration-research",
-        "mockup-generation",
-        "screen-specs",
-        "design-pattern-research"
-      ],
-      "model": "pro",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "uiux-design"
-      ],
-      "parent": "uiux-lead"
-    },
-    {
-      "name": "frontend-lead",
-      "role": "Frontend Lead",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/frontend-lead/agent.md",
-      "capabilities": [
-        "component-architecture",
+        "ui-ux-craft",
+        "accessible-components",
         "state-management",
-        "routing",
-        "api-integration",
-        "frontend-testing",
-        "performance-budgets",
-        "i18n-strategy"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "frontend-development",
-        "testing"
-      ],
-      "workers": [
-        "ui-component-worker",
-        "routing-worker",
-        "state-management-worker",
-        "api-integration-worker",
-        "frontend-test-worker",
-        "accessibility-worker",
-        "performance-worker",
-        "localization-worker"
-      ]
-    },
-    {
-      "name": "ui-component-worker",
-      "role": "UI Component Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/ui-component-worker/agent.md",
-      "capabilities": [
-        "reusable-components",
-        "design-tokens",
-        "wcag-aria",
-        "component-variants"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "frontend-development"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "routing-worker",
-      "role": "Routing Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/routing-worker/agent.md",
-      "capabilities": [
         "client-routing",
-        "auth-guards",
-        "rbac-route-guards",
-        "lazy-loading",
-        "deep-links"
+        "api-client-integration",
+        "frontend-unit-tests"
       ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "frontend-development"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "state-management-worker",
-      "role": "State Management Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/state-management-worker/agent.md",
-      "capabilities": [
-        "global-state-stores",
-        "auth-state",
-        "async-state",
-        "state-persistence",
-        "selectors"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "frontend-development"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "api-integration-worker",
-      "role": "API Integration Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/api-integration-worker/agent.md",
-      "capabilities": [
-        "typed-api-client",
-        "react-query-hooks",
-        "auth-interceptors",
-        "error-normalization"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "frontend-development"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "frontend-test-worker",
-      "role": "Frontend Test Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/frontend-test-worker/agent.md",
-      "capabilities": [
-        "component-unit-tests",
-        "hook-tests",
-        "rtl",
-        "msw-mocking",
-        "coverage-reporting"
-      ],
-      "model": "flash",
+      "model": "pro",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
       "skills": [
         "frontend-development",
-        "testing"
+        "react-patterns",
+        "professional-ui-craft",
+        "typescript-patterns",
+        "localization"
       ],
-      "parent": "frontend-lead"
+      "subRoles": [
+        ".agents/skills/sub-roles/frontend/ui-components.md",
+        ".agents/skills/sub-roles/frontend/state-management.md",
+        ".agents/skills/sub-roles/frontend/routing.md",
+        ".agents/skills/sub-roles/frontend/api-integration.md",
+        ".agents/skills/sub-roles/frontend/accessibility.md",
+        ".agents/skills/sub-roles/frontend/performance.md"
+      ],
+      "description": "Fullstack Frontend Engineer of Neural Orchestra v5. Owns complete UI vertical slices end-to-end: UI/UX visual craft, accessible components, client state management, client-side routing, API client integration, and unit tests."
     },
     {
-      "name": "accessibility-worker",
-      "role": "Accessibility Worker",
-      "type": "worker",
+      "name": "fullstack-backend-engineer",
+      "role": "Fullstack Backend Engineer",
+      "type": "macro-vertical-engineer",
       "scope": "workspace",
-      "location": ".agents/agents/accessibility-worker/agent.md",
+      "location": ".agents/agents/fullstack-backend-engineer/agent.md",
       "capabilities": [
-        "wcag-audit",
-        "aria-implementation",
-        "keyboard-navigation",
-        "focus-management",
-        "contrast-check"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "frontend-development"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "backend-lead",
-      "role": "Backend Lead",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/backend-lead/agent.md",
-      "capabilities": [
-        "api-implementation",
-        "auth-design",
-        "business-logic",
-        "backend-testing",
-        "error-handling",
-        "analytics"
+        "api-controllers",
+        "auth-rbac",
+        "domain-business-logic",
+        "data-access-repositories",
+        "rate-limiting-caching",
+        "backend-unit-tests"
       ],
       "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "backend-development",
-        "testing"
-      ],
-      "workers": [
-        "api-route-worker",
-        "auth-worker",
-        "business-logic-worker",
-        "data-access-worker",
-        "backend-test-worker",
-        "error-handling-worker",
-        "analytics-worker"
-      ]
-    },
-    {
-      "name": "api-route-worker",
-      "role": "API Route Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/api-route-worker/agent.md",
-      "capabilities": [
-        "route-controllers",
-        "middleware-chains",
-        "request-validation",
-        "response-serialization"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "backend-development"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "auth-worker",
-      "role": "Auth Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/auth-worker/agent.md",
-      "capabilities": [
-        "jwt",
-        "oauth2",
-        "rbac",
-        "refresh-token-rotation",
-        "password-hashing"
-      ],
-      "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
       "skills": [
         "backend-development",
-        "security-review"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "business-logic-worker",
-      "role": "Business Logic Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/business-logic-worker/agent.md",
-      "capabilities": [
-        "service-layer",
-        "domain-rules",
-        "workflows",
-        "transactions",
-        "domain-events"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "backend-development"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "data-access-worker",
-      "role": "Data Access Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/data-access-worker/agent.md",
-      "capabilities": [
-        "orm-models",
-        "repositories",
-        "query-optimization",
-        "n1-prevention",
-        "cursor-pagination"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "backend-development",
-        "database-engineering"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "backend-test-worker",
-      "role": "Backend Test Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/backend-test-worker/agent.md",
-      "capabilities": [
-        "service-unit-tests",
-        "api-integration-tests",
-        "contract-tests",
-        "coverage-reporting"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "backend-development",
-        "testing"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "error-handling-worker",
-      "role": "Error Handling Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/error-handling-worker/agent.md",
-      "capabilities": [
-        "error-hierarchy",
-        "global-error-handler",
-        "async-wrapper",
-        "structured-logging"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "backend-development"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "data-lead",
-      "role": "Database / Data Lead",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/data-lead/agent.md",
-      "capabilities": [
-        "schema-architecture",
-        "migration-strategy",
-        "indexing",
-        "query-performance"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "database-engineering",
-        "testing"
-      ],
-      "workers": [
-        "schema-design-worker",
-        "migration-worker",
-        "seed-data-worker"
-      ]
-    },
-    {
-      "name": "schema-design-worker",
-      "role": "Schema Design Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/schema-design-worker/agent.md",
-      "capabilities": [
-        "ddl",
-        "normalization",
-        "constraints",
-        "foreign-keys",
-        "enum-types"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "database-engineering"
-      ],
-      "parent": "data-lead"
-    },
-    {
-      "name": "migration-worker",
-      "role": "Migration Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/migration-worker/agent.md",
-      "capabilities": [
-        "versioned-migrations",
-        "up-down-scripts",
-        "idempotency",
-        "concurrent-indexes"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "database-engineering"
-      ],
-      "parent": "data-lead"
-    },
-    {
-      "name": "seed-data-worker",
-      "role": "Seed Data Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/seed-data-worker/agent.md",
-      "capabilities": [
-        "dev-seeds",
-        "test-fixtures",
-        "factory-pattern",
-        "idempotent-upserts"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "database-engineering"
-      ],
-      "parent": "data-lead"
-    },
-    {
-      "name": "security-lead",
-      "role": "Security Lead",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/security-lead/agent.md",
-      "capabilities": [
-        "owasp-audit",
-        "secret-scanning",
-        "dependency-cve-scan",
-        "auth-review",
-        "security-sign-off"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
+        "api-design",
+        "typescript-patterns",
         "security-review",
-        "code-review"
-      ]
+        "analytics-tracking"
+      ],
+      "subRoles": [
+        ".agents/skills/sub-roles/backend/api-routes.md",
+        ".agents/skills/sub-roles/backend/auth-rbac.md",
+        ".agents/skills/sub-roles/backend/business-logic.md",
+        ".agents/skills/sub-roles/backend/data-access.md",
+        ".agents/skills/sub-roles/backend/error-handling.md",
+        ".agents/skills/sub-roles/backend/analytics.md"
+      ],
+      "description": "Fullstack Backend Engineer of Neural Orchestra v5. Owns complete backend vertical slices end-to-end: REST/GraphQL route controllers, authentication/RBAC middleware, domain business services, data access layer, caching, rate limiting, and backend unit tests."
     },
     {
-      "name": "qa-lead",
-      "role": "QA Lead",
-      "type": "lead",
+      "name": "data-platform-engineer",
+      "role": "Data Platform Engineer",
+      "type": "macro-vertical-engineer",
       "scope": "workspace",
-      "location": ".agents/agents/qa-lead/agent.md",
+      "location": ".agents/agents/data-platform-engineer/agent.md",
       "capabilities": [
-        "test-strategy",
-        "defect-triage",
-        "qa-sign-off",
-        "regression-governance"
+        "relational-schema-design",
+        "database-migrations",
+        "indexing-query-optimization",
+        "seed-fixture-generation"
       ],
       "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "testing",
-        "code-review"
-      ],
-      "workers": [
-        "unit-test-worker",
-        "integration-test-worker",
-        "regression-test-worker",
-        "browser-e2e-tester"
-      ]
-    },
-    {
-      "name": "unit-test-worker",
-      "role": "Unit Test Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/unit-test-worker/agent.md",
-      "capabilities": [
-        "unit-tests",
-        "mocking",
-        "edge-case-coverage",
-        "aaa-pattern"
-      ],
-      "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
       "skills": [
-        "testing"
+        "database-engineering"
       ],
-      "parent": "qa-lead"
+      "subRoles": [
+        ".agents/skills/sub-roles/data/schema-design.md",
+        ".agents/skills/sub-roles/data/migrations.md",
+        ".agents/skills/sub-roles/data/seed-data.md",
+        ".agents/skills/sub-roles/data/query-optimization.md"
+      ],
+      "description": "Data Platform Engineer of Neural Orchestra v5. Owns database schema design, migrations (UP/DOWN), indexing strategies, representative seed data generation, and query performance optimization."
     },
     {
-      "name": "integration-test-worker",
-      "role": "Integration Test Worker",
-      "type": "worker",
+      "name": "ai-rag-engineer",
+      "role": "AI & RAG Engineer",
+      "type": "macro-vertical-engineer",
       "scope": "workspace",
-      "location": ".agents/agents/integration-test-worker/agent.md",
+      "location": ".agents/agents/ai-rag-engineer/agent.md",
       "capabilities": [
-        "api-integration-tests",
-        "contract-tests",
-        "auth-flow-tests",
-        "test-db-management"
+        "llm-providers",
+        "rag-pipelines",
+        "semantic-chunking",
+        "vector-databases",
+        "hybrid-retrieval-reranking"
       ],
-      "model": "flash",
+      "model": "pro",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
       "skills": [
-        "testing"
+        "ai-ml-engineering"
       ],
-      "parent": "qa-lead"
+      "subRoles": [
+        ".agents/skills/sub-roles/ai/llm-config.md",
+        ".agents/skills/sub-roles/ai/rag-pipeline.md",
+        ".agents/skills/sub-roles/ai/vector-database.md"
+      ],
+      "description": "AI & RAG Engineer of Neural Orchestra v5. Owns LLM provider integrations, structured generation, RAG document pipelines, semantic chunking, vector database indexing, and reranking systems."
     },
     {
-      "name": "regression-test-worker",
-      "role": "Regression Test Worker",
-      "type": "worker",
+      "name": "mobile-engineer",
+      "role": "Mobile Engineer",
+      "type": "macro-vertical-engineer",
       "scope": "workspace",
-      "location": ".agents/agents/regression-test-worker/agent.md",
+      "location": ".agents/agents/mobile-engineer/agent.md",
       "capabilities": [
-        "baseline-comparison",
-        "flaky-test-detection",
-        "coverage-delta",
-        "regression-report"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "testing"
-      ],
-      "parent": "qa-lead"
-    },
-    {
-      "name": "browser-e2e-tester",
-      "role": "Browser E2E Tester",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/browser-e2e-tester/agent.md",
-      "capabilities": [
-        "playwright-cypress",
-        "cross-browser",
-        "multi-viewport",
-        "visual-regression",
-        "user-journeys"
+        "cross-platform-screens",
+        "touch-ergonomics",
+        "mobile-state-management",
+        "offline-local-storage",
+        "push-notifications"
       ],
       "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "testing",
-        "frontend-development"
-      ],
-      "parent": "qa-lead"
-    },
-    {
-      "name": "integration-manager",
-      "role": "Integration Manager",
-      "type": "manager",
-      "scope": "workspace",
-      "location": ".agents/agents/integration-manager/agent.md",
-      "capabilities": [
-        "ownership-audit",
-        "merge-execution",
-        "conflict-resolution",
-        "build-verification",
-        "architecture-compliance"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "git-integration",
-        "code-review"
-      ]
-    },
-    {
-      "name": "code-reviewer",
-      "role": "Code Reviewer",
-      "type": "reviewer",
-      "scope": "workspace",
-      "location": ".agents/agents/code-reviewer/agent.md",
-      "capabilities": [
-        "correctness-audit",
-        "security-review",
-        "contract-compliance",
-        "test-coverage-check",
-        "severity-classification"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "code-review",
-        "security-review"
-      ]
-    },
-    {
-      "name": "devops-release-lead",
-      "role": "DevOps / Release Lead",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/devops-release-lead/agent.md",
-      "capabilities": [
-        "ci-cd-design",
-        "release-versioning",
-        "release-gate-enforcement",
-        "observability"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "git-integration",
-        "devops-practices",
-        "testing"
-      ],
-      "workers": [
-        "ci-pipeline-worker",
-        "docker-worker",
-        "release-notes-worker",
-        "observability-worker"
-      ]
-    },
-    {
-      "name": "ci-pipeline-worker",
-      "role": "CI Pipeline Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/ci-pipeline-worker/agent.md",
-      "capabilities": [
-        "github-actions",
-        "parallel-jobs",
-        "dependency-caching",
-        "pr-validation",
-        "release-workflow"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "git-integration"
-      ],
-      "parent": "devops-release-lead"
-    },
-    {
-      "name": "docker-worker",
-      "role": "Docker Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/docker-worker/agent.md",
-      "capabilities": [
-        "multi-stage-dockerfiles",
-        "non-root-container",
-        "health-checks",
-        "docker-compose",
-        "image-optimization"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "git-integration"
-      ],
-      "parent": "devops-release-lead"
-    },
-    {
-      "name": "release-notes-worker",
-      "role": "Release Notes Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/release-notes-worker/agent.md",
-      "capabilities": [
-        "conventional-commits",
-        "keep-a-changelog",
-        "migration-guides",
-        "github-release-body"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "git-integration"
-      ],
-      "parent": "devops-release-lead"
-    },
-    {
-      "name": "mobile-lead",
-      "role": "Mobile Lead",
-      "type": "lead",
-      "scope": "workspace",
-      "location": ".agents/agents/mobile-lead/agent.md",
-      "capabilities": [
-        "react-native-flutter",
-        "offline-first",
-        "push-notifications",
-        "device-apis",
-        "mobile-testing"
-      ],
-      "model": "pro",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": true,
-      "skills": [
-        "flutter-development",
-        "frontend-development",
-        "testing"
-      ],
-      "workers": [
-        "mobile-screen-worker",
-        "push-notification-worker"
-      ]
-    },
-    {
-      "name": "mobile-screen-worker",
-      "role": "Mobile Screen Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/mobile-screen-worker/agent.md",
-      "capabilities": [
-        "screen-implementation",
-        "navigation-wiring",
-        "loading-skeletons",
-        "empty-states",
-        "platform-conventions"
-      ],
-      "model": "flash",
       "mainAgent": false,
       "subagent": true,
       "can_delegate": false,
       "skills": [
         "flutter-development",
-        "frontend-development"
-      ],
-      "parent": "mobile-lead"
-    },
-    {
-      "name": "push-notification-worker",
-      "role": "Push Notification Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/push-notification-worker/agent.md",
-      "capabilities": [
-        "fcm-apns-setup",
-        "device-token-management",
-        "deep-link-routing",
-        "in-app-banner",
-        "notification-channels"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
         "mobile-notifications",
-        "flutter-development",
-        "backend-development"
+        "localization"
       ],
-      "parent": "mobile-lead"
+      "subRoles": [
+        ".agents/skills/sub-roles/mobile/mobile-screens.md",
+        ".agents/skills/sub-roles/mobile/push-notifications.md",
+        ".agents/skills/sub-roles/mobile/offline-storage.md"
+      ],
+      "description": "Mobile Engineer of Neural Orchestra v5. Owns Flutter and React Native cross-platform applications, touch-optimized screens, mobile state management, offline local storage, push notifications (FCM/APNs), and platform channels."
     },
     {
-      "name": "performance-worker",
-      "role": "Performance Worker",
-      "type": "worker",
+      "name": "qa-security-verifier",
+      "role": "QA & Security Verifier",
+      "type": "macro-vertical-verifier",
       "scope": "workspace",
-      "location": ".agents/agents/performance-worker/agent.md",
+      "location": ".agents/agents/qa-security-verifier/agent.md",
       "capabilities": [
-        "lighthouse-audit",
-        "core-web-vitals",
-        "bundle-analysis",
-        "code-splitting",
-        "image-optimization",
-        "virtualization"
+        "e2e-browser-testing",
+        "security-auditing",
+        "code-review",
+        "stress-testing",
+        "contract-verification"
       ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "performance-optimization",
-        "frontend-development",
-        "react-patterns"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "localization-worker",
-      "role": "Localization Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/localization-worker/agent.md",
-      "capabilities": [
-        "i18n-setup",
-        "string-extraction",
-        "rtl-support",
-        "locale-formatting",
-        "plural-rules",
-        "locale-switcher"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "localization",
-        "frontend-development",
-        "flutter-development"
-      ],
-      "parent": "frontend-lead"
-    },
-    {
-      "name": "analytics-worker",
-      "role": "Analytics Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/analytics-worker/agent.md",
-      "capabilities": [
-        "event-taxonomy",
-        "sdk-integration",
-        "tracking-plan",
-        "funnel-definitions",
-        "pii-scrubbing",
-        "server-side-tracking"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": [
-        "analytics-tracking",
-        "backend-development",
-        "frontend-development"
-      ],
-      "parent": "backend-lead"
-    },
-    {
-      "name": "observability-worker",
-      "role": "Observability Worker",
-      "type": "worker",
-      "scope": "workspace",
-      "location": ".agents/agents/observability-worker/agent.md",
-      "capabilities": [
-        "sentry-integration",
-        "structured-logging",
-        "health-endpoints",
-        "metrics",
-        "alerting",
-        "runbook"
-      ],
-      "model": "flash",
-      "mainAgent": false,
-      "subagent": true,
-      "can_delegate": false,
-      "blocking": true,
-      "blockingNote": "devops-release-lead MUST wait for observability-report.json PASS before releasing",
-      "skills": [
-        "observability",
-        "backend-development",
-        "devops-practices"
-      ],
-      "parent": "devops-release-lead"
-    },
-    {
-      "name": "documentation-agent",
-      "role": "Documentation Agent",
-      "type": "documenter",
-      "scope": "workspace",
-      "location": ".agents/agents/documentation-agent/agent.md",
-      "capabilities": [
-        "readme-authoring",
-        "api-reference",
-        "architecture-docs",
-        "adr-log",
-        "setup-guides"
-      ],
-      "model": "flash",
-      "mainAgent": true,
-      "subagent": true,
-      "can_delegate": false,
-      "skills": []
-    },
-    {
-      "name": "stress-test-worker",
-      "type": "worker",
-      "parent": "qa-lead",
-      "model": "flash",
-      "capabilities": [
-        "load-testing",
-        "rate-limit-validation",
-        "latency-benchmarking",
-        "bottleneck-identification"
-      ],
-      "skills": [
-        "load-testing"
-      ]
-    },
-    {
-      "name": "ai-ml-lead",
-      "type": "lead",
       "model": "pro",
-      "mainAgent": true,
+      "mainAgent": false,
       "subagent": true,
-      "capabilities": [
-        "llm-integration",
-        "rag-architecture",
-        "vector-db-design",
-        "prompt-engineering",
-        "ai-evaluation",
-        "agent-orchestration"
-      ],
+      "can_delegate": false,
       "skills": [
-        "ai-ml-engineering",
-        "backend-development"
+        "testing",
+        "security-review",
+        "code-review",
+        "load-testing"
       ],
-      "workers": [
-        "rag-pipeline-worker",
-        "llm-config-worker",
-        "vector-db-worker"
-      ]
+      "subRoles": [
+        ".agents/skills/sub-roles/qa/e2e-browser-testing.md",
+        ".agents/skills/sub-roles/qa/security-audit.md",
+        ".agents/skills/sub-roles/qa/code-review.md",
+        ".agents/skills/sub-roles/qa/stress-load-testing.md",
+        ".agents/skills/sub-roles/qa/integration-contract-testing.md"
+      ],
+      "description": "QA & Security Verifier of Neural Orchestra v5. Triggered ONLY after .agents/bin/quality-gate.mjs passes compiler and linter checks. Executes E2E journeys, integration tests, security audits, load testing, and rigorous git diff review against business requirements."
     },
     {
-      "name": "rag-pipeline-worker",
-      "type": "worker",
-      "parent": "ai-ml-lead",
-      "model": "flash",
+      "name": "devops-release-engineer",
+      "role": "DevOps & Release Engineer",
+      "type": "macro-vertical-engineer",
+      "scope": "workspace",
+      "location": ".agents/agents/devops-release-engineer/agent.md",
       "capabilities": [
-        "document-ingestion",
-        "chunking",
-        "embedding-generation",
-        "retrieval-logic",
-        "reranking"
+        "docker-containerization",
+        "ci-cd-pipelines",
+        "observability-instrumentation",
+        "health-probes",
+        "release-packaging"
       ],
+      "model": "pro",
+      "mainAgent": false,
+      "subagent": true,
+      "can_delegate": false,
       "skills": [
-        "ai-ml-engineering"
-      ]
-    },
-    {
-      "name": "llm-config-worker",
-      "type": "worker",
-      "parent": "ai-ml-lead",
-      "model": "flash",
-      "capabilities": [
-        "llm-client-setup",
-        "prompt-engineering",
-        "streaming-responses",
-        "fallback-chains",
-        "semantic-caching"
+        "devops-practices",
+        "observability",
+        "git-integration"
       ],
-      "skills": [
-        "ai-ml-engineering"
-      ]
-    },
-    {
-      "name": "vector-db-worker",
-      "type": "worker",
-      "parent": "ai-ml-lead",
-      "model": "flash",
-      "capabilities": [
-        "vector-db-setup",
-        "index-design",
-        "hybrid-search",
-        "multi-tenancy",
-        "migration"
+      "subRoles": [
+        ".agents/skills/sub-roles/devops/docker-containers.md",
+        ".agents/skills/sub-roles/devops/ci-cd-pipelines.md",
+        ".agents/skills/sub-roles/devops/observability.md",
+        ".agents/skills/sub-roles/devops/release-notes.md"
       ],
-      "skills": [
-        "ai-ml-engineering",
-        "database-engineering"
-      ]
-    },
-    {
-      "name": "automation-workflow-worker",
-      "type": "worker",
-      "parent": "backend-lead",
-      "model": "flash",
-      "capabilities": [
-        "webhook-handlers",
-        "scheduled-jobs",
-        "n8n-workflows",
-        "job-queues",
-        "workflow-monitoring"
-      ],
-      "skills": [
-        "backend-development"
-      ]
+      "description": "DevOps & Release Engineer of Neural Orchestra v5. Owns Docker containerization, CI/CD automation pipelines, production observability instrumentation (Pino logs, Sentry, Prometheus metrics), health probes, semantic versioning, and release packaging."
     }
   ],
-  "workflows": [
-    {
-      "id": "software-project",
-      "name": "Full Lifecycle Greenfield Project",
-      "phases": 6,
-      "projectTypes": [
-        "fullstack",
-        "api-only",
-        "frontend-only"
-      ]
-    },
-    {
-      "id": "codebase-update",
-      "name": "Brownfield Codebase Update",
-      "phases": 6,
-      "projectTypes": [
-        "all"
-      ]
-    },
-    {
-      "id": "parallel-feature-development",
-      "name": "Parallel Feature Development",
-      "phases": 3,
-      "projectTypes": [
-        "all"
-      ]
-    },
-    {
-      "id": "integration-and-release",
-      "name": "Integration and Release",
-      "phases": 5,
-      "projectTypes": [
-        "all"
-      ]
-    },
-    {
-      "id": "ai-rag-project",
-      "name": "AI/RAG/LLM Project",
-      "phases": 6,
-      "projectTypes": [
-        "ai-rag"
-      ]
-    },
-    {
-      "id": "automation-workflow",
-      "name": "Automation Workflow Project",
-      "phases": 4,
-      "projectTypes": [
-        "automation"
-      ]
-    }
-  ]
+  "deprecationMap": {
+    "project-manager": "conductor",
+    "workflow-manager": "conductor",
+    "execution-manager": "conductor",
+    "context-manager": "principal-architect",
+    "codebase-onboarder": "principal-architect",
+    "workflow-compiler": "principal-architect",
+    "intake-manager": "principal-architect",
+    "technical-architect": "principal-architect",
+    "frontend-lead": "fullstack-frontend-engineer",
+    "uiux-lead": "fullstack-frontend-engineer",
+    "ui-component-worker": "fullstack-frontend-engineer",
+    "routing-worker": "fullstack-frontend-engineer",
+    "state-management-worker": "fullstack-frontend-engineer",
+    "api-integration-worker": "fullstack-frontend-engineer",
+    "accessibility-worker": "fullstack-frontend-engineer",
+    "localization-worker": "fullstack-frontend-engineer",
+    "performance-worker": "fullstack-frontend-engineer",
+    "mockup-wireframe-worker": "fullstack-frontend-engineer",
+    "frontend-test-worker": "fullstack-frontend-engineer",
+    "backend-lead": "fullstack-backend-engineer",
+    "api-route-worker": "fullstack-backend-engineer",
+    "auth-worker": "fullstack-backend-engineer",
+    "business-logic-worker": "fullstack-backend-engineer",
+    "data-access-worker": "fullstack-backend-engineer",
+    "error-handling-worker": "fullstack-backend-engineer",
+    "analytics-worker": "fullstack-backend-engineer",
+    "backend-test-worker": "fullstack-backend-engineer",
+    "data-lead": "data-platform-engineer",
+    "schema-design-worker": "data-platform-engineer",
+    "migration-worker": "data-platform-engineer",
+    "seed-data-worker": "data-platform-engineer",
+    "ai-ml-lead": "ai-rag-engineer",
+    "llm-config-worker": "ai-rag-engineer",
+    "rag-pipeline-worker": "ai-rag-engineer",
+    "vector-db-worker": "ai-rag-engineer",
+    "mobile-lead": "mobile-engineer",
+    "mobile-screen-worker": "mobile-engineer",
+    "push-notification-worker": "mobile-engineer",
+    "qa-lead": "qa-security-verifier",
+    "security-lead": "qa-security-verifier",
+    "quality-manager": "qa-security-verifier",
+    "code-reviewer": "qa-security-verifier",
+    "conflict-resolver": "qa-security-verifier",
+    "browser-e2e-tester": "qa-security-verifier",
+    "integration-test-worker": "qa-security-verifier",
+    "regression-test-worker": "qa-security-verifier",
+    "stress-test-worker": "qa-security-verifier",
+    "unit-test-worker": "qa-security-verifier",
+    "devops-release-lead": "devops-release-engineer",
+    "docker-worker": "devops-release-engineer",
+    "ci-pipeline-worker": "devops-release-engineer",
+    "observability-worker": "devops-release-engineer",
+    "release-notes-worker": "devops-release-engineer",
+    "documentation-agent": "devops-release-engineer",
+    "memory-manager": ".agents/bin/orchestra-state.mjs",
+    "resource-manager": ".agents/bin/orchestra-state.mjs",
+    "skill-researcher": "principal-architect"
+  }
 }

@@ -1,66 +1,81 @@
 {
   "name": "ai-rag-project",
-  "version": "1.0",
+  "version": "5.0",
+  "architecture": "Neural Orchestra v5 Contract-First Vertical Slicing",
   "description": "Pipeline for Artificial Intelligence, LLM, and RAG (Retrieval-Augmented Generation) applications.",
   "execution": {
-    "defaultModel": "inherit",
-    "modelOverrides": {
-      "technical-architect": "pro",
-      "ai-ml-lead": "pro",
-      "security-lead": "pro",
-      "documentation-agent": "flash"
-    },
-    "parallelismLimit": 3
+    "defaultModel": "pro",
+    "parallelismLimit": 4,
+    "qualityGateCommand": "node .agents/bin/quality-gate.mjs",
+    "maxGateRetries": 3,
+    "stateManager": "node .agents/bin/orchestra-state.mjs"
   },
   "projectTypes": ["ai-rag"],
   "phases": [
     {
-      "id": "phase_1_discovery",
-      "name": "Discovery & Requirements",
-      "skipConditions": ["user_skip_discovery"],
-      "agents": ["project-manager"],
-      "requiredArtifacts": ["ai-requirements.md"],
-      "hardGate": true
-    },
-    {
-      "id": "phase_2_architecture",
-      "name": "AI Architecture",
-      "skipConditions": ["user_skip_architecture"],
-      "agents": ["technical-architect", "ai-ml-lead"],
-      "requiredArtifacts": ["ai-architecture.md", "data-pipeline-spec.md"],
-      "hardGate": true
-    },
-    {
-      "id": "phase_3_implementation",
-      "name": "Parallel Implementation",
+      "id": "phase_1_contract_and_eval_lock",
+      "name": "AI Contract Lock & Evaluation Criteria",
       "skipConditions": [],
-      "agents": ["ai-ml-lead", "backend-lead", "data-lead", "frontend-lead"],
-      "requiredArtifacts": ["ai_impl_complete_flag"],
-      "hardGate": true
+      "agents": ["principal-architect"],
+      "requiredArtifacts": [
+        "src/contracts/contracts.ts",
+        ".env.example"
+      ],
+      "hardGate": true,
+      "instructions": "Lock executable TypeScript contracts for LLM payloads, tool schemas, and retrieval responses. Define evaluation accuracy thresholds."
     },
     {
-      "id": "phase_4_testing",
-      "name": "AI Testing & Evaluation",
+      "id": "phase_2_parallel_vertical_execution",
+      "name": "Parallel AI & Fullstack Execution",
+      "executionMode": "PARALLEL",
+      "agents": [
+        "ai-rag-engineer",
+        "fullstack-backend-engineer",
+        "fullstack-frontend-engineer",
+        "data-platform-engineer"
+      ],
+      "requiredArtifacts": [
+        "ai_impl_complete_flag"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_1_contract_and_eval_lock"],
+      "instructions": "ai-rag-engineer builds chunking, vector indexing & RAG pipelines; fullstack-backend-engineer implements streaming endpoints; fullstack-frontend-engineer builds generative UI; data-platform-engineer sets up pgvector/vector store. All engineers run node .agents/bin/quality-gate.mjs locally."
+    },
+    {
+      "id": "phase_3_deterministic_verification",
+      "name": "Zero-Token Deterministic Quality Gate",
+      "agents": ["conductor"],
+      "requiredArtifacts": [
+        ".agent_execution/quality-gate-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_2_parallel_vertical_execution"],
+      "instructions": "Execute node .agents/bin/quality-gate.mjs. Map failures via orchestra-state.mjs and dispatch back if needed (max 3 retries)."
+    },
+    {
+      "id": "phase_4_ai_eval_and_security",
+      "name": "AI Evaluation, Retrieval Benchmarks & Security Audit",
       "skipConditions": ["user_skip_testing"],
-      "agents": ["qa-lead", "ai-ml-lead"],
-      "requiredArtifacts": ["eval-benchmarks.md"],
-      "hardGate": true
+      "agents": ["qa-security-verifier"],
+      "requiredArtifacts": [
+        ".agent_execution/ai-evaluation-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_3_deterministic_verification"],
+      "instructions": "Evaluate retrieval recall/precision, benchmark hallucination rates, test prompt injection defenses, and audit git diff."
     },
     {
-      "id": "phase_5_security",
-      "name": "Integration & Security",
-      "skipConditions": ["user_skip_security"],
-      "agents": ["security-lead"],
-      "requiredArtifacts": ["ai-security-audit.md"],
-      "hardGate": true
-    },
-    {
-      "id": "phase_6_deployment",
-      "name": "Deployment",
+      "id": "phase_5_deployment",
+      "name": "Production Deployment & Observability",
       "skipConditions": ["user_skip_deployment"],
-      "agents": ["devops-release-lead"],
-      "requiredArtifacts": ["deployment-success_flag"],
-      "hardGate": true
+      "agents": ["devops-release-engineer"],
+      "requiredArtifacts": [
+        "Dockerfile",
+        "CHANGELOG.md"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_4_ai_eval_and_security"],
+      "instructions": "Containerize AI application, configure token tracing/observability metrics, and deploy."
     }
   ]
 }

@@ -1,66 +1,82 @@
 {
   "name": "codebase-update",
-  "version": "2.0",
-  "description": "Workflow for updates, refactors, and feature additions to existing codebases.",
+  "version": "5.0",
+  "architecture": "Neural Orchestra v5 Contract-First Vertical Slicing",
+  "description": "Workflow for brownfield enhancements, refactors, and feature additions to existing codebases.",
   "execution": {
-    "defaultModel": "inherit",
-    "modelOverrides": {
-      "technical-architect": "pro",
-      "code-reviewer": "pro",
-      "documentation-agent": "flash",
-      "release-notes-worker": "flash"
-    },
-    "parallelismLimit": 3
+    "defaultModel": "pro",
+    "parallelismLimit": 3,
+    "qualityGateCommand": "node .agents/bin/quality-gate.mjs",
+    "maxGateRetries": 3,
+    "stateManager": "node .agents/bin/orchestra-state.mjs"
   },
-  "projectTypes": ["fullstack", "frontend-only", "mobile-app", "api-only", "ai-rag", "automation", "game"],
+  "projectTypes": ["fullstack", "frontend-only", "mobile-app", "api-only", "ai-rag", "automation"],
   "phases": [
     {
-      "id": "phase_1_analysis",
-      "name": "Codebase Analysis",
+      "id": "phase_1_ast_skeleton_and_contract_lock",
+      "name": "Codebase Skeleton Extraction & Contract Lock",
       "skipConditions": [],
-      "agents": ["technical-architect", "code-reviewer"],
-      "requiredArtifacts": ["impact-analysis.md"],
-      "hardGate": true
+      "agents": ["principal-architect"],
+      "requiredArtifacts": [
+        "context-skeleton.d.ts",
+        "src/contracts/contracts.ts"
+      ],
+      "hardGate": true,
+      "instructions": "Run node .agents/bin/extract-skeleton.mjs to extract compact type skeleton (~85% token reduction). Formulate contract deltas in contracts.ts."
     },
     {
-      "id": "phase_2_implementation",
-      "name": "Implementation",
+      "id": "phase_2_parallel_vertical_execution",
+      "name": "Parallel Vertical Implementation",
       "skipConditions": [],
-      "agents": ["backend-lead", "frontend-lead", "mobile-lead"],
-      "requiredArtifacts": ["update_complete_flag"],
-      "hardGate": true
+      "executionMode": "PARALLEL",
+      "agents": [
+        "fullstack-backend-engineer",
+        "fullstack-frontend-engineer",
+        "data-platform-engineer"
+      ],
+      "requiredArtifacts": [
+        "update_complete_flag"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_1_ast_skeleton_and_contract_lock"],
+      "instructions": "Implement feature or refactor across vertical slices. Every engineer runs node .agents/bin/quality-gate.mjs locally before reporting back."
     },
     {
-      "id": "phase_3_qa",
-      "name": "Regression Testing",
+      "id": "phase_3_deterministic_verification",
+      "name": "Zero-Token Deterministic Quality Gate",
+      "skipConditions": [],
+      "agents": ["conductor"],
+      "requiredArtifacts": [
+        ".agent_execution/quality-gate-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_2_parallel_vertical_execution"],
+      "instructions": "Run node .agents/bin/quality-gate.mjs. If failed, map-failures and dispatch to responsible engineers (max 3 retries). Advance only on PASS."
+    },
+    {
+      "id": "phase_4_regression_and_security",
+      "name": "Regression Testing & Security Sign-Off",
       "skipConditions": ["user_skip_testing"],
-      "agents": ["qa-lead", "regression-test-worker"],
-      "requiredArtifacts": ["regression-report.md"],
-      "hardGate": true
+      "agents": ["qa-security-verifier"],
+      "requiredArtifacts": [
+        ".agent_execution/regression-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_3_deterministic_verification"],
+      "instructions": "Triggered ONLY after quality-gate passes. Run full regression test suite, inspect git diff for regressions, and perform security verification."
     },
     {
-      "id": "phase_3_5_stress_testing",
-      "name": "Performance Evaluation",
-      "skipConditions": ["user_skip_stress_testing"],
-      "agents": ["performance-worker"],
-      "requiredArtifacts": ["performance-delta.md"],
-      "hardGate": false
-    },
-    {
-      "id": "phase_4_doc",
-      "name": "Documentation Update",
-      "skipConditions": ["user_skip_doc"],
-      "agents": ["documentation-agent"],
-      "requiredArtifacts": ["updated-docs_flag"],
-      "hardGate": false
-    },
-    {
-      "id": "phase_5_deployment",
-      "name": "Deployment",
+      "id": "phase_5_devops_release",
+      "name": "Deployment & Release Verification",
       "skipConditions": ["user_skip_deployment"],
-      "agents": ["devops-release-lead"],
-      "requiredArtifacts": ["deployment-success_flag"],
-      "hardGate": true
+      "agents": ["devops-release-engineer"],
+      "requiredArtifacts": [
+        "CHANGELOG.md",
+        "deployment-success_flag"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_4_regression_and_security"],
+      "instructions": "Update changelog, verify Docker and CI checks, and release package."
     }
   ]
 }

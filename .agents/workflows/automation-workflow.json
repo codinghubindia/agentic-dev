@@ -1,56 +1,77 @@
 {
   "name": "automation-workflow",
-  "version": "1.0",
-  "description": "Pipeline for automation and integration projects (e.g., n8n, Zapier-style, or custom scripts).",
+  "version": "5.0",
+  "architecture": "Neural Orchestra v5 Contract-First Vertical Slicing",
+  "description": "Pipeline for automation, event-driven webhooks, background jobs, and script workflows.",
   "execution": {
-    "defaultModel": "inherit",
-    "modelOverrides": {
-      "technical-architect": "pro",
-      "documentation-agent": "flash"
-    },
-    "parallelismLimit": 3
+    "defaultModel": "pro",
+    "parallelismLimit": 3,
+    "qualityGateCommand": "node .agents/bin/quality-gate.mjs",
+    "maxGateRetries": 3,
+    "stateManager": "node .agents/bin/orchestra-state.mjs"
   },
   "projectTypes": ["automation"],
   "phases": [
     {
-      "id": "phase_1_requirements",
-      "name": "Requirements & Tool Selection",
+      "id": "phase_1_contract_lock",
+      "name": "Payload Contracts & Event Specifications",
       "skipConditions": ["user_skip_requirements"],
-      "agents": ["technical-architect"],
-      "requiredArtifacts": ["automation-spec.md"],
-      "hardGate": true
+      "agents": ["principal-architect"],
+      "requiredArtifacts": [
+        "src/contracts/contracts.ts"
+      ],
+      "hardGate": true,
+      "instructions": "Lock executable event contracts, trigger schemas, and external API interfaces in contracts.ts."
     },
     {
-      "id": "phase_2_architecture",
-      "name": "Workflow Architecture",
-      "skipConditions": ["user_skip_architecture"],
-      "agents": ["technical-architect", "data-lead"],
-      "requiredArtifacts": ["workflow-diagram.md"],
-      "hardGate": true
-    },
-    {
-      "id": "phase_3_implementation",
-      "name": "Implementation",
+      "id": "phase_2_vertical_execution",
+      "name": "Automation Logic & Storage Implementation",
       "skipConditions": [],
-      "agents": ["backend-lead"],
-      "requiredArtifacts": ["automation_impl_complete_flag"],
-      "hardGate": true
+      "agents": [
+        "fullstack-backend-engineer",
+        "data-platform-engineer"
+      ],
+      "requiredArtifacts": [
+        "automation_impl_complete_flag"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_1_contract_lock"],
+      "instructions": "Implement workflow handlers, job queues, and persistent storage. Run node .agents/bin/quality-gate.mjs locally."
     },
     {
-      "id": "phase_4_testing",
-      "name": "Testing & Validation",
+      "id": "phase_3_deterministic_verification",
+      "name": "Zero-Token Deterministic Quality Gate",
+      "agents": ["conductor"],
+      "requiredArtifacts": [
+        ".agent_execution/quality-gate-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_2_vertical_execution"],
+      "instructions": "Run node .agents/bin/quality-gate.mjs. Map failures via orchestra-state.mjs and dispatch back if needed (max 3 retries)."
+    },
+    {
+      "id": "phase_4_testing_and_validation",
+      "name": "Automation Testing & Idempotency Check",
       "skipConditions": ["user_skip_testing"],
-      "agents": ["qa-lead"],
-      "requiredArtifacts": ["automation-test-report.md"],
-      "hardGate": true
+      "agents": ["qa-security-verifier"],
+      "requiredArtifacts": [
+        ".agent_execution/automation-test-report.json"
+      ],
+      "hardGate": true,
+      "dependsOn": ["phase_3_deterministic_verification"],
+      "instructions": "Test webhook payload handling, failure retries, rate limits, and idempotent execution."
     },
     {
       "id": "phase_5_deployment",
-      "name": "Deployment",
+      "name": "Deployment & Scheduling",
       "skipConditions": ["user_skip_deployment"],
-      "agents": ["devops-release-lead"],
-      "requiredArtifacts": ["automation_deployment_flag"],
-      "hardGate": false
+      "agents": ["devops-release-engineer"],
+      "requiredArtifacts": [
+        "deployment-success_flag"
+      ],
+      "hardGate": false,
+      "dependsOn": ["phase_4_testing_and_validation"],
+      "instructions": "Deploy background worker containers and schedule recurring cron tasks."
     }
   ]
 }
