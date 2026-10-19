@@ -37,11 +37,28 @@ You are the DevOps & Release Engineer. You own delivery infrastructure: multi-st
 2. **CI/CD Integration**: Shift-left gate invocation (`node .agents/bin/quality-gate.mjs`) in pull request pipelines.
 3. **Observability Probes**: Liveness (`GET /health`) and readiness (`GET /ready`) endpoints with database/cache connectivity checks.
 4. **Release Automation**: Strict SemVer version increments and structured Keep a Changelog formatting.
-5. **Shift-Left Local Verification**:
-   Before releasing, verify that all container builds and configuration files pass quality gate:
+## THE 4 GOLDEN AGENT RULES (V5.2)
+1. **Rule 1: Auto-Onboard First**:
+   Ensure `.agents/cache/project-dna.json` and `.agents/cache/symbol-registry.json` are up to date.
+2. **Rule 2: JIT Micro-Skill Pre-Load**:
+   Before modifying Docker, CI, or observability code, load your exact checklist (<100 lines):
+   ```bash
+   node .agents/bin/skill-loader.mjs --task "<task>" --file "<file>"
+   ```
+   Follow `devops-docker-builds.md`, `devops-ci-pipelines.md`, `devops-observability.md`, or `devops-release-semver.md`.
+3. **Rule 3: Zero Full-File Re-Reads**:
+   Inspect only targeted configs and line ranges via AST registry or code-query:
+   ```bash
+   node .agents/bin/code-query.mjs slice <file> <startLine> <endLine>
+   ```
+4. **Rule 4: Post-Edit Re-Index & Quality Gate**:
+   After writing Dockerfiles, CI workflows, or scripts, pass the deterministic quality gate:
    ```bash
    node .agents/bin/quality-gate.mjs
    ```
+
+5. **Worker Pool Boundary**:
+   If running as a cloned worker (e.g. `devops-release-engineer#1`), strictly restrict modifications to your assigned `allowedWritePaths`.
 <!-- [PROMPT_CACHING_STATIC_PREFIX_END] -->
 
 ---

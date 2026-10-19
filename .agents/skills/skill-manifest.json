@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "5.2.0",
+  "shardsDir": "shards",
+  "intents": [
+    {
+      "pattern": "\\b(ui|components?|buttons?|cards?|modals?|dialogs?|forms?|inputs?|styling|styles?|css|tailwind)\\b",
+      "shards": ["fe-component-ui.md", "ui-anti-vibecode.md"]
+    },
+    {
+      "pattern": "\\b(state|store|zustand|redux|tanstack|query|mutation|swr|cache client)\\b",
+      "shards": ["fe-state-data.md"]
+    },
+    {
+      "pattern": "\\b(routing|router|navigation|route|routes|links?|url params?|redirects?)\\b",
+      "shards": ["fe-routing-nav.md"]
+    },
+    {
+      "pattern": "\\b(a11y|accessibility|aria|wcag|screen reader|focus|contrast)\\b",
+      "shards": ["fe-a11y-perf.md"]
+    },
+    {
+      "pattern": "\\b(i18n|l10n|translations?|locales?|rtl|ltr|internationalization)\\b",
+      "shards": ["fe-i18n-rtl.md"]
+    },
+    {
+      "pattern": "\\b(api|rest|endpoints?|controllers?|validation|zod schemas?|request params?)\\b",
+      "shards": ["be-api-validation.md"]
+    },
+    {
+      "pattern": "\\b(auth|jwt|tokens?|login|logout|passwords?|argon2|bcrypt|rbac|sessions?|cookies?)\\b",
+      "shards": ["be-auth-security.md"]
+    },
+    {
+      "pattern": "\\b(services?|business logic|domain|transactions?|event emitters?|workflows?)\\b",
+      "shards": ["be-business-logic.md"]
+    },
+    {
+      "pattern": "\\b(data access|repositories?|orm|prisma|drizzle|kysely|query builders?)\\b",
+      "shards": ["be-data-access.md"]
+    },
+    {
+      "pattern": "\\b(cache|caching|redis|rate limits?|throttle|throttling|sliding window|stampede)\\b",
+      "shards": ["be-caching-ratelimit.md"]
+    },
+    {
+      "pattern": "\\b(analytics|tracking|events?|posthog|mixpanel|amplitude|telemetry events?)\\b",
+      "shards": ["be-analytics-events.md"]
+    },
+    {
+      "pattern": "\\b(db|schemas?|tables?|columns?|foreign keys?|indexes?|uuidv7|normalization)\\b",
+      "shards": ["db-schema-indexing.md"]
+    },
+    {
+      "pattern": "\\b(migrations?|alter table|rollbacks?|up migration|down migration)\\b",
+      "shards": ["db-migrations.md"]
+    },
+    {
+      "pattern": "\\b(seeds?|fixtures?|mock data|factories?|sample data)\\b",
+      "shards": ["db-seed-fixtures.md"]
+    },
+    {
+      "pattern": "\\b(query tuning|slow query|explain analyze|seq scan|index scan|replicas?)\\b",
+      "shards": ["db-query-tuning.md"]
+    },
+    {
+      "pattern": "\\b(llm|openai|anthropic|gemini|prompts?|streaming|sse|fallback providers?)\\b",
+      "shards": ["ai-llm-config.md"]
+    },
+    {
+      "pattern": "\\b(rag|chunking|hybrid search|bm25|rerank|retrieval|citations?)\\b",
+      "shards": ["ai-rag-retrieval.md"]
+    },
+    {
+      "pattern": "\\b(vectors?|embeddings?|hnsw|pinecone|qdrant|pgvector|chroma)\\b",
+      "shards": ["ai-vector-indexing.md"]
+    },
+    {
+      "pattern": "\\b(mobile|flutter|react native|screens?|notches?|safearea|touch targets?)\\b",
+      "shards": ["mobile-screens-ux.md"]
+    },
+    {
+      "pattern": "\\b(push notifications?|fcm|apns|notification channels?|deep links?)\\b",
+      "shards": ["mobile-push-fcm.md"]
+    },
+    {
+      "pattern": "\\b(offline|sync queues?|sqlite|drift|watermelondb|local storages?)\\b",
+      "shards": ["mobile-offline-sync.md"]
+    },
+    {
+      "pattern": "\\b(e2e|playwright|browser tests?|integration tests?|smoke tests?)\\b",
+      "shards": ["qa-e2e-playwright.md"]
+    },
+    {
+      "pattern": "\\b(security audits?|vulnerabilities?|cve|injections?|sqli|xss|idor|helmet)\\b",
+      "shards": ["qa-security-audit.md"]
+    },
+    {
+      "pattern": "\\b(code reviews?|diff reviews?|contract compliances?|lint checks?)\\b",
+      "shards": ["qa-code-review.md"]
+    },
+    {
+      "pattern": "\\b(load tests?|stress tests?|k6|locust|latency budgets?|throughput|p95)\\b",
+      "shards": ["qa-load-stress.md"]
+    },
+    {
+      "pattern": "\\b(docker|containers?|dockerfiles?|images?|multi-stage|distroless)\\b",
+      "shards": ["devops-docker-builds.md"]
+    },
+    {
+      "pattern": "\\b(ci|cd|pipelines?|github actions?|workflows?|caching builds?)\\b",
+      "shards": ["devops-ci-pipelines.md"]
+    },
+    {
+      "pattern": "\\b(observability|logging|pino|prometheus|metrics|sentry|health probes?)\\b",
+      "shards": ["devops-observability.md"]
+    },
+    {
+      "pattern": "\\b(semver|releases?|versions?|conventional commits?|changelogs?|tags?)\\b",
+      "shards": ["devops-release-semver.md"]
+    },
+    {
+      "pattern": "\\b(contracts?|interfaces?|api contracts?|zod schema types?|contract freezing)\\b",
+      "shards": ["arch-contracts-design.md"]
+    },
+    {
+      "pattern": "\\b(intake|scope|architectures?|system boundaries?|slice decompositions?)\\b",
+      "shards": ["arch-intake-scope.md"]
+    }
+  ],
+  "filePatterns": [
+    {
+      "pattern": ".*(components|ui|views)/.*\\.(tsx|jsx|vue|svelte)$",
+      "shards": ["fe-component-ui.md", "ui-anti-vibecode.md"]
+    },
+    {
+      "pattern": ".*(hooks|store|signals|atoms)/.*\\.(ts|js)$",
+      "shards": ["fe-state-data.md"]
+    },
+    {
+      "pattern": ".*(routes|pages|app)/.*\\.(tsx|jsx)$",
+      "shards": ["fe-routing-nav.md", "fe-component-ui.md"]
+    },
+    {
+      "pattern": ".*(controllers|routes|handlers|api)/.*\\.(ts|js|py|go)$",
+      "shards": ["be-api-validation.md", "be-business-logic.md"]
+    },
+    {
+      "pattern": ".*(middleware)/.*auth.*\\.(ts|js|py)$",
+      "shards": ["be-auth-security.md"]
+    },
+    {
+      "pattern": ".*(middleware)/.*(rate|throttle|cache).*\\.(ts|js|py)$",
+      "shards": ["be-caching-ratelimit.md"]
+    },
+    {
+      "pattern": ".*(services|domain|usecases)/.*\\.(ts|js|py|go)$",
+      "shards": ["be-business-logic.md", "be-data-access.md"]
+    },
+    {
+      "pattern": ".*(repositories|dao|db)/.*\\.(ts|js|py|go)$",
+      "shards": ["be-data-access.md", "db-schema-indexing.md"]
+    },
+    {
+      "pattern": ".*(migrations)/.*\\.(sql|ts|js|py)$",
+      "shards": ["db-migrations.md"]
+    },
+    {
+      "pattern": ".*(seeds|fixtures)/.*\\.(sql|ts|js|py|json)$",
+      "shards": ["db-seed-fixtures.md"]
+    },
+    {
+      "pattern": ".*schema.*\\.(prisma|sql|ts)$",
+      "shards": ["db-schema-indexing.md"]
+    },
+    {
+      "pattern": ".*(llm|prompts|rag|vector|embeddings)/.*\\.(ts|py)$",
+      "shards": ["ai-llm-config.md", "ai-rag-retrieval.md"]
+    },
+    {
+      "pattern": ".*(lib|screens|widgets)/.*\\.dart$",
+      "shards": ["mobile-screens-ux.md"]
+    },
+    {
+      "pattern": ".*(e2e|playwright|cypress)/.*\\.(ts|js)$",
+      "shards": ["qa-e2e-playwright.md"]
+    },
+    {
+      "pattern": ".*(\\.(test|spec))\\.(ts|tsx|js|jsx)$",
+      "shards": ["qa-code-review.md"]
+    },
+    {
+      "pattern": ".*(Dockerfile|docker-compose.*\\.ya?ml)$",
+      "shards": ["devops-docker-builds.md"]
+    },
+    {
+      "pattern": ".*(\\.github/workflows)/.*\\.ya?ml$",
+      "shards": ["devops-ci-pipelines.md"]
+    },
+    {
+      "pattern": ".*(contracts|schemas)/.*\\.(ts|json)$",
+      "shards": ["arch-contracts-design.md"]
+    }
+  ],
+  "symbolTypes": {
+    "component": ["fe-component-ui.md", "ui-anti-vibecode.md"],
+    "hook": ["fe-state-data.md"],
+    "apiRoute": ["be-api-validation.md", "be-business-logic.md"],
+    "service": ["be-business-logic.md", "be-data-access.md"],
+    "middleware": ["be-auth-security.md", "be-caching-ratelimit.md"],
+    "schema": ["db-schema-indexing.md"],
+    "migration": ["db-migrations.md"],
+    "test": ["qa-code-review.md"],
+    "docker": ["devops-docker-builds.md"]
+  },
+  "roleDefaults": {
+    "conductor": ["arch-intake-scope.md"],
+    "principal-architect": ["arch-contracts-design.md", "arch-intake-scope.md"],
+    "fullstack-frontend-engineer": ["fe-component-ui.md", "ui-anti-vibecode.md"],
+    "fullstack-backend-engineer": ["be-api-validation.md", "be-business-logic.md"],
+    "data-platform-engineer": ["db-schema-indexing.md", "db-migrations.md"],
+    "ai-rag-engineer": ["ai-llm-config.md", "ai-rag-retrieval.md"],
+    "mobile-engineer": ["mobile-screens-ux.md"],
+    "qa-security-verifier": ["qa-code-review.md", "qa-security-audit.md"],
+    "devops-release-engineer": ["devops-docker-builds.md", "devops-ci-pipelines.md"]
+  }
+}

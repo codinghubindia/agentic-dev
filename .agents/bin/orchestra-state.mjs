@@ -24,6 +24,8 @@ const DEFAULT_PLAN_PATH = path.join(EXECUTION_DIR, 'project-plan.json');
 const DEFAULT_ERROR_REGISTRY_PATH = path.join(EXECUTION_DIR, 'error-registry.json');
 const DEFAULT_MEMORY_DIR = path.join(EXECUTION_DIR, 'memory');
 const DEFAULT_INDEX_PATH = path.join(EXECUTION_DIR, 'file-responsibility-index.json');
+const CACHE_INDEX_PATH = path.resolve(process.cwd(), '.agents', 'cache', 'file-responsibility-index.json');
+const DEFAULT_WORKER_POOL_PATH = path.join(EXECUTION_DIR, 'worker-pool.json');
 const DEFAULT_GATE_REPORT = path.join(EXECUTION_DIR, 'quality-gate-report.json');
 
 // -----------------------------------------------------------------------------
@@ -465,7 +467,7 @@ function mapLegacyAgentToMacro(legacyName) {
 
 function mapFailures(options = {}) {
   const reportPath = options.reportPath || DEFAULT_GATE_REPORT;
-  const indexPath = options.indexPath || DEFAULT_INDEX_PATH;
+  const indexPath = options.indexPath || (fs.existsSync(DEFAULT_INDEX_PATH) ? DEFAULT_INDEX_PATH : CACHE_INDEX_PATH);
 
   if (!fs.existsSync(reportPath)) {
     console.error(`[orchestra-state] Error: Quality gate report not found at ${reportPath}`);
@@ -533,6 +535,89 @@ function mapFailures(options = {}) {
 }
 
 // -----------------------------------------------------------------------------
+// 5. Parallel Worker Pool Partitioning
+// -----------------------------------------------------------------------------
+function partitionWorkers(options = {}) {
+  const maxClones = Math.max(1, Math.min(4, parseInt(options.maxClones || '4', 10)));
+  const targetRole = options.role || null;
+  const indexPath = options.indexPath || (fs.existsSync(DEFAULT_INDEX_PATH) ? DEFAULT_INDEX_PATH : CACHE_INDEX_PATH);
+  const outPath = options.outPath || DEFAULT_WORKER_POOL_PATH;
+
+  const indexData = readJsonSafe(indexPath, { files: {} });
+  const filesByRole = {};
+
+  for (const [filePath, fileInfo] of Object.entries(indexData.files || {})) {
+    const role = (typeof fileInfo === 'string' ? fileInfo : fileInfo.owner || fileInfo.primaryAgent) || resolveAgentForFile(filePath, indexData);
+    if (targetRole && role !== targetRole) continue;
+    if (!filesByRole[role]) {
+      filesByRole[role] = [];
+    }
+    filesByRole[role].push(filePath);
+  }
+
+  const pools = {};
+
+  for (const [role, files] of Object.entries(filesByRole)) {
+    const cloneCount = Math.min(maxClones, Math.max(1, files.length));
+    pools[role] = [];
+
+    for (let c = 0; c < cloneCount; c++) {
+      pools[role].push({
+        workerId: `${role}#${c + 1}`,
+        role: role,
+        cloneIndex: c + 1,
+        allowedWritePaths: [],
+        status: 'ready'
+      });
+    }
+
+    files.forEach((file, index) => {
+      const cloneIdx = index % cloneCount;
+      pools[role][cloneIdx].allowedWritePaths.push(file);
+    });
+  }
+
+  const poolPayload = {
+    timestamp: new Date().toISOString(),
+    maxClones,
+    totalRoles: Object.keys(pools).length,
+    pools
+  };
+
+  atomicWriteJson(outPath, poolPayload);
+
+  console.log('\n🎯 PARALLEL WORKER POOL ALLOCATIONS');
+  console.log('='.repeat(50));
+  for (const [role, workers] of Object.entries(pools)) {
+    console.log(`\n📌 Role Template: ${role} (${workers.length} active clone(s))`);
+    for (const w of workers) {
+      console.log(`   - Clone: ${w.workerId} (${w.allowedWritePaths.length} file(s))`);
+      for (const p of w.allowedWritePaths) {
+        console.log(`     * ${p}`);
+      }
+    }
+  }
+  console.log(`\nWritten worker pools to: ${path.relative(process.cwd(), outPath)}\n`);
+  return poolPayload;
+}
+
+function getWorkerSlice(workerId, options = {}) {
+  const poolPath = options.poolPath || DEFAULT_WORKER_POOL_PATH;
+  const poolData = readJsonSafe(poolPath, { pools: {} });
+
+  for (const roleWorkers of Object.values(poolData.pools || {})) {
+    const found = roleWorkers.find((w) => w.workerId === workerId);
+    if (found) {
+      console.log(JSON.stringify(found, null, 2));
+      return found;
+    }
+  }
+
+  console.error(`Worker clone ${workerId} not found in ${poolPath}`);
+  return null;
+}
+
+// -----------------------------------------------------------------------------
 // CLI Dispatcher
 // -----------------------------------------------------------------------------
 export function runOrchestraState(args = process.argv.slice(2)) {
@@ -563,6 +648,12 @@ Commands:
 
   map-failures [--report <path>] [--index <path>]
       Maps quality-gate failures directly to the responsible Macro Vertical Agent
+
+  partition-workers [--role <role>] [--max-clones <N>] [--index <path>] [--out <path>]
+      Partitions files/tasks across parallel worker clones with disjoint allowedWritePaths
+
+  get-worker-slice <workerId> [--pool <path>]
+      Outputs assigned disjoint slice and allowedWritePaths for a specific worker clone
 `);
     process.exit(0);
   }
@@ -632,6 +723,25 @@ Commands:
         indexPath: getArg('--index')
       });
       break;
+
+    case 'partition-workers':
+      partitionWorkers({
+        role: getArg('--role'),
+        maxClones: getArg('--max-clones'),
+        indexPath: getArg('--index'),
+        outPath: getArg('--out')
+      });
+      break;
+
+    case 'get-worker-slice': {
+      const workerId = args[1];
+      if (!workerId) {
+        console.error('Error: workerId required.');
+        process.exit(1);
+      }
+      getWorkerSlice(workerId, { poolPath: getArg('--pool') });
+      break;
+    }
 
     default:
       console.error(`Unknown command: ${command}. Run with --help for usage.`);

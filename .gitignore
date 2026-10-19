@@ -43,4 +43,5 @@ test-results/
 
 # Agent Execution artifacts
 .agent_execution/
+.agents/cache/
 context-skeleton.d.ts
