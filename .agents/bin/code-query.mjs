@@ -21,12 +21,20 @@ import process from 'node:process';
 import { runOnboard } from './onboard-project.mjs';
 import { runSymbolIndexer } from './symbol-indexer.mjs';
 
-const ROOT_DIR = process.cwd();
-const CACHE_DIR = path.resolve(ROOT_DIR, '.agents/cache');
-const DNA_FILE = path.join(CACHE_DIR, 'project-dna.json');
-const REGISTRY_FILE = path.join(CACHE_DIR, 'symbol-registry.json');
-const LEDGER_FILE = path.join(CACHE_DIR, 'progress-ledger.json');
-const INDEX_FILE = path.join(CACHE_DIR, 'file-responsibility-index.json');
+import {
+  WORKSPACE_ROOT,
+  PROJECT_DNA_PATH,
+  SYMBOL_REGISTRY_PATH,
+  PROGRESS_LEDGER_PATH,
+  FILE_RESPONSIBILITY_INDEX_PATH,
+  ensureExecDir
+} from './paths.mjs';
+
+const ROOT_DIR = WORKSPACE_ROOT;
+const DNA_FILE = PROJECT_DNA_PATH;
+const REGISTRY_FILE = SYMBOL_REGISTRY_PATH;
+const LEDGER_FILE = PROGRESS_LEDGER_PATH;
+const INDEX_FILE = FILE_RESPONSIBILITY_INDEX_PATH;
 
 function ensureOnboarded() {
   if (!fs.existsSync(DNA_FILE) || !fs.existsSync(INDEX_FILE)) {

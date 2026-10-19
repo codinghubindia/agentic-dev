@@ -15,25 +15,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  WORKSPACE_ROOT,
+  CONTEXT_SKELETON_PATH,
+  IGNORED_SCAN_DIRS,
+  ensureExecDir
+} from './paths.mjs';
 
 const SUPPORTED_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.dart']);
-const DEFAULT_IGNORE_DIRS = new Set([
-  'node_modules',
-  '.git',
-  '.agents',
-  '.agent_execution',
-  'dist',
-  'build',
-  'out',
-  '.next',
-  '.nuxt',
-  'coverage',
-  '.cache',
-  '.turbo',
-  'target',
-  'bin',
-  'obj'
-]);
+const DEFAULT_IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 // -----------------------------------------------------------------------------
 // TypeScript / JavaScript AST-lite skeleton extractor
@@ -545,7 +535,8 @@ function collectFiles(targetPaths, ignoreDirs = DEFAULT_IGNORE_DIRS) {
 // CLI Runner
 // -----------------------------------------------------------------------------
 export function runExtractor(args = process.argv.slice(2)) {
-  let outPath = 'context-skeleton.d.ts';
+  ensureExecDir();
+  let outPath = CONTEXT_SKELETON_PATH;
   let targetPaths = [];
   let format = 'dts';
   let isStdout = false;

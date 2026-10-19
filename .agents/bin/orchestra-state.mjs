@@ -15,18 +15,33 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  WORKSPACE_ROOT,
+  EXEC_DIR,
+  EXEC_STATE_DIR,
+  EXEC_MEMORY_DIR,
+  PROJECT_PLAN_PATH,
+  ERROR_REGISTRY_PATH,
+  WORKER_POOL_PATH,
+  FILE_RESPONSIBILITY_INDEX_PATH,
+  QUALITY_GATE_REPORT_PATH,
+  FAILURE_ASSIGNMENTS_PATH,
+  isAgentsEnginePath,
+  isEngineOrExecutionPath,
+  ensureExecDir
+} from './paths.mjs';
 
 const MAX_ERROR_REGISTRY_ITEMS = 20;
 const MAX_AGENT_MEMORY_ITEMS = 15;
 
-const EXECUTION_DIR = path.resolve(process.cwd(), '.agent_execution');
-const DEFAULT_PLAN_PATH = path.join(EXECUTION_DIR, 'project-plan.json');
-const DEFAULT_ERROR_REGISTRY_PATH = path.join(EXECUTION_DIR, 'error-registry.json');
-const DEFAULT_MEMORY_DIR = path.join(EXECUTION_DIR, 'memory');
-const DEFAULT_INDEX_PATH = path.join(EXECUTION_DIR, 'file-responsibility-index.json');
-const CACHE_INDEX_PATH = path.resolve(process.cwd(), '.agents', 'cache', 'file-responsibility-index.json');
-const DEFAULT_WORKER_POOL_PATH = path.join(EXECUTION_DIR, 'worker-pool.json');
-const DEFAULT_GATE_REPORT = path.join(EXECUTION_DIR, 'quality-gate-report.json');
+const EXECUTION_DIR = EXEC_STATE_DIR;
+const DEFAULT_PLAN_PATH = PROJECT_PLAN_PATH;
+const DEFAULT_ERROR_REGISTRY_PATH = ERROR_REGISTRY_PATH;
+const DEFAULT_MEMORY_DIR = EXEC_MEMORY_DIR;
+const DEFAULT_INDEX_PATH = FILE_RESPONSIBILITY_INDEX_PATH;
+const DEFAULT_WORKER_POOL_PATH = WORKER_POOL_PATH;
+const DEFAULT_GATE_REPORT = QUALITY_GATE_REPORT_PATH;
+const DEFAULT_FAILURES_PATH = FAILURE_ASSIGNMENTS_PATH;
 
 // -----------------------------------------------------------------------------
 // Atomic File Operations
@@ -467,7 +482,7 @@ function mapLegacyAgentToMacro(legacyName) {
 
 function mapFailures(options = {}) {
   const reportPath = options.reportPath || DEFAULT_GATE_REPORT;
-  const indexPath = options.indexPath || (fs.existsSync(DEFAULT_INDEX_PATH) ? DEFAULT_INDEX_PATH : CACHE_INDEX_PATH);
+  const indexPath = options.indexPath || DEFAULT_INDEX_PATH;
 
   if (!fs.existsSync(reportPath)) {
     console.error(`[orchestra-state] Error: Quality gate report not found at ${reportPath}`);
@@ -510,7 +525,7 @@ function mapFailures(options = {}) {
     assignments
   };
 
-  const outPath = path.join(EXECUTION_DIR, 'failure-assignments.json');
+  const outPath = options.outPath || DEFAULT_FAILURES_PATH;
   atomicWriteJson(outPath, result);
 
   console.log('\n🎯 FAILURE ASSIGNMENT MAP');
@@ -540,13 +555,17 @@ function mapFailures(options = {}) {
 function partitionWorkers(options = {}) {
   const maxClones = Math.max(1, Math.min(4, parseInt(options.maxClones || '4', 10)));
   const targetRole = options.role || null;
-  const indexPath = options.indexPath || (fs.existsSync(DEFAULT_INDEX_PATH) ? DEFAULT_INDEX_PATH : CACHE_INDEX_PATH);
+  const indexPath = options.indexPath || DEFAULT_INDEX_PATH;
   const outPath = options.outPath || DEFAULT_WORKER_POOL_PATH;
 
   const indexData = readJsonSafe(indexPath, { files: {} });
   const filesByRole = {};
 
   for (const [filePath, fileInfo] of Object.entries(indexData.files || {})) {
+    // Strictly block .agents/** and .agent_execution/** from worker write slices
+    if (isAgentsEnginePath(filePath) || isEngineOrExecutionPath(filePath)) {
+      continue;
+    }
     const role = (typeof fileInfo === 'string' ? fileInfo : fileInfo.owner || fileInfo.primaryAgent) || resolveAgentForFile(filePath, indexData);
     if (targetRole && role !== targetRole) continue;
     if (!filesByRole[role]) {
@@ -608,6 +627,10 @@ function getWorkerSlice(workerId, options = {}) {
   for (const roleWorkers of Object.values(poolData.pools || {})) {
     const found = roleWorkers.find((w) => w.workerId === workerId);
     if (found) {
+      // Ensure .agents/ and .agent_execution/ are never in allowedWritePaths
+      found.allowedWritePaths = (found.allowedWritePaths || []).filter(
+        (p) => !isAgentsEnginePath(p) && !isEngineOrExecutionPath(p)
+      );
       console.log(JSON.stringify(found, null, 2));
       return found;
     }
@@ -621,6 +644,7 @@ function getWorkerSlice(workerId, options = {}) {
 // CLI Dispatcher
 // -----------------------------------------------------------------------------
 export function runOrchestraState(args = process.argv.slice(2)) {
+  ensureExecDir();
   const command = args[0];
 
   if (!command || command === '--help' || command === '-h') {

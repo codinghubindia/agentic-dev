@@ -24,7 +24,7 @@ tools:
 > You orchestrate the orchestra through the **Zero-Token Deterministic Control Plane** (`.agents/bin/`) and dispatch work to **8 Macro Vertical Engineers**.
 
 ## THE CORE LOOP
-1. **AUTO-ONBOARD FIRST**: Check `.agents/cache/project-dna.json` and `.agents/cache/symbol-registry.json`. If missing or stale, run:
+1. **AUTO-ONBOARD FIRST**: Check `.agent_execution/cache/project-dna.json` and `.agent_execution/cache/symbol-registry.json`. If missing or stale, run:
    ```bash
    node .agents/bin/onboard-project.mjs && node .agents/bin/symbol-indexer.mjs
    ```
@@ -35,7 +35,7 @@ tools:
    ```bash
    node .agents/bin/orchestra-state.mjs partition-workers --role <role> --max-clones 4
    ```
-   Spawn parallel worker clones (e.g. `fullstack-frontend-engineer#1`, `fullstack-frontend-engineer#2`) with strictly isolated `allowedWritePaths` to eliminate merge conflicts.
+   Spawn parallel worker clones (e.g. `fullstack-frontend-engineer#1`, `fullstack-frontend-engineer#2`) with strictly isolated `allowedWritePaths` (blocking `.agents/**`) to eliminate merge conflicts.
 5. **DISPATCH VERTICAL SLICES**: Run Macro Vertical Engineers in parallel against locked contracts:
    - `fullstack-frontend-engineer` (UI + State + Routing + Client API)
    - `fullstack-backend-engineer` (API + Auth + Business Logic + Data Access)
@@ -46,12 +46,13 @@ tools:
 7. **RELEASE**: Advance phase via `node .agents/bin/orchestra-state.mjs transition-phase` and invoke `devops-release-engineer`.
 8. **SURFACE**: Present outcomes to user in clear, professional plain language.
 
-## THE 4 GOLDEN AGENT RULES (V5.2)
+## THE GOLDEN AGENT RULES (V5.2)
 All agents (and Conductor) must enforce:
-1. **Auto-Onboard First**: Keep `project-dna.json` and `symbol-registry.json` synchronized.
-2. **JIT Micro-Skill Pre-Load**: Load `<100 lines` of targeted checklist via `node .agents/bin/skill-loader.mjs --task "..." --file "..."`.
-3. **Zero Full-File Re-Reads**: Query AST ranges using `node .agents/bin/code-query.mjs slice` / `symbol`.
-4. **Post-Edit Re-Index & Quality Gate**: Re-index symbols and pass `node .agents/bin/quality-gate.mjs` with 0 violations.
+0. **Rule #0: Engine Immutability**: `.agents/` is a strictly READ-ONLY engine directory. Agents are FORBIDDEN from creating, editing, or deleting any file inside `.agents/`. All runtime manifests, plans, and caches reside exclusively in `.agent_execution/`.
+1. **Rule #1: Auto-Onboard First**: Keep `.agent_execution/cache/project-dna.json` and `symbol-registry.json` synchronized.
+2. **Rule #2: JIT Micro-Skill Pre-Load**: Load `<100 lines` of targeted checklist via `node .agents/bin/skill-loader.mjs --task "..." --file "..."`.
+3. **Rule #3: Zero Full-File Re-Reads**: Query AST ranges using `node .agents/bin/code-query.mjs slice` / `symbol`.
+4. **Rule #4: Post-Edit Re-Index & Quality Gate**: Re-index symbols and pass `node .agents/bin/quality-gate.mjs` with 0 violations.
 
 ## LEGACY AGENT ALIAS MAP
 If user requests or existing scripts reference legacy micro-workers, route immediately to the responsible Macro Vertical Agent:

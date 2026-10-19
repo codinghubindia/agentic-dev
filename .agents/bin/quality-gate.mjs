@@ -20,27 +20,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { spawn } from 'node:child_process';
+import {
+  WORKSPACE_ROOT,
+  QUALITY_GATE_REPORT_PATH,
+  IGNORED_SCAN_DIRS,
+  ensureExecDir
+} from './paths.mjs';
 
 const TIMEOUT_MS = 30000;
 const MAX_BUFFER_BYTES = 8 * 1024; // 8KB truncation limit
 
-const IGNORE_DIRS = new Set([
-  'node_modules',
-  '.git',
-  '.agents',
-  '.agent_execution',
-  'dist',
-  'build',
-  'out',
-  '.next',
-  '.nuxt',
-  'coverage',
-  '.cache',
-  '.turbo',
-  'target',
-  'bin',
-  'obj'
-]);
+const IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 // -----------------------------------------------------------------------------
 // Safe Process Execution with hard timeout & 8KB buffer truncation
@@ -53,8 +43,9 @@ function execBounded(command, args, options = {}) {
     let killed = false;
 
     const isWindows = process.platform === 'win32';
+    const useShell = isWindows && (command === 'npm' || command === 'npx' || command === 'pnpm' || command === 'yarn');
     const child = spawn(command, args, {
-      shell: isWindows,
+      shell: useShell,
       cwd: options.cwd || process.cwd(),
       env: { ...process.env, ...options.env },
       windowsHide: true
@@ -471,9 +462,92 @@ async function checkDependencies(rootDir) {
 }
 
 // -----------------------------------------------------------------------------
+// Check 5: .agents Engine Immutability Check
+// -----------------------------------------------------------------------------
+async function checkAgentsImmutability(rootDir) {
+  const errors = [];
+  const agentsDir = path.resolve(rootDir, '.agents');
+
+  if (!fs.existsSync(agentsDir)) {
+    return {
+      name: 'agents-engine-immutability',
+      passed: true,
+      errors
+    };
+  }
+
+  // 1. Check for unauthorized runtime subdirectories inside .agents/
+  const forbiddenDirs = ['cache', 'state', 'logs', 'temp', 'tmp'];
+  for (const dir of forbiddenDirs) {
+    const fullPath = path.join(agentsDir, dir);
+    if (fs.existsSync(fullPath)) {
+      errors.push({
+        file: `.agents/${dir}`,
+        line: 1,
+        rule: 'engine-immutability-violation',
+        message: `Forbidden runtime directory detected inside .agents/: .agents/${dir}. All runtime state must live in .agent_execution/.`
+      });
+    }
+  }
+
+  // 2. Check for unauthorized runtime files inside .agents/ root
+  try {
+    const entries = fs.readdirSync(agentsDir);
+    for (const entry of entries) {
+      if (entry.endsWith('.json') || entry.endsWith('.d.ts') || entry.endsWith('.log') || entry.endsWith('.tmp')) {
+        errors.push({
+          file: `.agents/${entry}`,
+          line: 1,
+          rule: 'engine-immutability-violation',
+          message: `Forbidden runtime file found in .agents/: .agents/${entry}. .agents/ must remain strictly read-only.`
+        });
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  // 3. If git is available, verify git status --porcelain .agents/
+  if (fs.existsSync(path.join(rootDir, '.git'))) {
+    const gitRes = await execBounded('git', ['status', '--porcelain', '.agents/'], { cwd: rootDir });
+    if (gitRes.stdout && gitRes.stdout.trim()) {
+      const changed = gitRes.stdout.trim().split(/\r?\n/).map((l) => l.trim());
+      for (const line of changed) {
+        const parts = line.split(/\s+/);
+        const filePath = (parts[parts.length - 1] || line).trim();
+        const normalized = filePath.replace(/\\/g, '/');
+        if (
+          normalized.includes('/cache/') ||
+          normalized.endsWith('/cache') ||
+          normalized.includes('/state/') ||
+          normalized.endsWith('/state') ||
+          normalized.includes('/logs/') ||
+          normalized.endsWith('.tmp') ||
+          (normalized.startsWith('.agents/') && normalized.split('/').length === 2 && (normalized.endsWith('.json') || normalized.endsWith('.log')))
+        ) {
+          errors.push({
+            file: filePath,
+            line: 1,
+            rule: 'engine-immutability-violation',
+            message: `Git detected uncommitted runtime mutation inside engine directory: ${line}`
+          });
+        }
+      }
+    }
+  }
+
+  return {
+    name: 'agents-engine-immutability',
+    passed: errors.length === 0,
+    errors
+  };
+}
+
+// -----------------------------------------------------------------------------
 // CLI Runner
 // -----------------------------------------------------------------------------
 export async function runQualityGate(args = process.argv.slice(2)) {
+  ensureExecDir();
   let isJsonOnly = false;
   let customReportPath = null;
   const rootDir = process.cwd();
@@ -490,21 +564,22 @@ Usage: node .agents/bin/quality-gate.mjs [options]
 
 Options:
   --json             Output raw JSON report to stdout
-  -r, --report <p>   Custom report output path (default: .agent_execution/quality-gate-report.json)
+  -r, --report <p>   Custom report output path (default: .agent_execution/state/quality-gate-report.json)
   -h, --help         Show this help message
 `);
       process.exit(0);
     }
   }
 
-  const [conflictCheck, tsCheck, uiCraftCheck, depCheck] = await Promise.all([
+  const [conflictCheck, tsCheck, uiCraftCheck, depCheck, immutabilityCheck] = await Promise.all([
     checkGitConflicts(rootDir),
     checkTypescript(rootDir),
     checkUiCraft(rootDir),
-    checkDependencies(rootDir)
+    checkDependencies(rootDir),
+    checkAgentsImmutability(rootDir)
   ]);
 
-  const checks = [conflictCheck, tsCheck, uiCraftCheck, depCheck];
+  const checks = [conflictCheck, tsCheck, uiCraftCheck, depCheck, immutabilityCheck];
   const allErrors = checks.flatMap((c) => c.errors);
   const passed = allErrors.length === 0;
 
@@ -528,8 +603,8 @@ Options:
     checks
   };
 
-  // Atomic write report to .agent_execution/quality-gate-report.json
-  const defaultReportPath = path.resolve(rootDir, '.agent_execution/quality-gate-report.json');
+  // Atomic write report to .agent_execution/state/quality-gate-report.json
+  const defaultReportPath = QUALITY_GATE_REPORT_PATH;
   const targetReportPath = customReportPath ? path.resolve(rootDir, customReportPath) : defaultReportPath;
   const reportDir = path.dirname(targetReportPath);
 

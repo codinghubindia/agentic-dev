@@ -8,14 +8,12 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {
+  SKILL_MANIFEST_PATH,
+  SHARDS_DIR
+} from './paths.mjs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.resolve(__dirname, '..', '..');
-const SKILLS_DIR = path.resolve(ROOT_DIR, '.agents', 'skills');
-const MANIFEST_FILE = path.resolve(SKILLS_DIR, 'skill-manifest.json');
-const SHARDS_DIR = path.resolve(SKILLS_DIR, 'shards');
+const MANIFEST_FILE = SKILL_MANIFEST_PATH;
 
 function parseArgs() {
   const args = process.argv.slice(2);

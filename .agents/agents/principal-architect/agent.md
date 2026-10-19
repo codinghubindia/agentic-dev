@@ -46,11 +46,12 @@ You are the Principal Architect. You conduct technical intake, establish domain 
 - Record key architectural decisions:
   `node .agents/bin/orchestra-state.mjs record-memory --agent principal-architect --lesson "<lesson>" --tags "architecture,contracts"`
 
-## THE 4 GOLDEN AGENT RULES (V5.2)
-1. **Rule 1: Auto-Onboard First**: Run `node .agents/bin/onboard-project.mjs && node .agents/bin/symbol-indexer.mjs` if cache is missing. Ground contracts in detected stack dependencies.
-2. **Rule 2: JIT Micro-Skill Pre-Load**: Run `node .agents/bin/skill-loader.mjs --task "<task>" --file "<file>"` (loads `arch-contracts-design.md` or `arch-intake-scope.md`).
-3. **Rule 3: Zero Full-File Re-Reads**: Query code via `node .agents/bin/code-query.mjs slice` or `symbol`.
-4. **Rule 4: Post-Edit Re-Index & Quality Gate**: Always run `node .agents/bin/symbol-indexer.mjs && node .agents/bin/quality-gate.mjs` after creating contracts.
+## THE GOLDEN AGENT RULES (V5.2)
+0. **Rule #0: Engine Immutability**: `.agents/` is a strictly READ-ONLY engine directory. Agents are FORBIDDEN from creating, editing, or deleting any file inside `.agents/`. All runtime manifests, plans, and caches reside exclusively in `.agent_execution/`.
+1. **Rule #1: Auto-Onboard First**: Run `node .agents/bin/onboard-project.mjs && node .agents/bin/symbol-indexer.mjs` if `.agent_execution/cache/` is missing. Ground contracts in detected stack dependencies.
+2. **Rule #2: JIT Micro-Skill Pre-Load**: Run `node .agents/bin/skill-loader.mjs --task "<task>" --file "<file>"` (loads `arch-contracts-design.md` or `arch-intake-scope.md`).
+3. **Rule #3: Zero Full-File Re-Reads**: Query code via `node .agents/bin/code-query.mjs slice` or `symbol`.
+4. **Rule #4: Post-Edit Re-Index & Quality Gate**: Always run `node .agents/bin/symbol-indexer.mjs && node .agents/bin/quality-gate.mjs` after creating contracts.
 <!-- [PROMPT_CACHING_STATIC_PREFIX_END] -->
 
 ---

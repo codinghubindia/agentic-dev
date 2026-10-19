@@ -6,41 +6,30 @@
  * Scans source files (.ts, .tsx, .js, .jsx, .mjs, .cjs, .py, .dart, .go) in <50ms
  * using SHA-1 hashing to incrementally index symbols and their exact line ranges.
  * Outputs:
- * 1. .agents/cache/symbol-registry.json (comprehensive symbol & line-number map)
- * 2. .agents/cache/progress-ledger.json (separates [DONE] from [STUB/PENDING] symbols)
+ * 1. .agent_execution/cache/symbol-registry.json (comprehensive symbol & line-number map)
+ * 2. .agent_execution/cache/progress-ledger.json (separates [DONE] from [STUB/PENDING] symbols)
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import process from 'node:process';
+import {
+  WORKSPACE_ROOT,
+  SYMBOL_REGISTRY_PATH,
+  PROGRESS_LEDGER_PATH,
+  FILE_RESPONSIBILITY_INDEX_PATH,
+  IGNORED_SCAN_DIRS,
+  ensureExecDir
+} from './paths.mjs';
 
-const ROOT_DIR = process.cwd();
-const CACHE_DIR = path.resolve(ROOT_DIR, '.agents/cache');
-const REGISTRY_FILE = path.join(CACHE_DIR, 'symbol-registry.json');
-const LEDGER_FILE = path.join(CACHE_DIR, 'progress-ledger.json');
-const INDEX_FILE = path.join(CACHE_DIR, 'file-responsibility-index.json');
+const ROOT_DIR = WORKSPACE_ROOT;
+const REGISTRY_FILE = SYMBOL_REGISTRY_PATH;
+const LEDGER_FILE = PROGRESS_LEDGER_PATH;
+const INDEX_FILE = FILE_RESPONSIBILITY_INDEX_PATH;
 
 const SUPPORTED_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.dart', '.go']);
-const IGNORE_DIRS = new Set([
-  'node_modules',
-  '.git',
-  '.agents',
-  '.agent_execution',
-  'dist',
-  'build',
-  'out',
-  '.next',
-  '.nuxt',
-  'coverage',
-  '.cache',
-  '.turbo',
-  'target',
-  'bin',
-  'obj',
-  'venv',
-  '.venv'
-]);
+const IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 function sha1(str) {
   return crypto.createHash('sha1').update(str).digest('hex');
@@ -500,6 +489,7 @@ function collectSourceFiles(targetDir = ROOT_DIR) {
 // CLI Runner
 // -----------------------------------------------------------------------------
 export function runSymbolIndexer(args = process.argv.slice(2)) {
+  ensureExecDir();
   const isForce = args.includes('--force');
   const isQuiet = args.includes('--quiet');
   const startTime = performance.now();

@@ -3,43 +3,28 @@
  * .agents/bin/onboard-project.mjs
  * Neural Orchestra v5.2 - Instant Drop-In Context & Auto-Ownership Bootstrapper
  *
- * Runs automatically when .agents/cache/project-dna.json is missing or stale.
+ * Runs automatically when .agent_execution/cache/project-dna.json is missing or stale.
  * Inspects all project manifests (package.json, tsconfig.json, pubspec.yaml,
  * pyproject.toml, requirements.txt, Dockerfile, ORM schemas) to construct:
- * 1. .agents/cache/project-dna.json (complete tech stack, scripts, topology)
- * 2. .agents/cache/file-responsibility-index.json (auto-ownership across 8 Macro Roles)
+ * 1. .agent_execution/cache/project-dna.json (complete tech stack, scripts, topology)
+ * 2. .agent_execution/cache/file-responsibility-index.json (auto-ownership across 8 Macro Roles)
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import {
+  WORKSPACE_ROOT,
+  PROJECT_DNA_PATH,
+  FILE_RESPONSIBILITY_INDEX_PATH,
+  IGNORED_SCAN_DIRS,
+  ensureExecDir
+} from './paths.mjs';
 
-const ROOT_DIR = process.cwd();
-const CACHE_DIR = path.resolve(ROOT_DIR, '.agents/cache');
-const DNA_FILE = path.join(CACHE_DIR, 'project-dna.json');
-const INDEX_FILE = path.join(CACHE_DIR, 'file-responsibility-index.json');
-const EXECUTION_INDEX_FILE = path.resolve(ROOT_DIR, '.agent_execution/file-responsibility-index.json');
-
-const IGNORE_DIRS = new Set([
-  'node_modules',
-  '.git',
-  '.agents',
-  '.agent_execution',
-  'dist',
-  'build',
-  'out',
-  '.next',
-  '.nuxt',
-  'coverage',
-  '.cache',
-  '.turbo',
-  'target',
-  'bin',
-  'obj',
-  'venv',
-  '.venv',
-  '__pycache__'
-]);
+const ROOT_DIR = WORKSPACE_ROOT;
+const DNA_FILE = PROJECT_DNA_PATH;
+const INDEX_FILE = FILE_RESPONSIBILITY_INDEX_PATH;
+const IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 const MACRO_ROLES = {
   FRONTEND: 'fullstack-frontend-engineer',
@@ -478,6 +463,7 @@ function categorizeFile(filePath, ext) {
 // CLI Execution
 // -----------------------------------------------------------------------------
 export function runOnboard(args = process.argv.slice(2)) {
+  ensureExecDir();
   const isForce = args.includes('--force');
   const isQuiet = args.includes('--quiet');
   const isCheckOnly = args.includes('--check');
@@ -520,11 +506,6 @@ export function runOnboard(args = process.argv.slice(2)) {
 
   atomicWrite(DNA_FILE, dna);
   atomicWrite(INDEX_FILE, index);
-
-  // Sync index to .agent_execution if the directory exists
-  if (fs.existsSync(path.dirname(EXECUTION_INDEX_FILE))) {
-    atomicWrite(EXECUTION_INDEX_FILE, index);
-  }
 
   const elapsed = (performance.now() - startTime).toFixed(1);
 
