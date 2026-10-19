@@ -20,6 +20,7 @@ import {
   PROGRESS_LEDGER_PATH,
   FILE_RESPONSIBILITY_INDEX_PATH,
   IGNORED_SCAN_DIRS,
+  SUPPORTED_EXTENSIONS,
   ensureExecDir
 } from './paths.mjs';
 
@@ -28,7 +29,7 @@ const REGISTRY_FILE = SYMBOL_REGISTRY_PATH;
 const LEDGER_FILE = PROGRESS_LEDGER_PATH;
 const INDEX_FILE = FILE_RESPONSIBILITY_INDEX_PATH;
 
-const SUPPORTED_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.dart', '.go']);
+const SUPPORTED_EXTS = SUPPORTED_EXTENSIONS;
 const IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 function sha1(str) {
@@ -74,9 +75,17 @@ function detectStubStatus(bodyText) {
   if (
     lower.includes('not implemented') ||
     lower.includes('notimplementederror') ||
+    lower.includes('notimplementedexception') ||
+    lower.includes('unsupportedoperationexception') ||
     lower.includes('unimplemented') ||
+    lower.includes('todo!') ||
+    lower.includes('unimplemented!') ||
+    lower.includes('panic!("not implemented")') ||
+    lower.includes('panic!("todo")') ||
     lower.includes('throw new error("not implemented")') ||
-    lower.includes("throw new error('not implemented')")
+    lower.includes("throw new error('not implemented')") ||
+    lower.includes('throw new notimplementedexception') ||
+    lower.includes('throw new unsupportedoperationexception')
   ) {
     return { isStub: true, reason: 'Explicit Not Implemented exception/stub' };
   }
@@ -85,6 +94,29 @@ function detectStubStatus(bodyText) {
   }
 
   return { isStub: false, reason: null };
+}
+
+// -----------------------------------------------------------------------------
+// Shared Brace Helper
+// -----------------------------------------------------------------------------
+function findBraceBlockEnd(lines, startIndex) {
+  let depth = 0;
+  let foundOpen = false;
+  const bodyLines = [];
+
+  for (let j = startIndex; j < lines.length; j++) {
+    const l = lines[j];
+    bodyLines.push(l);
+    for (let c = 0; c < l.length; c++) {
+      const char = l[c];
+      if (char === '{') { depth++; foundOpen = true; }
+      else if (char === '}') depth--;
+    }
+    if (foundOpen && depth <= 0) {
+      return { endLine: j + 1, nextIndex: j, bodyText: bodyLines.join('\n') };
+    }
+  }
+  return { endLine: lines.length, nextIndex: lines.length - 1, bodyText: bodyLines.join('\n') };
 }
 
 // -----------------------------------------------------------------------------
@@ -454,6 +486,607 @@ function parseDartSymbols(content, relPath) {
 }
 
 // -----------------------------------------------------------------------------
+// Rust Symbol Parser
+// -----------------------------------------------------------------------------
+function parseRustSymbols(content, relPath) {
+  const lines = content.split(/\r?\n/);
+  const symbols = [];
+  const imports = [];
+  const exports = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    const lineNum = i + 1;
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
+
+    // Imports: use ...;
+    if (trimmed.startsWith('use ')) {
+      let stmt = trimmed;
+      let j = i;
+      while (!stmt.includes(';') && j + 1 < lines.length) {
+        j++;
+        stmt += ' ' + lines[j].trim();
+      }
+      imports.push({ line: lineNum, statement: stmt });
+      i = j;
+      continue;
+    }
+
+    // Module: mod name; or pub mod name; or mod name { ... }
+    const modMatch = trimmed.match(/^(pub(\([^)]+\))?\s+)?mod\s+([A-Za-z0-9_]+)/);
+    if (modMatch) {
+      const name = modMatch[3];
+      const isExported = Boolean(modMatch[1]);
+      if (isExported) exports.push(name);
+
+      if (trimmed.includes(';')) {
+        symbols.push({
+          name,
+          kind: 'module',
+          startLine: lineNum,
+          endLine: lineNum,
+          signature: trimmed,
+          status: 'DONE',
+          isExported
+        });
+      } else if (trimmed.includes('{')) {
+        const { endLine, nextIndex } = findBraceBlockEnd(lines, i);
+        symbols.push({
+          name,
+          kind: 'module',
+          startLine: lineNum,
+          endLine,
+          signature: lines[lineNum - 1].split('{')[0].trim(),
+          status: 'DONE',
+          isExported
+        });
+        i = nextIndex;
+      }
+      continue;
+    }
+
+    // Trait: trait Name or pub trait Name
+    const traitMatch = trimmed.match(/^(pub(\([^)]+\))?\s+)?(unsafe\s+)?trait\s+([A-Za-z0-9_]+)/);
+    if (traitMatch) {
+      const name = traitMatch[4];
+      const isExported = Boolean(traitMatch[1]);
+      if (isExported) exports.push(name);
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+      symbols.push({
+        name,
+        kind: 'trait',
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported
+      });
+      i = nextIndex;
+      continue;
+    }
+
+    // Struct: struct Name or pub struct Name
+    const structMatch = trimmed.match(/^(pub(\([^)]+\))?\s+)?struct\s+([A-Za-z0-9_]+)/);
+    if (structMatch) {
+      const name = structMatch[3];
+      const isExported = Boolean(structMatch[1]);
+      if (isExported) exports.push(name);
+
+      if (trimmed.includes(';')) {
+        symbols.push({
+          name,
+          kind: 'struct',
+          startLine: lineNum,
+          endLine: lineNum,
+          signature: trimmed,
+          status: 'DONE',
+          isExported
+        });
+      } else {
+        const { endLine, nextIndex } = findBraceBlockEnd(lines, i);
+        symbols.push({
+          name,
+          kind: 'struct',
+          startLine: lineNum,
+          endLine,
+          signature: lines[lineNum - 1].split('{')[0].trim(),
+          status: 'DONE',
+          isExported
+        });
+        i = nextIndex;
+      }
+      continue;
+    }
+
+    // Enum: enum Name or pub enum Name
+    const enumMatch = trimmed.match(/^(pub(\([^)]+\))?\s+)?enum\s+([A-Za-z0-9_]+)/);
+    if (enumMatch) {
+      const name = enumMatch[3];
+      const isExported = Boolean(enumMatch[1]);
+      if (isExported) exports.push(name);
+      const { endLine, nextIndex } = findBraceBlockEnd(lines, i);
+      symbols.push({
+        name,
+        kind: 'enum',
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: 'DONE',
+        isExported
+      });
+      i = nextIndex;
+      continue;
+    }
+
+    // Impl block: impl Type or impl Trait for Type
+    const implMatch = trimmed.match(/^impl(\s*<[^>]+>)?\s+([A-Za-z0-9_:]+)(\s+for\s+([A-Za-z0-9_:]+))?/);
+    if (implMatch) {
+      const traitOrType = implMatch[2];
+      const forType = implMatch[4];
+      const name = forType ? `${traitOrType} for ${forType}` : traitOrType;
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+      symbols.push({
+        name,
+        kind: 'impl',
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported: false
+      });
+      i = nextIndex;
+      continue;
+    }
+
+    // Function: fn or pub fn
+    const fnMatch = trimmed.match(/^(pub(\([^)]+\))?\s+)?(async\s+)?(unsafe\s+)?(extern\s+"[^"]+"\s+)?fn\s+([A-Za-z0-9_]+)/);
+    if (fnMatch) {
+      const name = fnMatch[6];
+      const isExported = Boolean(fnMatch[1]);
+      if (isExported) exports.push(name);
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+      symbols.push({
+        name,
+        kind: 'function',
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported
+      });
+      i = nextIndex;
+      continue;
+    }
+  }
+
+  return { symbols, imports, exports };
+}
+
+// -----------------------------------------------------------------------------
+// C / C++ Symbol Parser
+// -----------------------------------------------------------------------------
+function parseCppSymbols(content, relPath) {
+  const lines = content.split(/\r?\n/);
+  const symbols = [];
+  const imports = [];
+  const exports = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    const lineNum = i + 1;
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
+
+    // Includes: #include <header> or #include "header.h"
+    if (trimmed.startsWith('#include')) {
+      imports.push({ line: lineNum, statement: trimmed });
+      continue;
+    }
+
+    // Macros: #define NAME ...
+    const macroMatch = trimmed.match(/^#define\s+([A-Za-z0-9_]+)(\([^)]*\))?/);
+    if (macroMatch) {
+      const name = macroMatch[1];
+      symbols.push({
+        name,
+        kind: 'macro',
+        startLine: lineNum,
+        endLine: lineNum,
+        signature: trimmed,
+        status: 'DONE',
+        isExported: true
+      });
+      continue;
+    }
+
+    // Namespace: namespace name {
+    const nsMatch = trimmed.match(/^namespace\s+([A-Za-z0-9_:]+)/);
+    if (nsMatch) {
+      const name = nsMatch[1];
+      symbols.push({
+        name,
+        kind: 'namespace',
+        startLine: lineNum,
+        endLine: lineNum,
+        signature: trimmed.split('{')[0].trim(),
+        status: 'DONE',
+        isExported: true
+      });
+      continue;
+    }
+
+    // Class / Struct
+    const classMatch = trimmed.match(/^(template\s*<[^>]+>\s*)?(class|struct)\s+([A-Za-z0-9_]+)/);
+    if (classMatch && !trimmed.endsWith(';')) {
+      const kind = classMatch[2];
+      const name = classMatch[3];
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+      symbols.push({
+        name,
+        kind,
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported: true
+      });
+      exports.push(name);
+      i = nextIndex;
+      continue;
+    }
+
+    // Enum
+    const enumMatch = trimmed.match(/^enum(\s+class)?\s+([A-Za-z0-9_]+)/);
+    if (enumMatch) {
+      const name = enumMatch[2];
+      const { endLine, nextIndex } = findBraceBlockEnd(lines, i);
+      symbols.push({
+        name,
+        kind: 'enum',
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: 'DONE',
+        isExported: true
+      });
+      exports.push(name);
+      i = nextIndex;
+      continue;
+    }
+
+    // Function definition: type name(...) {
+    const fnMatch = trimmed.match(/^([A-Za-z0-9_:<>&*~]+)\s+([A-Za-z0-9_:]+)\s*\(([^)]*)\)\s*(const|noexcept|override|final)*\s*\{/);
+    if (fnMatch) {
+      const name = fnMatch[2];
+      if (!['if', 'while', 'for', 'switch', 'catch'].includes(name)) {
+        const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+        const { isStub, reason } = detectStubStatus(bodyText);
+        symbols.push({
+          name,
+          kind: 'function',
+          startLine: lineNum,
+          endLine,
+          signature: lines[lineNum - 1].split('{')[0].trim(),
+          status: isStub ? 'STUB' : 'DONE',
+          stubReason: reason,
+          isExported: !trimmed.startsWith('static ')
+        });
+        i = nextIndex;
+        continue;
+      }
+    }
+  }
+
+  return { symbols, imports, exports };
+}
+
+// -----------------------------------------------------------------------------
+// C# Symbol Parser
+// -----------------------------------------------------------------------------
+function parseCsharpSymbols(content, relPath) {
+  const lines = content.split(/\r?\n/);
+  const symbols = [];
+  const imports = [];
+  const exports = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    const lineNum = i + 1;
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
+
+    // Using directive: using System;
+    if (trimmed.startsWith('using ') && trimmed.endsWith(';') && !trimmed.includes('(')) {
+      imports.push({ line: lineNum, statement: trimmed });
+      continue;
+    }
+
+    // Namespace
+    const nsMatch = trimmed.match(/^namespace\s+([A-Za-z0-9_.]+)/);
+    if (nsMatch) {
+      symbols.push({
+        name: nsMatch[1],
+        kind: 'namespace',
+        startLine: lineNum,
+        endLine: lineNum,
+        signature: trimmed.replace(/[{;]/g, '').trim(),
+        status: 'DONE',
+        isExported: true
+      });
+      continue;
+    }
+
+    // Class / Interface / Struct / Enum / Record
+    const typeMatch = trimmed.match(/^(public|private|protected|internal|abstract|sealed|static|partial|\s+)*(class|interface|struct|enum|record)\s+([A-Za-z0-9_]+)/);
+    if (typeMatch && !trimmed.endsWith(';')) {
+      const kind = typeMatch[2];
+      const name = typeMatch[3];
+      const isPublic = /^(public|internal)/.test(trimmed);
+      if (isPublic) exports.push(name);
+
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+
+      symbols.push({
+        name,
+        kind,
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported: isPublic
+      });
+
+      // Also scan method signatures inside this type body
+      for (let k = i + 1; k < endLine - 1; k++) {
+        const memberLine = lines[k].trim();
+        if (!memberLine || memberLine.startsWith('//') || memberLine.startsWith('[')) continue;
+
+        // Method match: [modifiers] [returnType] MethodName(...)
+        const methodMatch = memberLine.match(/^(public|private|protected|internal|static|async|virtual|override|abstract|\s+)+([A-Za-z0-9_<>\[\],\s\?]+)\s+([A-Za-z0-9_]+)\s*(\<[^\>]+\>)?\s*\(([^)]*)\)/);
+        if (methodMatch) {
+          const methodName = methodMatch[3];
+          if (!['if', 'while', 'for', 'foreach', 'switch', 'catch', 'using', 'lock', 'return', 'get', 'set'].includes(methodName)) {
+            const mStart = k + 1;
+            let mEnd = mStart;
+            let mStub = false;
+            let mReason = null;
+
+            if (memberLine.includes('{') || (k + 1 < lines.length && lines[k + 1].trim().startsWith('{'))) {
+              const res = findBraceBlockEnd(lines, k);
+              mEnd = res.endLine;
+              k = res.nextIndex;
+              const stubCheck = detectStubStatus(res.bodyText);
+              mStub = stubCheck.isStub;
+              mReason = stubCheck.reason;
+            } else if (memberLine.includes(';')) {
+              mEnd = mStart;
+            }
+
+            symbols.push({
+              name: `${name}.${methodName}`,
+              kind: 'method',
+              startLine: mStart,
+              endLine: mEnd,
+              signature: memberLine.split('{')[0].trim(),
+              status: mStub ? 'STUB' : 'DONE',
+              stubReason: mReason,
+              isExported: /^(public|internal)/.test(memberLine)
+            });
+          }
+        }
+      }
+
+      i = nextIndex;
+      continue;
+    }
+  }
+
+  return { symbols, imports, exports };
+}
+
+// -----------------------------------------------------------------------------
+// Java Symbol Parser
+// -----------------------------------------------------------------------------
+function parseJavaSymbols(content, relPath) {
+  const lines = content.split(/\r?\n/);
+  const symbols = [];
+  const imports = [];
+  const exports = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    const lineNum = i + 1;
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
+
+    // Package: package com.company.pkg;
+    if (trimmed.startsWith('package ') && trimmed.endsWith(';')) {
+      const pkgName = trimmed.replace(/^package\s+/, '').replace(';', '').trim();
+      symbols.push({
+        name: pkgName,
+        kind: 'package',
+        startLine: lineNum,
+        endLine: lineNum,
+        signature: trimmed,
+        status: 'DONE',
+        isExported: true
+      });
+      continue;
+    }
+
+    // Import: import java.util.List;
+    if (trimmed.startsWith('import ') && trimmed.endsWith(';')) {
+      imports.push({ line: lineNum, statement: trimmed });
+      continue;
+    }
+
+    // Class / Interface / Enum / Record
+    const typeMatch = trimmed.match(/^(public|protected|private|abstract|static|final|\s+)*(class|interface|enum|record)\s+([A-Za-z0-9_]+)/);
+    if (typeMatch && !trimmed.endsWith(';')) {
+      const kind = typeMatch[2];
+      const name = typeMatch[3];
+      const isPublic = trimmed.startsWith('public ');
+      if (isPublic) exports.push(name);
+
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+
+      symbols.push({
+        name,
+        kind,
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported: isPublic
+      });
+
+      // Also scan method signatures inside this class/interface
+      for (let k = i + 1; k < endLine - 1; k++) {
+        const memberLine = lines[k].trim();
+        if (!memberLine || memberLine.startsWith('//') || memberLine.startsWith('@')) continue;
+
+        // Method match: [modifiers] [returnType] methodName(...)
+        const methodMatch = memberLine.match(/^(public|protected|private|static|final|abstract|synchronized|\s+)+([A-Za-z0-9_<>\[\],\s]+)\s+([A-Za-z0-9_]+)\s*(\<[^\>]+\>)?\s*\(([^)]*)\)/);
+        if (methodMatch) {
+          const methodName = methodMatch[3];
+          if (!['if', 'while', 'for', 'switch', 'catch', 'synchronized', 'return'].includes(methodName)) {
+            const mStart = k + 1;
+            let mEnd = mStart;
+            let mStub = false;
+            let mReason = null;
+
+            if (memberLine.includes('{') || (k + 1 < lines.length && lines[k + 1].trim().startsWith('{'))) {
+              const res = findBraceBlockEnd(lines, k);
+              mEnd = res.endLine;
+              k = res.nextIndex;
+              const stubCheck = detectStubStatus(res.bodyText);
+              mStub = stubCheck.isStub;
+              mReason = stubCheck.reason;
+            } else if (memberLine.includes(';')) {
+              mEnd = mStart;
+            }
+
+            symbols.push({
+              name: `${name}.${methodName}`,
+              kind: 'method',
+              startLine: mStart,
+              endLine: mEnd,
+              signature: memberLine.split('{')[0].trim(),
+              status: mStub ? 'STUB' : 'DONE',
+              stubReason: mReason,
+              isExported: memberLine.startsWith('public ')
+            });
+          }
+        }
+      }
+
+      i = nextIndex;
+      continue;
+    }
+  }
+
+  return { symbols, imports, exports };
+}
+
+// -----------------------------------------------------------------------------
+// Go Symbol Parser
+// -----------------------------------------------------------------------------
+function parseGoSymbols(content, relPath) {
+  const lines = content.split(/\r?\n/);
+  const symbols = [];
+  const imports = [];
+  const exports = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    const lineNum = i + 1;
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
+
+    if (trimmed.startsWith('package ')) {
+      symbols.push({
+        name: trimmed.replace('package ', '').trim(),
+        kind: 'package',
+        startLine: lineNum,
+        endLine: lineNum,
+        signature: trimmed,
+        status: 'DONE',
+        isExported: true
+      });
+      continue;
+    }
+
+    if (trimmed.startsWith('import ')) {
+      imports.push({ line: lineNum, statement: trimmed });
+      continue;
+    }
+
+    // Function or Method: func ...
+    const fnMatch = trimmed.match(/^func\s*(\([^)]+\)\s*)?([A-Za-z0-9_]+)\s*\(/);
+    if (fnMatch) {
+      const name = fnMatch[2];
+      const isExported = /^[A-Z]/.test(name);
+      if (isExported) exports.push(name);
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+      const { isStub, reason } = detectStubStatus(bodyText);
+      symbols.push({
+        name,
+        kind: 'function',
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: isStub ? 'STUB' : 'DONE',
+        stubReason: reason,
+        isExported
+      });
+      i = nextIndex;
+      continue;
+    }
+
+    // Struct or Interface: type Name struct/interface
+    const typeMatch = trimmed.match(/^type\s+([A-Za-z0-9_]+)\s+(struct|interface)/);
+    if (typeMatch) {
+      const name = typeMatch[1];
+      const kind = typeMatch[2];
+      const isExported = /^[A-Z]/.test(name);
+      if (isExported) exports.push(name);
+      const { endLine, nextIndex } = findBraceBlockEnd(lines, i);
+      symbols.push({
+        name,
+        kind,
+        startLine: lineNum,
+        endLine,
+        signature: lines[lineNum - 1].split('{')[0].trim(),
+        status: 'DONE',
+        isExported
+      });
+      i = nextIndex;
+      continue;
+    }
+  }
+
+  return { symbols, imports, exports };
+}
+
+// -----------------------------------------------------------------------------
 // Collector & Incremental Scanner
 // -----------------------------------------------------------------------------
 function collectSourceFiles(targetDir = ROOT_DIR) {
@@ -539,6 +1172,16 @@ export function runSymbolIndexer(args = process.argv.slice(2)) {
         parseResult = parsePythonSymbols(content, relPath);
       } else if (ext === '.dart') {
         parseResult = parseDartSymbols(content, relPath);
+      } else if (ext === '.rs') {
+        parseResult = parseRustSymbols(content, relPath);
+      } else if (['.c', '.h', '.cpp', '.cc', '.hpp'].includes(ext)) {
+        parseResult = parseCppSymbols(content, relPath);
+      } else if (ext === '.cs') {
+        parseResult = parseCsharpSymbols(content, relPath);
+      } else if (ext === '.java') {
+        parseResult = parseJavaSymbols(content, relPath);
+      } else if (ext === '.go') {
+        parseResult = parseGoSymbols(content, relPath);
       }
 
       fileSymbols = {

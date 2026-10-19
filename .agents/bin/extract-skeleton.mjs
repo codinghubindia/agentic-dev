@@ -19,10 +19,11 @@ import {
   WORKSPACE_ROOT,
   CONTEXT_SKELETON_PATH,
   IGNORED_SCAN_DIRS,
+  SUPPORTED_EXTENSIONS,
   ensureExecDir
 } from './paths.mjs';
 
-const SUPPORTED_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.dart']);
+const SUPPORTED_EXTS = SUPPORTED_EXTENSIONS;
 const DEFAULT_IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 // -----------------------------------------------------------------------------
@@ -495,6 +496,580 @@ function extractDartSkeleton(source, filePath) {
 }
 
 // -----------------------------------------------------------------------------
+// Rust AST-lite skeleton extractor
+// -----------------------------------------------------------------------------
+function extractRustSkeleton(source, filePath) {
+  const lines = source.split(/\r?\n/);
+  const outputLines = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+      i++;
+      continue;
+    }
+
+    // Imports: use ...;
+    if (trimmed.startsWith('use ')) {
+      let stmt = trimmed;
+      while (!stmt.includes(';') && i + 1 < lines.length) {
+        i++;
+        stmt += ' ' + lines[i].trim();
+      }
+      outputLines.push(stmt);
+      i++;
+      continue;
+    }
+
+    // Attributes/Macros: #[...] or #![...]
+    if (trimmed.startsWith('#[') || trimmed.startsWith('#![')) {
+      outputLines.push(line);
+      i++;
+      continue;
+    }
+
+    // Module: mod foo; or pub mod foo;
+    if (/^(pub(\([^)]+\))?\s+)?mod\s+[A-Za-z0-9_]+\s*;/.test(trimmed)) {
+      outputLines.push(trimmed);
+      i++;
+      continue;
+    }
+
+    // Struct / Enum / Trait
+    if (/^(pub(\([^)]+\))?\s+)?(struct|enum|(unsafe\s+)?trait)\s+[A-Za-z0-9_]/.test(trimmed)) {
+      if (trimmed.includes(';')) {
+        outputLines.push(trimmed);
+        i++;
+        continue;
+      }
+      const { block, nextIndex } = captureBraceBlock(lines, i);
+      outputLines.push(block);
+      i = nextIndex;
+      continue;
+    }
+
+    // Impl block: impl ... { fn ...; }
+    if (/^impl(\s*<[^>]+>)?\s+/.test(trimmed)) {
+      let header = trimmed.split('{')[0].trim() + ' {';
+      outputLines.push(header);
+      i++;
+      let depth = 1;
+
+      while (i < lines.length && depth > 0) {
+        const innerTrimmed = lines[i].trim();
+        // Method inside impl
+        if (/^(pub(\([^)]+\))?\s+)?(async\s+)?(unsafe\s+)?fn\s+[A-Za-z0-9_]/.test(innerTrimmed)) {
+          let sig = innerTrimmed;
+          while (!sig.includes('{') && !sig.includes(';') && i + 1 < lines.length) {
+            i++;
+            sig += ' ' + lines[i].trim();
+          }
+          const braceIdx = sig.indexOf('{');
+          if (braceIdx !== -1) {
+            outputLines.push('    ' + sig.substring(0, braceIdx).trim() + ';');
+            let mDepth = 1;
+            const rest = sig.substring(braceIdx + 1);
+            for (const c of rest) {
+              if (c === '{') mDepth++;
+              if (c === '}') mDepth--;
+            }
+            while (mDepth > 0 && i + 1 < lines.length) {
+              i++;
+              for (const c of lines[i]) {
+                if (c === '{') mDepth++;
+                if (c === '}') mDepth--;
+              }
+            }
+          } else {
+            outputLines.push('    ' + sig);
+          }
+          i++;
+          continue;
+        }
+
+        for (const c of lines[i]) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+        if (depth === 0) {
+          outputLines.push('}');
+        }
+        i++;
+      }
+      continue;
+    }
+
+    // Standalone Function
+    if (/^(pub(\([^)]+\))?\s+)?(async\s+)?(unsafe\s+)?fn\s+[A-Za-z0-9_]/.test(trimmed)) {
+      let sig = trimmed;
+      while (!sig.includes('{') && !sig.includes(';') && i + 1 < lines.length) {
+        i++;
+        sig += ' ' + lines[i].trim();
+      }
+      const braceIdx = sig.indexOf('{');
+      if (braceIdx !== -1) {
+        outputLines.push(sig.substring(0, braceIdx).trim() + ';');
+        let depth = 1;
+        const rest = sig.substring(braceIdx + 1);
+        for (const c of rest) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+        while (depth > 0 && i + 1 < lines.length) {
+          i++;
+          for (const c of lines[i]) {
+            if (c === '{') depth++;
+            if (c === '}') depth--;
+          }
+        }
+      } else {
+        outputLines.push(sig);
+      }
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  return outputLines.join('\n');
+}
+
+// -----------------------------------------------------------------------------
+// C / C++ AST-lite skeleton extractor
+// -----------------------------------------------------------------------------
+function extractCppSkeleton(source, filePath) {
+  const lines = source.split(/\r?\n/);
+  const outputLines = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+      i++;
+      continue;
+    }
+
+    // Includes & Macros
+    if (trimmed.startsWith('#include') || trimmed.startsWith('#define') || trimmed.startsWith('#pragma') || trimmed.startsWith('#ifndef') || trimmed.startsWith('#endif')) {
+      outputLines.push(trimmed);
+      i++;
+      continue;
+    }
+
+    // Namespace header: namespace foo {
+    if (/^namespace\s+[A-Za-z0-9_:]+/.test(trimmed)) {
+      outputLines.push(trimmed.includes('{') ? trimmed : trimmed + ' {');
+      i++;
+      continue;
+    }
+
+    // Class / Struct / Enum
+    if (/^(template\s*<[^>]+>\s*)?(class|struct|enum(\s+class)?)\s+[A-Za-z0-9_]/.test(trimmed)) {
+      if (trimmed.endsWith(';')) {
+        outputLines.push(trimmed);
+        i++;
+        continue;
+      }
+      let header = trimmed.split('{')[0].trim() + ' {';
+      outputLines.push(header);
+      i++;
+      let depth = 1;
+
+      while (i < lines.length && depth > 0) {
+        const mTrimmed = lines[i].trim();
+        if (mTrimmed === '};' || (mTrimmed === '}' && depth === 1)) {
+          depth--;
+          outputLines.push('};');
+          break;
+        }
+
+        // Access specifiers: public:, private:, protected:
+        if (/^(public|private|protected)\s*:/.test(mTrimmed)) {
+          outputLines.push('  ' + mTrimmed);
+          i++;
+          continue;
+        }
+
+        // Method implementation inside class: void foo() { ... }
+        if (/^([A-Za-z0-9_:<>&*~]+)\s+([A-Za-z0-9_]+)\s*\([^)]*\)/.test(mTrimmed)) {
+          let sig = mTrimmed;
+          while (!sig.includes('{') && !sig.includes(';') && i + 1 < lines.length) {
+            i++;
+            sig += ' ' + lines[i].trim();
+          }
+          const braceIdx = sig.indexOf('{');
+          if (braceIdx !== -1) {
+            outputLines.push('    ' + sig.substring(0, braceIdx).trim() + ';');
+            let mDepth = 1;
+            const rest = sig.substring(braceIdx + 1);
+            for (const c of rest) {
+              if (c === '{') mDepth++;
+              if (c === '}') mDepth--;
+            }
+            while (mDepth > 0 && i + 1 < lines.length) {
+              i++;
+              for (const c of lines[i]) {
+                if (c === '{') mDepth++;
+                if (c === '}') mDepth--;
+              }
+            }
+          } else {
+            outputLines.push('    ' + sig);
+          }
+          i++;
+          continue;
+        }
+
+        // Field / declaration ending in ;
+        if (mTrimmed.endsWith(';') && depth === 1) {
+          outputLines.push('    ' + mTrimmed);
+          i++;
+          continue;
+        }
+
+        for (const c of lines[i]) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+        i++;
+      }
+      i++;
+      continue;
+    }
+
+    // Free Function implementation: void bar() { ... }
+    if (/^([A-Za-z0-9_:<>&*~]+)\s+([A-Za-z0-9_]+)\s*\([^)]*\)\s*\{/.test(trimmed)) {
+      const braceIdx = trimmed.indexOf('{');
+      outputLines.push(trimmed.substring(0, braceIdx).trim() + ';');
+      let depth = 1;
+      const rest = trimmed.substring(braceIdx + 1);
+      for (const c of rest) {
+        if (c === '{') depth++;
+        if (c === '}') depth--;
+      }
+      while (depth > 0 && i + 1 < lines.length) {
+        i++;
+        for (const c of lines[i]) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+      }
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  return outputLines.join('\n');
+}
+
+// -----------------------------------------------------------------------------
+// C# AST-lite skeleton extractor
+// -----------------------------------------------------------------------------
+function extractCsharpSkeleton(source, filePath) {
+  const lines = source.split(/\r?\n/);
+  const outputLines = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+      i++;
+      continue;
+    }
+
+    // Using directive
+    if (trimmed.startsWith('using ') && trimmed.endsWith(';')) {
+      outputLines.push(trimmed);
+      i++;
+      continue;
+    }
+
+    // Namespace
+    if (/^namespace\s+[A-Za-z0-9_.]+/.test(trimmed)) {
+      outputLines.push(trimmed);
+      i++;
+      continue;
+    }
+
+    // Interface / Enum
+    if (/^(public|internal)?\s*(interface|enum)\s+[A-Za-z0-9_]/.test(trimmed)) {
+      const { block, nextIndex } = captureBraceBlock(lines, i);
+      outputLines.push(block);
+      i = nextIndex;
+      continue;
+    }
+
+    // Class / Struct / Record
+    if (/^(public|private|protected|internal|abstract|sealed|static|partial|\s+)*(class|struct|record)\s+[A-Za-z0-9_]/.test(trimmed)) {
+      let header = trimmed.split('{')[0].trim() + ' {';
+      outputLines.push(header);
+      i++;
+      let depth = 1;
+
+      while (i < lines.length && depth > 0) {
+        const mTrimmed = lines[i].trim();
+        if (mTrimmed === '}' && depth === 1) {
+          depth--;
+          outputLines.push('}');
+          break;
+        }
+
+        // Properties: public int Id { get; set; }
+        if (/^(public|private|protected|internal|static|\s+)+[A-Za-z0-9_<>\[\],\s\?]+\s+[A-Za-z0-9_]+\s*\{\s*get;/.test(mTrimmed)) {
+          outputLines.push('    ' + mTrimmed);
+          i++;
+          continue;
+        }
+
+        // Fields: private readonly string _name;
+        if (/^(public|private|protected|internal|readonly|static|\s+)+[A-Za-z0-9_<>\[\],\s\?]+\s+[A-Za-z0-9_]+\s*;/.test(mTrimmed)) {
+          outputLines.push('    ' + mTrimmed);
+          i++;
+          continue;
+        }
+
+        // Methods: public async Task<Order> CreateOrder(...) { ... }
+        if (/^(public|private|protected|internal|static|async|virtual|override|abstract|\s+)+[A-Za-z0-9_<>\[\],\s\?]+\s+[A-Za-z0-9_]+\s*(\<[^\>]+\>)?\s*\([^)]*\)/.test(mTrimmed)) {
+          let sig = mTrimmed;
+          while (!sig.includes('{') && !sig.includes(';') && !sig.includes('=>') && i + 1 < lines.length) {
+            i++;
+            sig += ' ' + lines[i].trim();
+          }
+
+          if (sig.includes('=>')) {
+            const arrowIdx = sig.indexOf('=>');
+            outputLines.push('    ' + sig.substring(0, arrowIdx).trim() + ';');
+          } else if (sig.includes('{')) {
+            const braceIdx = sig.indexOf('{');
+            outputLines.push('    ' + sig.substring(0, braceIdx).trim() + ';');
+            let mDepth = 1;
+            const rest = sig.substring(braceIdx + 1);
+            for (const c of rest) {
+              if (c === '{') mDepth++;
+              if (c === '}') mDepth--;
+            }
+            while (mDepth > 0 && i + 1 < lines.length) {
+              i++;
+              for (const c of lines[i]) {
+                if (c === '{') mDepth++;
+                if (c === '}') mDepth--;
+              }
+            }
+          } else if (sig.includes(';')) {
+            outputLines.push('    ' + sig.trim());
+          }
+          i++;
+          continue;
+        }
+
+        for (const c of lines[i]) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+        i++;
+      }
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  return outputLines.join('\n');
+}
+
+// -----------------------------------------------------------------------------
+// Java AST-lite skeleton extractor
+// -----------------------------------------------------------------------------
+function extractJavaSkeleton(source, filePath) {
+  const lines = source.split(/\r?\n/);
+  const outputLines = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+      i++;
+      continue;
+    }
+
+    // Package & Import
+    if ((trimmed.startsWith('package ') || trimmed.startsWith('import ')) && trimmed.endsWith(';')) {
+      outputLines.push(trimmed);
+      i++;
+      continue;
+    }
+
+    // Interface / Enum / Record
+    if (/^(public|protected|private)?\s*(interface|enum|record)\s+[A-Za-z0-9_]/.test(trimmed)) {
+      const { block, nextIndex } = captureBraceBlock(lines, i);
+      outputLines.push(block);
+      i = nextIndex;
+      continue;
+    }
+
+    // Class
+    if (/^(public|protected|private|abstract|static|final|\s+)*class\s+[A-Za-z0-9_]/.test(trimmed)) {
+      let header = trimmed.split('{')[0].trim() + ' {';
+      outputLines.push(header);
+      i++;
+      let depth = 1;
+
+      while (i < lines.length && depth > 0) {
+        const mTrimmed = lines[i].trim();
+        if (mTrimmed === '}' && depth === 1) {
+          depth--;
+          outputLines.push('}');
+          break;
+        }
+
+        // Fields ending in ;
+        if (/^(public|protected|private|static|final|\s+)+[A-Za-z0-9_<>\[\],\s]+\s+[A-Za-z0-9_]+\s*(=[^;]+)?;/.test(mTrimmed)) {
+          const semiIdx = mTrimmed.indexOf(';');
+          const eqIdx = mTrimmed.indexOf('=');
+          const cut = eqIdx !== -1 ? eqIdx : semiIdx;
+          outputLines.push('    ' + mTrimmed.substring(0, cut).trim() + ';');
+          i++;
+          continue;
+        }
+
+        // Methods
+        if (/^(public|protected|private|static|final|abstract|synchronized|\s+)+[A-Za-z0-9_<>\[\],\s]+\s+[A-Za-z0-9_]+\s*(\<[^\>]+\>)?\s*\([^)]*\)/.test(mTrimmed)) {
+          let sig = mTrimmed;
+          while (!sig.includes('{') && !sig.includes(';') && i + 1 < lines.length) {
+            i++;
+            sig += ' ' + lines[i].trim();
+          }
+
+          if (sig.includes('{')) {
+            const braceIdx = sig.indexOf('{');
+            outputLines.push('    ' + sig.substring(0, braceIdx).trim() + ';');
+            let mDepth = 1;
+            const rest = sig.substring(braceIdx + 1);
+            for (const c of rest) {
+              if (c === '{') mDepth++;
+              if (c === '}') mDepth--;
+            }
+            while (mDepth > 0 && i + 1 < lines.length) {
+              i++;
+              for (const c of lines[i]) {
+                if (c === '{') mDepth++;
+                if (c === '}') mDepth--;
+              }
+            }
+          } else if (sig.includes(';')) {
+            outputLines.push('    ' + sig.trim());
+          }
+          i++;
+          continue;
+        }
+
+        for (const c of lines[i]) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+        i++;
+      }
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  return outputLines.join('\n');
+}
+
+// -----------------------------------------------------------------------------
+// Go AST-lite skeleton extractor
+// -----------------------------------------------------------------------------
+function extractGoSkeleton(source, filePath) {
+  const lines = source.split(/\r?\n/);
+  const outputLines = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+      i++;
+      continue;
+    }
+
+    if (trimmed.startsWith('package ')) {
+      outputLines.push(trimmed);
+      i++;
+      continue;
+    }
+
+    if (trimmed.startsWith('import ')) {
+      if (trimmed.includes('(')) {
+        const { block, nextIndex } = captureBraceBlock(lines, i);
+        outputLines.push(block);
+        i = nextIndex;
+      } else {
+        outputLines.push(trimmed);
+        i++;
+      }
+      continue;
+    }
+
+    if (trimmed.startsWith('type ') && (trimmed.includes('struct') || trimmed.includes('interface'))) {
+      const { block, nextIndex } = captureBraceBlock(lines, i);
+      outputLines.push(block);
+      i = nextIndex;
+      continue;
+    }
+
+    if (trimmed.startsWith('func ')) {
+      let sig = trimmed;
+      while (!sig.includes('{') && i + 1 < lines.length) {
+        i++;
+        sig += ' ' + lines[i].trim();
+      }
+      const braceIdx = sig.indexOf('{');
+      if (braceIdx !== -1) {
+        outputLines.push(sig.substring(0, braceIdx).trim() + ' {}');
+        let depth = 1;
+        const rest = sig.substring(braceIdx + 1);
+        for (const c of rest) {
+          if (c === '{') depth++;
+          if (c === '}') depth--;
+        }
+        while (depth > 0 && i + 1 < lines.length) {
+          i++;
+          for (const c of lines[i]) {
+            if (c === '{') depth++;
+            if (c === '}') depth--;
+          }
+        }
+      } else {
+        outputLines.push(sig);
+      }
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  return outputLines.join('\n');
+}
+
+// -----------------------------------------------------------------------------
 // File Tree Scanner
 // -----------------------------------------------------------------------------
 function collectFiles(targetPaths, ignoreDirs = DEFAULT_IGNORE_DIRS) {
@@ -619,6 +1194,21 @@ Examples:
       } else if (ext === '.dart') {
         const dartSkeleton = extractDartSkeleton(source, file);
         skeleton = `/* [Dart Interface: ${relPath}]\n${dartSkeleton}\n*/`;
+      } else if (ext === '.rs') {
+        const rustSkeleton = extractRustSkeleton(source, file);
+        skeleton = `/* [Rust Interface: ${relPath}]\n${rustSkeleton}\n*/`;
+      } else if (['.c', '.h', '.cpp', '.cc', '.hpp'].includes(ext)) {
+        const cppSkeleton = extractCppSkeleton(source, file);
+        skeleton = `/* [C/C++ Interface: ${relPath}]\n${cppSkeleton}\n*/`;
+      } else if (ext === '.cs') {
+        const csSkeleton = extractCsharpSkeleton(source, file);
+        skeleton = `/* [C# Interface: ${relPath}]\n${csSkeleton}\n*/`;
+      } else if (ext === '.java') {
+        const javaSkeleton = extractJavaSkeleton(source, file);
+        skeleton = `/* [Java Interface: ${relPath}]\n${javaSkeleton}\n*/`;
+      } else if (ext === '.go') {
+        const goSkeleton = extractGoSkeleton(source, file);
+        skeleton = `/* [Go Interface: ${relPath}]\n${goSkeleton}\n*/`;
       }
 
       const skeletonBytes = Buffer.byteLength(skeleton, 'utf8');

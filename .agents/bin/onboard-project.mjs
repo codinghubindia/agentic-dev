@@ -234,6 +234,41 @@ function inspectProjectDna() {
     if (!dna.techStack.backend) dna.techStack.backend = { runtime: 'Go', framework: 'Go Standard/Modules' };
   }
 
+  // Rust detection (Cargo.toml)
+  if (fs.existsSync(path.join(ROOT_DIR, 'Cargo.toml'))) {
+    detectedManifests.push('Cargo.toml');
+    detectedLangs.add('Rust');
+    if (!dna.techStack.backend) dna.techStack.backend = { runtime: 'Rust', framework: 'Cargo Workspace / Crates' };
+  }
+
+  // C / C++ detection (CMakeLists.txt, Makefile)
+  if (fs.existsSync(path.join(ROOT_DIR, 'CMakeLists.txt')) || fs.existsSync(path.join(ROOT_DIR, 'Makefile'))) {
+    if (fs.existsSync(path.join(ROOT_DIR, 'CMakeLists.txt'))) detectedManifests.push('CMakeLists.txt');
+    if (fs.existsSync(path.join(ROOT_DIR, 'Makefile'))) detectedManifests.push('Makefile');
+    detectedLangs.add('C/C++');
+    if (!dna.techStack.backend) dna.techStack.backend = { runtime: 'C/C++', framework: 'CMake / Native' };
+  }
+
+  // C# / .NET detection (*.csproj, *.sln)
+  try {
+    const rootFiles = fs.readdirSync(ROOT_DIR);
+    const csManifest = rootFiles.find(f => f.endsWith('.csproj') || f.endsWith('.sln'));
+    if (csManifest) {
+      detectedManifests.push(csManifest);
+      detectedLangs.add('C#');
+      if (!dna.techStack.backend) dna.techStack.backend = { runtime: '.NET / C#', framework: 'ASP.NET Core / .NET' };
+    }
+  } catch {}
+
+  // Java detection (pom.xml, build.gradle, build.gradle.kts)
+  if (fs.existsSync(path.join(ROOT_DIR, 'pom.xml')) || fs.existsSync(path.join(ROOT_DIR, 'build.gradle')) || fs.existsSync(path.join(ROOT_DIR, 'build.gradle.kts'))) {
+    if (fs.existsSync(path.join(ROOT_DIR, 'pom.xml'))) detectedManifests.push('pom.xml');
+    if (fs.existsSync(path.join(ROOT_DIR, 'build.gradle'))) detectedManifests.push('build.gradle');
+    if (fs.existsSync(path.join(ROOT_DIR, 'build.gradle.kts'))) detectedManifests.push('build.gradle.kts');
+    detectedLangs.add('Java');
+    if (!dna.techStack.backend) dna.techStack.backend = { runtime: 'Java', framework: 'Spring Boot / Maven / Gradle' };
+  }
+
   // Docker detection
   if (fs.existsSync(path.join(ROOT_DIR, 'Dockerfile')) || fs.existsSync(path.join(ROOT_DIR, 'docker-compose.yml'))) {
     detectedManifests.push('Dockerfile');
@@ -340,7 +375,15 @@ function resolveFileOwner(filePath) {
     norm.endsWith('.test.js') ||
     norm.endsWith('.spec.ts') ||
     norm.endsWith('.spec.tsx') ||
-    norm.endsWith('.spec.js')
+    norm.endsWith('.spec.js') ||
+    norm.endsWith('_test.go') ||
+    norm.endsWith('_test.rs') ||
+    norm.endsWith('test.cs') ||
+    norm.endsWith('tests.cs') ||
+    norm.endsWith('test.java') ||
+    norm.endsWith('tests.java') ||
+    norm.endsWith('it.java') ||
+    norm.endsWith('_test.cpp')
   ) {
     return MACRO_ROLES.QA;
   }
@@ -361,6 +404,15 @@ function resolveFileOwner(filePath) {
     norm.endsWith('package-lock.json') ||
     norm.endsWith('pnpm-lock.yaml') ||
     norm.endsWith('yarn.lock') ||
+    norm.endsWith('cargo.toml') ||
+    norm.endsWith('cargo.lock') ||
+    norm.endsWith('cmakelists.txt') ||
+    norm.endsWith('makefile') ||
+    norm.endsWith('pom.xml') ||
+    norm.endsWith('build.gradle') ||
+    norm.endsWith('build.gradle.kts') ||
+    norm.endsWith('.csproj') ||
+    norm.endsWith('.sln') ||
     norm.endsWith('readme.md') ||
     norm.endsWith('changelog.md')
   ) {
@@ -388,10 +440,13 @@ function resolveFileOwner(filePath) {
     norm.includes('/database/') ||
     norm.includes('/db/') ||
     norm.includes('/seeds/') ||
+    norm.includes('/flyway/') ||
+    norm.includes('/liquibase/') ||
     norm.endsWith('schema.prisma') ||
     norm.endsWith('.sql') ||
     norm.endsWith('seed.ts') ||
-    norm.endsWith('seed.js')
+    norm.endsWith('seed.js') ||
+    norm.endsWith('dbcontext.cs')
   ) {
     return MACRO_ROLES.DATA;
   }
@@ -415,7 +470,9 @@ function resolveFileOwner(filePath) {
     norm.includes('/ios/') ||
     norm.includes('/android/') ||
     norm.includes('/flutter/') ||
-    norm.endsWith('pubspec.yaml')
+    norm.endsWith('pubspec.yaml') ||
+    norm.endsWith('.kt') ||
+    norm.endsWith('.swift')
   ) {
     return MACRO_ROLES.MOBILE;
   }
@@ -436,7 +493,10 @@ function resolveFileOwner(filePath) {
     norm.endsWith('.css') ||
     norm.endsWith('.scss') ||
     norm.endsWith('.vue') ||
-    norm.endsWith('.svelte')
+    norm.endsWith('.svelte') ||
+    norm.endsWith('.razor') ||
+    norm.endsWith('.xaml') ||
+    norm.endsWith('.axaml')
   ) {
     return MACRO_ROLES.FRONTEND;
   }
@@ -471,7 +531,10 @@ export function runOnboard(args = process.argv.slice(2)) {
   // Check if cache already fresh
   if (!isForce && fs.existsSync(DNA_FILE) && fs.existsSync(INDEX_FILE)) {
     const dnaStat = fs.statSync(DNA_FILE);
-    const manifests = ['package.json', 'tsconfig.json', 'pyproject.toml', 'pubspec.yaml'];
+    const manifests = [
+      'package.json', 'tsconfig.json', 'pyproject.toml', 'pubspec.yaml',
+      'Cargo.toml', 'CMakeLists.txt', 'Makefile', 'pom.xml', 'build.gradle'
+    ];
     let stale = false;
     for (const m of manifests) {
       const p = path.join(ROOT_DIR, m);

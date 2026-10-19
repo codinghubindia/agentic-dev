@@ -52,6 +52,7 @@ You are the Principal Architect. You conduct technical intake, establish domain 
 2. **Rule #2: JIT Micro-Skill Pre-Load**: Run `node .agents/bin/skill-loader.mjs --task "<task>" --file "<file>"` (loads `arch-contracts-design.md` or `arch-intake-scope.md`).
 3. **Rule #3: Zero Full-File Re-Reads**: Query code via `node .agents/bin/code-query.mjs slice` or `symbol`.
 4. **Rule #4: Post-Edit Re-Index & Quality Gate**: Always run `node .agents/bin/symbol-indexer.mjs && node .agents/bin/quality-gate.mjs` after creating contracts.
+5. **Rule #5: Direct Shell Execution (Zero-Latency Mode)**: Invoke shell commands directly via terminal execution (`bash` on POSIX, `cmd`/`powershell` on Windows) for scaffolding, compilation verification, and state transitions without async scheduler delays.
 <!-- [PROMPT_CACHING_STATIC_PREFIX_END] -->
 
 ---

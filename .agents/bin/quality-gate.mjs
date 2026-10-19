@@ -43,13 +43,19 @@ function execBounded(command, args, options = {}) {
     let killed = false;
 
     const isWindows = process.platform === 'win32';
-    const useShell = isWindows && (command === 'npm' || command === 'npx' || command === 'pnpm' || command === 'yarn');
-    const child = spawn(command, args, {
-      shell: useShell,
-      cwd: options.cwd || process.cwd(),
-      env: { ...process.env, ...options.env },
-      windowsHide: true
-    });
+    const child = isWindows
+      ? spawn([command, ...args].join(' '), {
+          shell: true,
+          cwd: options.cwd || process.cwd(),
+          env: { ...process.env, ...options.env },
+          windowsHide: true
+        })
+      : spawn(command, args, {
+          shell: false,
+          cwd: options.cwd || process.cwd(),
+          env: { ...process.env, ...options.env },
+          windowsHide: true
+        });
 
     const timer = setTimeout(() => {
       timedOut = true;
@@ -143,7 +149,8 @@ async function checkGitConflicts(rootDir) {
   const errors = [];
   const textExts = new Set([
     '.ts', '.tsx', '.js', '.jsx', '.json', '.md', '.py', '.dart', '.css',
-    '.scss', '.html', '.yaml', '.yml', '.sql', '.prisma', '.env', '.sh'
+    '.scss', '.html', '.yaml', '.yml', '.sql', '.prisma', '.env', '.sh',
+    '.rs', '.c', '.h', '.cpp', '.cc', '.hpp', '.cs', '.java', '.go'
   ]);
   const files = getAllFiles(rootDir, textExts);
 
@@ -544,6 +551,266 @@ async function checkAgentsImmutability(rootDir) {
 }
 
 // -----------------------------------------------------------------------------
+// Check 6: Rust Compiler Check (cargo check --workspace)
+// -----------------------------------------------------------------------------
+async function checkRust(rootDir) {
+  const errors = [];
+  const hasCargo = fs.existsSync(path.join(rootDir, 'Cargo.toml'));
+  const rsFiles = getAllFiles(rootDir, new Set(['.rs']));
+
+  if (!hasCargo && rsFiles.length === 0) {
+    return {
+      name: 'rust-compiler-check',
+      passed: true,
+      command: 'skipped (no Cargo.toml or .rs files found)',
+      errors: []
+    };
+  }
+
+  const res = await execBounded('cargo', ['check', '--workspace'], { cwd: rootDir });
+
+  if (
+    res.error?.includes('ENOENT') ||
+    res.stderr.includes('is not recognized') ||
+    res.stdout.includes('is not recognized')
+  ) {
+    return {
+      name: 'rust-compiler-check',
+      passed: true,
+      command: 'cargo check (skipped: cargo toolchain not installed on host)',
+      errors: []
+    };
+  }
+
+  if (res.timedOut) {
+    errors.push({
+      file: 'Cargo.toml',
+      line: 1,
+      rule: 'cargo-timeout',
+      message: 'Cargo compiler check timed out after 30000ms (SIGKILL enforced).'
+    });
+  } else if (res.code !== 0) {
+    const combined = (res.stdout + '\n' + res.stderr).trim();
+    const lines = combined.split(/\r?\n/);
+    for (const line of lines) {
+      const match = line.match(/-->\s+(.+):(\d+):(\d+)/);
+      if (match) {
+        errors.push({
+          file: path.relative(rootDir, path.resolve(rootDir, match[1])).replace(/\\/g, '/'),
+          line: parseInt(match[2], 10),
+          column: parseInt(match[3], 10),
+          rule: 'rust-compiler',
+          message: 'Cargo check compilation error.'
+        });
+      } else if (line.startsWith('error[') || line.startsWith('error:')) {
+        errors.push({
+          file: 'Cargo.toml',
+          line: 1,
+          rule: 'rust-compiler',
+          message: line.trim()
+        });
+      }
+    }
+  }
+
+  return {
+    name: 'rust-compiler-check',
+    passed: errors.length === 0,
+    command: 'cargo check --workspace',
+    errors
+  };
+}
+
+// -----------------------------------------------------------------------------
+// Check 7: C / C++ Compiler Check (syntax / build verification)
+// -----------------------------------------------------------------------------
+async function checkCpp(rootDir) {
+  const errors = [];
+  const hasCMake = fs.existsSync(path.join(rootDir, 'CMakeLists.txt'));
+  const hasMakefile = fs.existsSync(path.join(rootDir, 'Makefile'));
+  const cppFiles = getAllFiles(rootDir, new Set(['.c', '.cpp', '.cc']));
+
+  if (!hasCMake && !hasMakefile && cppFiles.length === 0) {
+    return {
+      name: 'cpp-compiler-check',
+      passed: true,
+      command: 'skipped (no C/C++ source or build manifests found)',
+      errors: []
+    };
+  }
+
+  let commandRun = 'skipped';
+  let res = null;
+
+  if (hasCMake) {
+    commandRun = 'cmake --version';
+    res = await execBounded('cmake', ['--version'], { cwd: rootDir });
+  } else if (hasMakefile) {
+    commandRun = 'make --version';
+    res = await execBounded('make', ['--version'], { cwd: rootDir });
+  } else {
+    commandRun = 'gcc --version';
+    res = await execBounded('gcc', ['--version'], { cwd: rootDir });
+  }
+
+  if (
+    !res ||
+    res.error?.includes('ENOENT') ||
+    res.stderr.includes('is not recognized') ||
+    res.stdout.includes('is not recognized')
+  ) {
+    return {
+      name: 'cpp-compiler-check',
+      passed: true,
+      command: `${commandRun} (skipped: C/C++ toolchain not installed on host)`,
+      errors: []
+    };
+  }
+
+  return {
+    name: 'cpp-compiler-check',
+    passed: errors.length === 0,
+    command: commandRun,
+    errors
+  };
+}
+
+// -----------------------------------------------------------------------------
+// Check 8: C# (.NET) Compiler Check (dotnet build)
+// -----------------------------------------------------------------------------
+async function checkCsharp(rootDir) {
+  const errors = [];
+  let hasCsproj = false;
+  try {
+    const entries = fs.readdirSync(rootDir);
+    hasCsproj = entries.some((e) => e.endsWith('.csproj') || e.endsWith('.sln'));
+  } catch {}
+  const csFiles = getAllFiles(rootDir, new Set(['.cs']));
+
+  if (!hasCsproj && csFiles.length === 0) {
+    return {
+      name: 'csharp-compiler-check',
+      passed: true,
+      command: 'skipped (no .csproj, .sln, or .cs files found)',
+      errors: []
+    };
+  }
+
+  const res = await execBounded('dotnet', ['build', '--no-restore'], { cwd: rootDir });
+
+  if (
+    res.error?.includes('ENOENT') ||
+    res.stderr.includes('is not recognized') ||
+    res.stdout.includes('is not recognized')
+  ) {
+    return {
+      name: 'csharp-compiler-check',
+      passed: true,
+      command: 'dotnet build (skipped: dotnet SDK not installed on host)',
+      errors: []
+    };
+  }
+
+  if (res.timedOut) {
+    errors.push({
+      file: 'project',
+      line: 1,
+      rule: 'dotnet-timeout',
+      message: '.NET compiler check timed out after 30000ms.'
+    });
+  } else if (res.code !== 0) {
+    const combined = (res.stdout + '\n' + res.stderr).trim();
+    const lines = combined.split(/\r?\n/);
+    for (const line of lines) {
+      const match = line.match(/^(.+)\((\d+),(\d+)\):\s+error\s+CS\d+:\s+(.+)$/);
+      if (match) {
+        errors.push({
+          file: path.relative(rootDir, path.resolve(rootDir, match[1])).replace(/\\/g, '/'),
+          line: parseInt(match[2], 10),
+          column: parseInt(match[3], 10),
+          rule: 'csharp-compiler',
+          message: match[4]
+        });
+      }
+    }
+  }
+
+  return {
+    name: 'csharp-compiler-check',
+    passed: errors.length === 0,
+    command: 'dotnet build',
+    errors
+  };
+}
+
+// -----------------------------------------------------------------------------
+// Check 9: Java Compiler Check (mvn / gradle / javac)
+// -----------------------------------------------------------------------------
+async function checkJava(rootDir) {
+  const errors = [];
+  const hasPom = fs.existsSync(path.join(rootDir, 'pom.xml'));
+  const hasGradle = fs.existsSync(path.join(rootDir, 'build.gradle')) || fs.existsSync(path.join(rootDir, 'build.gradle.kts'));
+  const javaFiles = getAllFiles(rootDir, new Set(['.java']));
+
+  if (!hasPom && !hasGradle && javaFiles.length === 0) {
+    return {
+      name: 'java-compiler-check',
+      passed: true,
+      command: 'skipped (no pom.xml, build.gradle, or .java files found)',
+      errors: []
+    };
+  }
+
+  let command = 'mvn';
+  let args = ['compile', '-q'];
+  if (hasGradle) {
+    command = process.platform === 'win32' && fs.existsSync(path.join(rootDir, 'gradlew.bat')) ? './gradlew.bat' : 'gradle';
+    args = ['compileJava', '-q'];
+  } else if (!hasPom) {
+    command = 'javac';
+    args = ['-version'];
+  }
+
+  const res = await execBounded(command, args, { cwd: rootDir });
+
+  if (
+    res.error?.includes('ENOENT') ||
+    res.stderr.includes('is not recognized') ||
+    res.stdout.includes('is not recognized')
+  ) {
+    return {
+      name: 'java-compiler-check',
+      passed: true,
+      command: `${command} (skipped: Java toolchain not installed on host)`,
+      errors: []
+    };
+  }
+
+  if (res.timedOut) {
+    errors.push({
+      file: 'project',
+      line: 1,
+      rule: 'java-timeout',
+      message: 'Java compiler check timed out after 30000ms.'
+    });
+  } else if (res.code !== 0) {
+    errors.push({
+      file: hasPom ? 'pom.xml' : hasGradle ? 'build.gradle' : 'project',
+      line: 1,
+      rule: 'java-compiler',
+      message: (res.stdout + '\n' + res.stderr).slice(0, 500)
+    });
+  }
+
+  return {
+    name: 'java-compiler-check',
+    passed: errors.length === 0,
+    command: `${command} ${args.join(' ')}`,
+    errors
+  };
+}
+
+// -----------------------------------------------------------------------------
 // CLI Runner
 // -----------------------------------------------------------------------------
 export async function runQualityGate(args = process.argv.slice(2)) {
@@ -571,15 +838,39 @@ Options:
     }
   }
 
-  const [conflictCheck, tsCheck, uiCraftCheck, depCheck, immutabilityCheck] = await Promise.all([
+  const [
+    conflictCheck,
+    tsCheck,
+    uiCraftCheck,
+    depCheck,
+    immutabilityCheck,
+    rustCheck,
+    cppCheck,
+    csharpCheck,
+    javaCheck
+  ] = await Promise.all([
     checkGitConflicts(rootDir),
     checkTypescript(rootDir),
     checkUiCraft(rootDir),
     checkDependencies(rootDir),
-    checkAgentsImmutability(rootDir)
+    checkAgentsImmutability(rootDir),
+    checkRust(rootDir),
+    checkCpp(rootDir),
+    checkCsharp(rootDir),
+    checkJava(rootDir)
   ]);
 
-  const checks = [conflictCheck, tsCheck, uiCraftCheck, depCheck, immutabilityCheck];
+  const checks = [
+    conflictCheck,
+    tsCheck,
+    uiCraftCheck,
+    depCheck,
+    immutabilityCheck,
+    rustCheck,
+    cppCheck,
+    csharpCheck,
+    javaCheck
+  ];
   const allErrors = checks.flatMap((c) => c.errors);
   const passed = allErrors.length === 0;
 

@@ -53,6 +53,7 @@ All agents (and Conductor) must enforce:
 2. **Rule #2: JIT Micro-Skill Pre-Load**: Load `<100 lines` of targeted checklist via `node .agents/bin/skill-loader.mjs --task "..." --file "..."`.
 3. **Rule #3: Zero Full-File Re-Reads**: Query AST ranges using `node .agents/bin/code-query.mjs slice` / `symbol`.
 4. **Rule #4: Post-Edit Re-Index & Quality Gate**: Re-index symbols and pass `node .agents/bin/quality-gate.mjs` with 0 violations.
+5. **Rule #5: Direct Shell Execution (Zero-Latency Mode)**: Invoke shell commands directly via terminal execution (`bash` on POSIX, `cmd`/`powershell` on Windows) for scaffolding, compiling, testing, indexing, and control plane scripts. Bypass asynchronous task schedulers and background queuing loops for routine commands to achieve maximum speed. All outputs must write to `.agent_execution/`.
 
 ## LEGACY AGENT ALIAS MAP
 If user requests or existing scripts reference legacy micro-workers, route immediately to the responsible Macro Vertical Agent:

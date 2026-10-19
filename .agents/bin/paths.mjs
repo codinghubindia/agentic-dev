@@ -71,8 +71,50 @@ export const IGNORED_SCAN_DIRS = new Set([
   'coverage',
   '.nyc_output',
   '.playwright',
-  'test-results'
+  'test-results',
+  // Multi-Language build & cache artifacts
+  'target',       // Rust / Maven
+  'bin',          // C# / .NET
+  'obj',          // C# / .NET
+  '.gradle',      // Gradle
+  'CMakeFiles',   // CMake
+  'CMakeScripts', // CMake
+  '.idea',        // JetBrains IDE
+  '.vscode'       // VSCode
 ]);
+
+// Multi-Language Supported File Extensions
+export const SUPPORTED_EXTENSIONS = new Set([
+  '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs',
+  '.py',
+  '.dart',
+  '.go',
+  '.rs',
+  '.c', '.h', '.cpp', '.cc', '.hpp',
+  '.cs',
+  '.java'
+]);
+
+// Language identifiers by file extension
+export const LANGUAGE_BY_EXT = {
+  '.ts': 'typescript',
+  '.tsx': 'typescript',
+  '.js': 'javascript',
+  '.jsx': 'javascript',
+  '.mjs': 'javascript',
+  '.cjs': 'javascript',
+  '.py': 'python',
+  '.dart': 'dart',
+  '.go': 'go',
+  '.rs': 'rust',
+  '.c': 'c',
+  '.h': 'c',
+  '.cpp': 'cpp',
+  '.cc': 'cpp',
+  '.hpp': 'cpp',
+  '.cs': 'csharp',
+  '.java': 'java'
+};
 
 /**
  * Checks whether a given absolute or relative path belongs to .agents or .agent_execution
