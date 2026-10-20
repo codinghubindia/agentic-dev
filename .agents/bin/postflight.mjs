@@ -10,14 +10,17 @@
  * 3. Returns a compact PASS/FAIL summary with exact file:line pointers if failed.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { execSync } from 'node:child_process';
 import { performance } from 'node:perf_hooks';
 
 import {
   WORKSPACE_ROOT,
   PROGRESS_LEDGER_PATH,
-  ensureExecDir
+  WORKER_SLICES_PATH,
+  ensureExecDirs
 } from './paths.mjs';
 
 import { runSymbolIndexer } from './symbol-indexer.mjs';
@@ -25,17 +28,66 @@ import { executeQualityGateChecks } from './quality-gate.mjs';
 
 export async function runPostflight(args = process.argv.slice(2)) {
   const startTime = performance.now();
-  ensureExecDir();
+  ensureExecDirs();
 
   const isJsonOnly = args.includes('--json');
   const rootDir = WORKSPACE_ROOT;
+
+  let workerId = null;
+  let role = null;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--worker' && args[i + 1]) {
+      workerId = args[++i];
+    } else if (args[i] === '--role' && args[i + 1]) {
+      role = args[++i];
+    }
+  }
 
   // 1. Incremental Re-Index
   const indexResult = runSymbolIndexer(['--quiet']);
   const ledger = indexResult.ledger;
 
-  // 2. Execute Quality Gate Checks
-  const { report, targetReportPath, passed } = await executeQualityGateChecks(rootDir);
+  // 2. Worker Boundary Verification (if --worker flag is provided)
+  let workerViolation = null;
+  if (workerId) {
+    try {
+      if (fs.existsSync(WORKER_SLICES_PATH)) {
+        const slicesData = JSON.parse(fs.readFileSync(WORKER_SLICES_PATH, 'utf8'));
+        const slice = slicesData.slices?.[workerId] || slicesData[workerId];
+        if (slice && slice.allowedWritePaths && slice.allowedWritePaths.length > 0) {
+          const gitStatus = execSync('git status --porcelain', { cwd: rootDir, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+          const modifiedFiles = gitStatus.split('\n')
+            .filter(l => l.trim())
+            .map(l => l.substring(3).trim());
+
+          for (const f of modifiedFiles) {
+            const normF = f.replace(/\\/g, '/');
+            const allowed = slice.allowedWritePaths.some(p => normF.startsWith(p.replace(/\\/g, '/')));
+            if (!allowed) {
+              workerViolation = `File '${normF}' violates boundary: outside worker '${workerId}' allowedWritePaths [${slice.allowedWritePaths.join(', ')}]`;
+              break;
+            }
+          }
+        }
+      }
+    } catch {
+      // non-fatal if git or slices file not available
+    }
+  }
+
+  // 3. Execute Quality Gate Checks
+  const { report, targetReportPath, passed: gatePassed } = await executeQualityGateChecks(rootDir);
+
+  let passed = gatePassed;
+  if (workerViolation) {
+    passed = false;
+    report.summary.passedChecks = Math.max(0, report.summary.passedChecks - 1);
+    report.checks.push({
+      name: 'Worker Slice Boundary Enforcement',
+      passed: false,
+      errors: [{ file: workerId, line: null, column: null, rule: 'worker-slice-boundary', message: workerViolation }]
+    });
+  }
 
   const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
 

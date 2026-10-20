@@ -497,6 +497,8 @@ Examples:
   }
 }
 
+export const queryCode = runCodeQuery;
+
 if (process.argv[1] && process.argv[1].endsWith('code-query.mjs')) {
   runCodeQuery();
 }

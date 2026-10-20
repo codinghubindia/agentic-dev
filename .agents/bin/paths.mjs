@@ -35,6 +35,11 @@ export const EXEC_STATE_DIR = path.join(EXEC_DIR, 'state');
 export const EXEC_LOGS_DIR = path.join(EXEC_DIR, 'logs');
 export const EXEC_MEMORY_DIR = path.join(EXEC_STATE_DIR, 'memory');
 
+// Standard aliases
+export const CACHE_DIR = EXEC_CACHE_DIR;
+export const STATE_DIR = EXEC_STATE_DIR;
+export const LOGS_DIR = EXEC_LOGS_DIR;
+
 // Cache File Paths (.agent_execution/cache/)
 export const PROJECT_DNA_PATH = path.join(EXEC_CACHE_DIR, 'project-dna.json');
 export const SYMBOL_REGISTRY_PATH = path.join(EXEC_CACHE_DIR, 'symbol-registry.json');
@@ -82,6 +87,8 @@ export const IGNORED_SCAN_DIRS = new Set([
   '.idea',        // JetBrains IDE
   '.vscode'       // VSCode
 ]);
+
+export const IGNORE_DIRS = IGNORED_SCAN_DIRS;
 
 // Multi-Language Supported File Extensions
 export const SUPPORTED_EXTENSIONS = new Set([
@@ -158,7 +165,7 @@ export function ensureExecDir() {
 
   // Self-ignoring .agent_execution/.gitignore
   const gitignorePath = path.join(EXEC_DIR, '.gitignore');
-  const gitignoreContent = `# Ignore everything in .agent_execution/ to prevent polluting host git status\n*\n!.gitignore\n`;
+  const gitignoreContent = `*\n!.gitignore\n`;
   try {
     if (!fs.existsSync(gitignorePath) || fs.readFileSync(gitignorePath, 'utf8') !== gitignoreContent) {
       fs.writeFileSync(gitignorePath, gitignoreContent, 'utf8');
@@ -167,3 +174,5 @@ export function ensureExecDir() {
     console.warn(`[paths] Could not write ${gitignorePath}: ${err.message}`);
   }
 }
+
+export const ensureExecDirs = ensureExecDir;

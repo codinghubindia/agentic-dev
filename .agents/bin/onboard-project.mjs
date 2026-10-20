@@ -619,6 +619,8 @@ export function runOnboard(args = process.argv.slice(2)) {
   return { dna, index };
 }
 
+export const runOnboarding = runOnboard;
+
 if (process.argv[1] && process.argv[1].endsWith('onboard-project.mjs')) {
   runOnboard();
 }

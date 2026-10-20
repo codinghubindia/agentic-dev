@@ -165,6 +165,20 @@ export function runSkillLoader(args = process.argv.slice(2)) {
   console.log(contents.join('\n\n---\n\n'));
 }
 
+export function loadSkillsForTask({ task, file, role } = {}) {
+  const manifest = loadManifest();
+  const selectedShards = resolveShards(manifest, { task, file, role });
+  if (selectedShards.length === 0) {
+    selectedShards.push('arch-intake-scope.md');
+  }
+  const contents = getShardContents(selectedShards);
+  return {
+    shards: selectedShards,
+    contents,
+    summary: contents.join('\n\n---\n\n')
+  };
+}
+
 if (process.argv[1] && process.argv[1].endsWith('skill-loader.mjs')) {
   runSkillLoader();
 }

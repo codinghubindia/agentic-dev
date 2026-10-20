@@ -14,45 +14,46 @@ flowchart LR
 ```
 
 ### Turn 1: Unified Pre-Flight Discovery (<40ms)
-Before reading any files or writing code, run the unified pre-flight command in a single terminal call:
+Before reading any files or writing code, run the unified pre-flight command in a single terminal call. **NEVER run `read_file` or `grep` before `preflight.mjs`:**
 
 ```bash
-node .agents/bin/preflight.mjs --task "<user request or feature description>" [--file "<target file>"]
+node .agents/bin/preflight.mjs --task "<user request or feature description>" [--file "<target file>"] [--role "<role>"]
 ```
 
 **What Pre-Flight Provides in 1 Output:**
-1. **Project DNA**: Tech stack, primary languages, frameworks, package manager, test runners.
-2. **File Responsibility**: Primary assigned role and file ownership mapping.
-3. **Task-Scoped Micro-Skills**: The 1–3 exact micro-skill shards (from `.agents/skills/shards/*.md`) needed for the task.
-4. **AST Delta Manifest**:
-   - `[STUB/PENDING]` symbols requiring implementation.
-   - `[DONE]` symbol signatures with exact start/end line numbers.
+1. **[1] PROJECT DNA**: Tech stack, test/typecheck commands, and directory ownership mapping.
+2. **[2] ACTIVE MICRO-SKILLS**: The 1–3 exact micro-skill shards (<90 lines) needed for this specific task.
+3. **[3] DELTA SYMBOL MAP**: Matching `[STUB]` symbols (implement these exact line numbers) and `[DONE]` exported signatures with line ranges (never read `[DONE]` bodies into context).
 
 ---
 
-### Turn 2: Surgical Code Modification
+### Turn 2: Surgical Code Modification OR Parallel Worker Dispatch
 Start coding immediately on Turn 2 using the line numbers and signatures provided in the Delta Manifest.
 
-- **FORBIDDEN**: Reading entire source files into context (`read_file` on large files).
-- **ALLOWED**:
-  - Direct file editing via `edit_file` / `write_file`.
-  - Surgical line slicing when extra context is needed:
+- **For Tasks Touching `<= 3` Files (Surgical Mode):**
+  - Use `node .agents/bin/code-query.mjs slice <file> <startLine> <endLine>` or `symbol <name>` to inspect only target `[STUB]` lines.
+  - Never read `[DONE]` function bodies into LLM context.
+  - Apply surgical edits using line-based replacement.
+- **For Tasks Touching `> 3` Files Across Modules (Parallel Worker Pool Mode):**
+  - Partition work across disjoint file buckets:
     ```bash
-    node .agents/bin/code-query.mjs slice <file> <startLine> <endLine>
-    node .agents/bin/code-query.mjs symbol <symbolName>
+    node .agents/bin/orchestra-state.mjs partition-workers --max-clones 4
     ```
+  - Dispatch parallel role clones with strictly isolated `allowedWritePaths` (blocking `.agents/**`) to eliminate merge conflicts.
+- **Strict Prohibition**: Full-file re-reads (`read_file` on entire source files) are FORBIDDEN.
 
 ---
 
-### Turn 3: Post-Flight Verification (<1s)
-After making edits, run the unified post-flight command:
+### Turn 3: Single Post-Flight Verification (<1s)
+After making edits, run the unified post-flight command before declaring complete:
 
 ```bash
-node .agents/bin/postflight.mjs
+node .agents/bin/postflight.mjs [--role "<role>"] [--worker "<workerId>"]
 ```
 
 **Automated Validations:**
 - Incremental AST Symbol Re-Indexing (`.agent_execution/cache/symbol-registry.json`).
+- Worker Boundary Check (if `--worker` provided, verifies changes stay within `allowedWritePaths`).
 - Git merge conflict marker scan (`<<<<<<<`, `=======`, `>>>>>>>`).
 - Project TypeScript / compiler typecheck (`tsc --noEmit`, `cargo check`, etc.).
 - UI craft static rules (no hardcoded hex colors, no `any`, no emojis in action labels).

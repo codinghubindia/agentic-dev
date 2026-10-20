@@ -26,12 +26,12 @@ import {
   SYMBOL_REGISTRY_PATH,
   PROGRESS_LEDGER_PATH,
   FILE_RESPONSIBILITY_INDEX_PATH,
-  ensureExecDir
+  ensureExecDirs
 } from './paths.mjs';
 
-import { runOnboard } from './onboard-project.mjs';
+import { runOnboarding } from './onboard-project.mjs';
 import { runSymbolIndexer } from './symbol-indexer.mjs';
-import { loadManifest, resolveShards, getShardContents } from './skill-loader.mjs';
+import { loadSkillsForTask } from './skill-loader.mjs';
 
 function readJsonSafe(filePath) {
   try {
@@ -91,12 +91,12 @@ export function runPreflight(args = process.argv.slice(2)) {
   const options = parseArgs(args);
 
   // 1. Ensure runtime environment
-  ensureExecDir();
+  ensureExecDirs();
 
   // 2. Incremental Onboarding
   const onboardArgs = ['--quiet'];
   if (options.force) onboardArgs.push('--force');
-  runOnboard(onboardArgs);
+  runOnboarding(onboardArgs);
 
   // 3. Incremental Symbol Indexing
   const indexerArgs = ['--quiet'];
@@ -104,12 +104,7 @@ export function runPreflight(args = process.argv.slice(2)) {
   const indexResult = runSymbolIndexer(indexerArgs);
 
   // 4. Load & Resolve Skills
-  const manifest = loadManifest();
-  const selectedShards = resolveShards(manifest, options);
-  if (selectedShards.length === 0) {
-    selectedShards.push('arch-intake-scope.md');
-  }
-  const shardContents = getShardContents(selectedShards);
+  const { shards: selectedShards, contents: shardContents } = loadSkillsForTask(options);
 
   // 5. Read project state
   const dna = readJsonSafe(PROJECT_DNA_PATH) || {};
@@ -169,6 +164,23 @@ export function runPreflight(args = process.argv.slice(2)) {
     targetFileSymbols = registry.files[normTarget].symbols || [];
   }
 
+  // Find relevant [DONE] symbols
+  const allDone = ledger.done || [];
+  let relevantDone = [];
+  if (normTarget) {
+    relevantDone = allDone.filter(d => d.ref.startsWith(normTarget));
+  }
+  if (relevantDone.length === 0 && options.task) {
+    const keywords = options.task.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    relevantDone = allDone.filter(d => {
+      const matchText = (d.ref + ' ' + d.signature).toLowerCase();
+      return keywords.some(k => matchText.includes(k));
+    }).slice(0, 8);
+  }
+  if (relevantDone.length === 0 && assignedRole) {
+    relevantDone = allDone.filter(d => d.owner === assignedRole).slice(0, 6);
+  }
+
   const elapsed = (performance.now() - startTime).toFixed(1);
 
   if (options.json) {
@@ -184,6 +196,7 @@ export function runPreflight(args = process.argv.slice(2)) {
       },
       skills: selectedShards,
       relevantStubs,
+      relevantDone,
       targetFileSymbols: targetFileSymbols.map(s => ({
         name: s.name,
         kind: s.kind,
@@ -201,40 +214,64 @@ export function runPreflight(args = process.argv.slice(2)) {
   const sep = '='.repeat(80);
   const subSep = '-'.repeat(80);
 
+  const testCmd = dna.scripts?.test ? `${dna.packageManager || 'npm'} test` : (dna.techStack?.testing?.runners?.[0] || 'None');
+  const typecheckCmd = dna.scripts?.typecheck ? `${dna.packageManager || 'npm'} run typecheck` : (dna.scripts?.build ? `${dna.packageManager || 'npm'} run build` : 'tsc --noEmit');
+
+  const topOwners = [];
+  if (responsibilityIndex.ownershipSummary) {
+    for (const [r, count] of Object.entries(responsibilityIndex.ownershipSummary)) {
+      if (count > 0) topOwners.push(`${r} (${count} files)`);
+    }
+  }
+
   console.log(`\n${sep}`);
-  console.log(`⚡ NEURAL ORCHESTRA v5.3 - PRE-FLIGHT DELTA MANIFEST (<${elapsed}ms)`);
+  console.log(`⚡ NEURAL ORCHESTRA v5.3 - PRE-FLIGHT CONTEXT PAYLOAD (<${elapsed}ms)`);
   console.log(sep);
-  console.log(`Task:       ${options.task || 'General Development'}`);
-  console.log(`Target:     ${options.file || '(Auto-detected based on task)'}`);
-  console.log(`Role:       ${assignedRole}`);
-  console.log(`Stack:      Frontend: ${dna.techStack?.frontend?.framework || 'None'} | Backend: ${dna.techStack?.backend?.framework || 'None'} | DB: ${dna.techStack?.database?.orm || 'None'}`);
-  console.log(`Languages:  ${dna.primaryLanguages?.join(', ') || 'Auto-detected'}`);
 
   console.log(`\n${subSep}`);
-  console.log(`🎯 ACTIVE MICRO-SKILL RULES (${selectedShards.join(', ')})`);
+  console.log(`[1] PROJECT DNA`);
+  console.log(subSep);
+  console.log(`Task:         ${options.task || 'General Development'}`);
+  console.log(`Target:       ${options.file || '(Auto-detected based on task)'}`);
+  console.log(`Role:         ${assignedRole}`);
+  console.log(`Stack:        Frontend: ${dna.techStack?.frontend?.framework || 'None'} | Backend: ${dna.techStack?.backend?.framework || 'None'} | DB: ${dna.techStack?.database?.orm || 'None'}`);
+  console.log(`Languages:    ${dna.primaryLanguages?.join(', ') || 'Auto-detected'}`);
+  console.log(`Test/Check:   Test: ${testCmd} | Check: ${typecheckCmd}`);
+  if (topOwners.length > 0) {
+    console.log(`Ownership:    ${topOwners.slice(0, 4).join(' | ')}`);
+  }
+
+  console.log(`\n${subSep}`);
+  console.log(`[2] ACTIVE MICRO-SKILLS (${selectedShards.join(', ')})`);
   console.log(subSep);
   console.log(shardContents.join('\n\n---\n\n'));
 
   console.log(`\n${subSep}`);
-  console.log(`📍 RELEVANT STUBS & SYMBOLS`);
+  console.log(`[3] DELTA SYMBOL MAP`);
   console.log(subSep);
 
+  console.log(`Matching [STUB] Symbols (Implement these file:line targets):`);
   if (relevantStubs.length > 0) {
-    console.log('Pending Implementation Stubs:');
     for (const s of relevantStubs) {
       console.log(`  - [STUB] ${s.ref} (${s.lines})`);
       console.log(`    Sig:    ${s.signature}`);
       console.log(`    Reason: ${s.reason}`);
     }
   } else {
-    console.log('Pending Implementation Stubs: None detected for target scope.');
+    console.log(`  (No pending [STUB] symbols detected for target scope)`);
   }
 
+  console.log(`\nMatching [DONE] Symbols (DO NOT re-read [DONE] function bodies; use signatures):`);
   if (targetFileSymbols.length > 0) {
-    console.log(`\nExisting Signatures in ${normTarget}:`);
-    for (const s of targetFileSymbols) {
-      console.log(`  - [${s.status}] ${s.kind} ${s.name} (L${s.startLine}-L${s.endLine}) -> ${s.signature}`);
+    for (const s of targetFileSymbols.filter(sym => sym.status === 'DONE')) {
+      console.log(`  - [DONE] ${normTarget}:${s.name} (L${s.startLine}-L${s.endLine}) -> ${s.signature}`);
     }
+  } else if (relevantDone.length > 0) {
+    for (const d of relevantDone) {
+      console.log(`  - [DONE] ${d.ref} (${d.lines}) -> ${d.signature}`);
+    }
+  } else {
+    console.log(`  (No existing [DONE] symbols in immediate scope)`);
   }
 
   console.log(`\n${subSep}`);

@@ -48,12 +48,11 @@ tools:
 
 ## THE GOLDEN AGENT RULES (V5.3)
 All agents (and Conductor) must enforce:
-0. **Rule #0: Engine Immutability**: `.agents/` is a strictly READ-ONLY engine directory. Agents are FORBIDDEN from creating, editing, or deleting any file inside `.agents/`. All runtime manifests, plans, and caches reside exclusively in `.agent_execution/`.
-1. **Rule #1: Pre-Flight First**: Run `node .agents/bin/preflight.mjs --task "<task>"` before beginning any work.
-2. **Rule #2: JIT Micro-Skill Shards**: Shards (`.agents/skills/shards/*.md`, 15-20 lines each) are pre-loaded by `preflight.mjs`. Never load monolithic skill guides.
-3. **Rule #3: Zero Full-File Re-Reads**: Query AST ranges using `node .agents/bin/code-query.mjs slice` / `symbol`.
-4. **Rule #4: Post-Flight Gate**: Always run `node .agents/bin/postflight.mjs` and verify 0 violations before declaring complete.
-5. **Rule #5: Direct Shell Execution (Zero-Latency Mode)**: Invoke shell commands directly via terminal execution (`bash` on POSIX, `cmd`/`powershell` on Windows) for scaffolding, compiling, testing, indexing, and control plane scripts. Bypass asynchronous task schedulers and background queuing loops for routine commands to achieve maximum speed. All outputs must write to `.agent_execution/`.
+0. **Rule #0: Engine Immutability**: `.agents/` is strictly READ-ONLY. All state/cache lives in `.agent_execution/`. Agents are FORBIDDEN from creating, editing, or deleting any file inside `.agents/`.
+1. **Rule #1: 1-Call Pre-Flight**: Always start with `node .agents/bin/preflight.mjs --task "<task>"`. NEVER run `read_file` or `grep` before `preflight.mjs`. Loads DNA, micro-shards, and AST delta symbols in <40ms.
+2. **Rule #2: Zero Full-File Reads**: Trust `[DONE]` signatures in `symbol-registry.json`. Only read code ranges using `node .agents/bin/code-query.mjs slice <file> <start> <end>` or `symbol <name>`.
+3. **Rule #3: 1-Call Post-Flight**: Always finish with `node .agents/bin/postflight.mjs`. Must report `PASS (0 violations)` before declaring complete.
+4. **Rule #4: Direct Shell Execution (Zero-Latency Mode)**: Invoke shell commands directly via terminal execution (`bash` on POSIX, `cmd`/`powershell` on Windows) for scaffolding, compiling, testing, indexing, and control plane scripts. Bypass asynchronous task schedulers for instant execution.
 
 ## LEGACY AGENT ALIAS MAP
 If user requests or existing scripts reference legacy micro-workers, route immediately to the responsible Macro Vertical Agent:
