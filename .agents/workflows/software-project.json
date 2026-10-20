@@ -23,7 +23,7 @@
         ".env.example"
       ],
       "hardGate": true,
-      "instructions": "Extract existing skeletons if any via extract-skeleton.mjs. Produce executable contracts.ts with Zod schemas and TypeScript interfaces. Scaffold database models and .env.example."
+      "instructions": "Extract existing skeletons if any via node .agents/bin/code-query.mjs skeleton. Produce executable contracts.ts with Zod schemas and TypeScript interfaces. Scaffold database models and .env.example."
     },
     {
       "id": "phase_2_database_migrations",

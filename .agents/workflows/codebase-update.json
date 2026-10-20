@@ -22,7 +22,7 @@
         "src/contracts/contracts.ts"
       ],
       "hardGate": true,
-      "instructions": "Run node .agents/bin/extract-skeleton.mjs to extract compact type skeleton (~85% token reduction). Formulate contract deltas in contracts.ts."
+      "instructions": "Run node .agents/bin/preflight.mjs (or node .agents/bin/code-query.mjs skeleton) to extract compact type skeleton (~85% token reduction). Formulate contract deltas in contracts.ts."
     },
     {
       "id": "phase_2_parallel_vertical_execution",

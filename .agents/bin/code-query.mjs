@@ -27,6 +27,7 @@ import {
   SYMBOL_REGISTRY_PATH,
   PROGRESS_LEDGER_PATH,
   FILE_RESPONSIBILITY_INDEX_PATH,
+  CONTEXT_SKELETON_PATH,
   ensureExecDir
 } from './paths.mjs';
 
@@ -316,6 +317,125 @@ function cmdTodo(roleFilter) {
 }
 
 // -----------------------------------------------------------------------------
+// 6. Skeleton Command (merged from extract-skeleton.mjs)
+// -----------------------------------------------------------------------------
+export function cmdSkeleton(arg1, arg2) {
+  ensureIndexed();
+  const registry = readJsonSafe(REGISTRY_FILE);
+  if (!registry || !registry.files) {
+    console.error('Error: Symbol registry not found or empty.');
+    return;
+  }
+
+  let targetFilter = null;
+  let outPath = CONTEXT_SKELETON_PATH;
+  let isStdout = false;
+
+  const rawArgs = [arg1, arg2].filter(Boolean);
+  for (let i = 0; i < rawArgs.length; i++) {
+    const a = rawArgs[i];
+    if (a === '--stdout') {
+      isStdout = true;
+    } else if (a === '-o' && rawArgs[i + 1]) {
+      outPath = rawArgs[i + 1];
+      i++;
+    } else if (a.endsWith('.d.ts') || a.endsWith('.ts')) {
+      outPath = a;
+    } else {
+      targetFilter = a.replace(/^[./\\]+/, '').replace(/\\/g, '/');
+    }
+  }
+
+  const sections = [];
+  let fileCount = 0;
+
+  for (const [relPath, fileData] of Object.entries(registry.files)) {
+    const normalizedRel = relPath.replace(/\\/g, '/');
+    if (targetFilter && !normalizedRel.startsWith(targetFilter) && !normalizedRel.includes(targetFilter)) {
+      continue;
+    }
+    fileCount++;
+
+    const lines = [];
+    lines.push(`// ============================================================================`);
+    lines.push(`// File: ${normalizedRel}`);
+    lines.push(`// ============================================================================`);
+
+    // Imports
+    if (fileData.imports && fileData.imports.length > 0) {
+      for (const imp of fileData.imports) {
+        lines.push(imp.statement || `import '${imp.source}';`);
+      }
+      lines.push('');
+    }
+
+    // Symbols
+    if (fileData.symbols && fileData.symbols.length > 0) {
+      for (const sym of fileData.symbols) {
+        const statusTag = sym.status === 'STUB' ? ' /* [STUB] */' : '';
+        const exportPrefix = sym.isExported ? 'export ' : '';
+
+        if (sym.kind === 'interface') {
+          lines.push(`${exportPrefix}interface ${sym.name.replace(/^export\s+/, '')} {`);
+          if (sym.members && sym.members.length > 0) {
+            for (const m of sym.members) {
+              lines.push(`  ${m};`);
+            }
+          }
+          lines.push(`}`);
+        } else if (sym.kind === 'type') {
+          let sig = (sym.signature || `type ${sym.name} = unknown;`).trim();
+          if (sig.startsWith('export ')) sig = sig.substring(7).trim();
+          sig = sig.endsWith(';') ? sig : `${sig};`;
+          lines.push(`${exportPrefix}${sig}`);
+        } else if (sym.kind === 'class') {
+          lines.push(`${exportPrefix}class ${sym.name.replace(/^export\s+/, '')} {`);
+          if (sym.members && sym.members.length > 0) {
+            for (const m of sym.members) {
+              lines.push(`  ${m.signature || m.name || m};`);
+            }
+          }
+          lines.push(`}`);
+        } else if (sym.kind === 'function') {
+          let sig = sym.signature || `function ${sym.name}();`;
+          if (!sig.endsWith(';') && !sig.endsWith('}')) {
+            sig = sig.replace(/\s*\{.*$/, '').trim() + ';';
+          }
+          if (sig.startsWith('export ')) {
+            sig = sig.substring(7).trim();
+          }
+          lines.push(`${exportPrefix}declare ${sig}${statusTag}`);
+        } else if (sym.kind === 'route') {
+          lines.push(`// [Route: ${sym.name}] ${sym.signature}${statusTag}`);
+        } else {
+          lines.push(`// [${sym.kind}: ${sym.name}] ${sym.signature}${statusTag}`);
+        }
+      }
+    } else {
+      lines.push(`// (No top-level exported symbols detected)`);
+    }
+
+    sections.push(lines.join('\n'));
+  }
+
+  const fullOutput = sections.join('\n\n');
+
+  if (isStdout) {
+    process.stdout.write(fullOutput + '\n');
+  } else {
+    ensureExecDir();
+    const resolvedOut = path.isAbsolute(outPath) ? outPath : path.resolve(ROOT_DIR, outPath);
+    const parentDir = path.dirname(resolvedOut);
+    if (!fs.existsSync(parentDir)) {
+      fs.mkdirSync(parentDir, { recursive: true });
+    }
+    fs.writeFileSync(resolvedOut, fullOutput + '\n', 'utf8');
+    const displayPath = path.relative(ROOT_DIR, resolvedOut) || outPath;
+    console.log(`[code-query skeleton] Generated ${displayPath} (${fileCount} files indexed).`);
+  }
+}
+
+// -----------------------------------------------------------------------------
 // CLI Dispatcher
 // -----------------------------------------------------------------------------
 export function runCodeQuery(args = process.argv.slice(2)) {
@@ -342,6 +462,10 @@ export function runCodeQuery(args = process.argv.slice(2)) {
       cmdTodo(args[1]);
       break;
 
+    case 'skeleton':
+      cmdSkeleton(args[1], args[2]);
+      break;
+
     case '--help':
     case '-h':
     default:
@@ -354,13 +478,17 @@ Commands:
   symbol <symbolName>          Surgically slice code surrounding a specific symbol
   slice <file> <start> <end>   Read ONLY the exact line range from a file
   todo [role]                  List unimplemented [STUB] symbols assigned to role
+  skeleton [target] [outFile]  Generate compact context-skeleton.d.ts from symbol registry
 
 Examples:
   node .agents/bin/code-query.mjs dna
   node .agents/bin/code-query.mjs map fullstack-backend-engineer
-  node .agents/bin/code-query.mjs symbol extractTsJsSkeleton
-  node .agents/bin/code-query.mjs slice .agents/bin/quality-gate.mjs 1 25
+  node .agents/bin/code-query.mjs symbol runOrchestraState
+  node .agents/bin/code-query.mjs slice .agents/bin/paths.mjs 1 25
   node .agents/bin/code-query.mjs todo
+  node .agents/bin/code-query.mjs skeleton
+  node .agents/bin/code-query.mjs skeleton src/
+  node .agents/bin/code-query.mjs skeleton --stdout
 `);
       if (subcmd && subcmd !== '--help' && subcmd !== '-h') {
         process.exit(1);

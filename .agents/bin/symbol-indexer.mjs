@@ -221,98 +221,119 @@ function parseTsJsSymbols(content, relPath) {
       continue;
     }
 
-    // Function / Component / Hook / Route Declaration
-    const fnMatch = trimmed.match(/^(export\s+)?(default\s+)?(async\s+)?function\s*([A-Za-z0-9_$]*)\s*(\<[^\>]+\>)?\s*\(([^)]*)\)/);
-    if (fnMatch) {
-      const name = fnMatch[4] || 'anonymous';
-      const startLine = lineNum;
-      let endLine = lineNum;
-      let depth = 0;
-      let foundOpen = false;
-      const bodyLines = [];
+    // Function / Component / Hook / Route Declaration (single or multi-line)
+    if (/^(export\s+)?(default\s+)?(async\s+)?function\b/.test(trimmed)) {
+      let stmt = trimmed;
+      let j = i;
+      while (!stmt.includes('{') && !stmt.includes(';') && j + 1 < lines.length) {
+        j++;
+        stmt += ' ' + lines[j].trim();
+      }
+      const fnMatch = stmt.match(/^(export\s+)?(default\s+)?(async\s+)?function\s*([A-Za-z0-9_$]*)/);
+      if (fnMatch) {
+        const name = fnMatch[4] || 'anonymous';
+        const startLine = lineNum;
+        const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+        const { isStub, reason } = detectStubStatus(bodyText);
 
-      for (let j = i; j < lines.length; j++) {
-        bodyLines.push(lines[j]);
-        for (const char of lines[j]) {
-          if (char === '{') { depth++; foundOpen = true; }
-          if (char === '}') depth--;
+        let kind = 'function';
+        if (/^[A-Z]/.test(name) && (relPath.includes('component') || relPath.endsWith('.tsx') || bodyText.includes('<'))) {
+          kind = 'component';
+        } else if (name.startsWith('use') && name.length > 3 && /^[A-Z]/.test(name[3])) {
+          kind = 'hook';
+        } else if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(name) || relPath.includes('api/') || relPath.includes('routes/')) {
+          kind = 'apiRoute';
         }
-        if (foundOpen && depth <= 0) { endLine = j + 1; i = j; break; }
-      }
 
-      const bodyText = bodyLines.join('\n');
+        const braceIdx = stmt.indexOf('{');
+        const signature = braceIdx !== -1 ? stmt.substring(0, braceIdx).trim() : stmt.trim();
+
+        symbols.push({
+          name,
+          kind,
+          startLine,
+          endLine,
+          signature,
+          status: isStub ? 'STUB' : 'DONE',
+          stubReason: reason,
+          isExported: trimmed.startsWith('export')
+        });
+        i = nextIndex;
+        continue;
+      }
+    }
+
+    // Route Handler: router.get('/path', ...) or app.post(...)
+    const routeMatch = trimmed.match(/^(export\s+)?(const\s+)?(router|app)\.(get|post|put|delete|patch|options|head)\s*\(\s*['"]([^'"]+)['"]/i);
+    if (routeMatch) {
+      const method = routeMatch[4].toUpperCase();
+      const routePath = routeMatch[5];
+      const name = `${method} ${routePath}`;
+      const startLine = lineNum;
+      const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
       const { isStub, reason } = detectStubStatus(bodyText);
-
-      let kind = 'function';
-      if (/^[A-Z]/.test(name) && (relPath.includes('component') || relPath.endsWith('.tsx') || bodyText.includes('<'))) {
-        kind = 'component';
-      } else if (name.startsWith('use') && name.length > 3 && /^[A-Z]/.test(name[3])) {
-        kind = 'hook';
-      } else if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(name) || relPath.includes('api/') || relPath.includes('routes/')) {
-        kind = 'apiRoute';
-      }
-
-      const sigLine = lines[startLine - 1];
-      const braceIdx = sigLine.indexOf('{');
-      const signature = braceIdx !== -1 ? sigLine.substring(0, braceIdx).trim() : sigLine.trim();
 
       symbols.push({
         name,
-        kind,
+        kind: 'apiRoute',
         startLine,
         endLine,
-        signature,
+        signature: `${method} ${routePath}`,
         status: isStub ? 'STUB' : 'DONE',
         stubReason: reason,
-        isExported: trimmed.startsWith('export')
+        isExported: true
       });
+      i = nextIndex;
       continue;
     }
 
-    // Const Arrow Function / Component Declaration
-    const arrowMatch = trimmed.match(/^(export\s+)?const\s+([A-Za-z0-9_$]+)(\s*:\s*[^=]+)?\s*=\s*(async\s*)?(\([^)]*\)|[A-Za-z0-9_$]+)\s*(:\s*[^=]+)?\s*=>/);
-    if (arrowMatch) {
-      const name = arrowMatch[2];
-      const startLine = lineNum;
-      let endLine = lineNum;
-      let depth = 0;
-      let foundOpen = false;
-      const bodyLines = [];
+    // Const Function / Arrow / forwardRef / memo / Component (single or multi-line)
+    if (/^(export\s+)?const\s+([A-Za-z0-9_$]+)/.test(trimmed) && !trimmed.includes('z.')) {
+      let stmt = trimmed;
+      let j = i;
+      while (!stmt.includes('=>') && !stmt.includes('{') && !stmt.includes(';') && j + 1 < lines.length) {
+        j++;
+        stmt += ' ' + lines[j].trim();
+      }
 
-      for (let j = i; j < lines.length; j++) {
-        bodyLines.push(lines[j]);
-        for (const char of lines[j]) {
-          if (char === '{') { depth++; foundOpen = true; }
-          if (char === '}') depth--;
+      if (stmt.includes('=>') || stmt.includes('forwardRef') || stmt.includes('memo') || stmt.includes('function')) {
+        const constMatch = stmt.match(/^(export\s+)?const\s+([A-Za-z0-9_$]+)/);
+        if (constMatch) {
+          const name = constMatch[2];
+          const startLine = lineNum;
+          const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+          const { isStub, reason } = detectStubStatus(bodyText);
+
+          let kind = 'function';
+          if ((stmt.includes('forwardRef') || stmt.includes('memo') || /^[A-Z]/.test(name)) && (relPath.includes('component') || relPath.endsWith('.tsx') || bodyText.includes('<'))) {
+            kind = 'component';
+          } else if (name.startsWith('use') && name.length > 3 && /^[A-Z]/.test(name[3])) {
+            kind = 'hook';
+          }
+
+          let signature = stmt;
+          const arrowIdx = stmt.indexOf('=>');
+          const braceIdx = stmt.indexOf('{');
+          if (arrowIdx !== -1) {
+            signature = stmt.substring(0, arrowIdx + 2).trim();
+          } else if (braceIdx !== -1) {
+            signature = stmt.substring(0, braceIdx).trim();
+          }
+
+          symbols.push({
+            name,
+            kind,
+            startLine,
+            endLine,
+            signature,
+            status: isStub ? 'STUB' : 'DONE',
+            stubReason: reason,
+            isExported: trimmed.startsWith('export')
+          });
+          i = nextIndex;
+          continue;
         }
-        if (foundOpen && depth <= 0) { endLine = j + 1; i = j; break; }
-        if (!foundOpen && lines[j].includes(';')) { endLine = j + 1; i = j; break; }
       }
-
-      const bodyText = bodyLines.join('\n');
-      const { isStub, reason } = detectStubStatus(bodyText);
-
-      let kind = 'function';
-      if (/^[A-Z]/.test(name) && (relPath.includes('component') || relPath.endsWith('.tsx') || bodyText.includes('<'))) {
-        kind = 'component';
-      } else if (name.startsWith('use') && name.length > 3 && /^[A-Z]/.test(name[3])) {
-        kind = 'hook';
-      }
-
-      const arrowIdx = line.indexOf('=>');
-      const signature = arrowIdx !== -1 ? line.substring(0, arrowIdx + 2).trim() : line.trim();
-
-      symbols.push({
-        name,
-        kind,
-        startLine,
-        endLine,
-        signature,
-        status: isStub ? 'STUB' : 'DONE',
-        stubReason: reason,
-        isExported: trimmed.startsWith('export')
-      });
-      continue;
     }
 
     // Zod Schemas
@@ -392,37 +413,45 @@ function parsePythonSymbols(content, relPath) {
       continue;
     }
 
-    // Function
-    const fnMatch = trimmed.match(/^(async\s+)?def\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)/);
-    if (fnMatch) {
-      const name = fnMatch[2];
-      const startLine = lineNum;
-      const baseIndent = line.match(/^(\s*)/)[1].length;
-      let endLine = lineNum;
-      const bodyLines = [];
-
-      for (let j = i + 1; j < lines.length; j++) {
-        const nextTrimmed = lines[j].trim();
-        if (!nextTrimmed) continue;
-        const nextIndent = lines[j].match(/^(\s*)/)[1].length;
-        if (nextIndent <= baseIndent) { break; }
-        bodyLines.push(lines[j]);
-        endLine = j + 1;
-        i = j;
+    // Function (single or multi-line)
+    if (/^(async\s+)?def\s+([A-Za-z0-9_]+)/.test(trimmed)) {
+      let stmt = trimmed;
+      let j = i;
+      while (!stmt.includes(':') && j + 1 < lines.length) {
+        j++;
+        stmt += ' ' + lines[j].trim();
       }
+      const fnMatch = stmt.match(/^(async\s+)?def\s+([A-Za-z0-9_]+)/);
+      if (fnMatch) {
+        const name = fnMatch[2];
+        const startLine = lineNum;
+        const baseIndent = line.match(/^(\s*)/)[1].length;
+        let endLine = lineNum;
+        const bodyLines = [];
 
-      const { isStub, reason } = detectStubStatus(bodyLines.join('\n'));
-      symbols.push({
-        name,
-        kind: 'function',
-        startLine,
-        endLine,
-        signature: line.trim(),
-        status: isStub ? 'STUB' : 'DONE',
-        stubReason: reason,
-        isExported: !name.startsWith('_')
-      });
-      continue;
+        for (let k = j + 1; k < lines.length; k++) {
+          const nextTrimmed = lines[k].trim();
+          if (!nextTrimmed) continue;
+          const nextIndent = lines[k].match(/^(\s*)/)[1].length;
+          if (nextIndent <= baseIndent) { break; }
+          bodyLines.push(lines[k]);
+          endLine = k + 1;
+          i = k;
+        }
+
+        const { isStub, reason } = detectStubStatus(bodyLines.join('\n'));
+        symbols.push({
+          name,
+          kind: 'function',
+          startLine,
+          endLine,
+          signature: stmt.split(':')[0].trim(),
+          status: isStub ? 'STUB' : 'DONE',
+          stubReason: reason,
+          isExported: !name.startsWith('_')
+        });
+        continue;
+      }
     }
   }
 
@@ -479,6 +508,30 @@ function parseDartSymbols(content, relPath) {
         isExported: !name.startsWith('_')
       });
       continue;
+    }
+
+    // Function / Method / Widget
+    if (/[A-Za-z0-9_$<>]+\s+([A-Za-z0-9_$]+)\s*\([^)]*\)\s*(\{|=>)/.test(trimmed)) {
+      const fnMatch = trimmed.match(/[A-Za-z0-9_$<>]+\s+([A-Za-z0-9_$]+)\s*\(/);
+      if (fnMatch && !['if', 'while', 'for', 'switch', 'catch'].includes(fnMatch[1])) {
+        const name = fnMatch[1];
+        const startLine = lineNum;
+        const { endLine, nextIndex, bodyText } = findBraceBlockEnd(lines, i);
+        const { isStub, reason } = detectStubStatus(bodyText);
+
+        symbols.push({
+          name,
+          kind: 'function',
+          startLine,
+          endLine,
+          signature: trimmed.split('{')[0].trim(),
+          status: isStub ? 'STUB' : 'DONE',
+          stubReason: reason,
+          isExported: !name.startsWith('_')
+        });
+        i = nextIndex;
+        continue;
+      }
     }
   }
 

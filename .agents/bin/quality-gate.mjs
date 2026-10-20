@@ -811,33 +811,9 @@ async function checkJava(rootDir) {
 }
 
 // -----------------------------------------------------------------------------
-// CLI Runner
+// Core Quality Gate Verification Pipeline
 // -----------------------------------------------------------------------------
-export async function runQualityGate(args = process.argv.slice(2)) {
-  ensureExecDir();
-  let isJsonOnly = false;
-  let customReportPath = null;
-  const rootDir = process.cwd();
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === '--json') {
-      isJsonOnly = true;
-    } else if (arg === '--report' || arg === '-r') {
-      customReportPath = args[++i];
-    } else if (arg === '--help' || arg === '-h') {
-      console.log(`
-Usage: node .agents/bin/quality-gate.mjs [options]
-
-Options:
-  --json             Output raw JSON report to stdout
-  -r, --report <p>   Custom report output path (default: .agent_execution/state/quality-gate-report.json)
-  -h, --help         Show this help message
-`);
-      process.exit(0);
-    }
-  }
-
+export async function executeQualityGateChecks(rootDir = process.cwd(), customReportPath = null) {
   const [
     conflictCheck,
     tsCheck,
@@ -874,7 +850,6 @@ Options:
   const allErrors = checks.flatMap((c) => c.errors);
   const passed = allErrors.length === 0;
 
-  // Extract unique failed files
   const failedFilesSet = new Set();
   for (const err of allErrors) {
     if (err.file) failedFilesSet.add(err.file);
@@ -894,7 +869,6 @@ Options:
     checks
   };
 
-  // Atomic write report to .agent_execution/state/quality-gate-report.json
   const defaultReportPath = QUALITY_GATE_REPORT_PATH;
   const targetReportPath = customReportPath ? path.resolve(rootDir, customReportPath) : defaultReportPath;
   const reportDir = path.dirname(targetReportPath);
@@ -912,6 +886,39 @@ Options:
     fs.unlinkSync(tmpReportPath);
   }
 
+  return { report, targetReportPath, passed };
+}
+
+// -----------------------------------------------------------------------------
+// CLI Runner
+// -----------------------------------------------------------------------------
+export async function runQualityGate(args = process.argv.slice(2)) {
+  ensureExecDir();
+  let isJsonOnly = false;
+  let customReportPath = null;
+  const rootDir = process.cwd();
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--json') {
+      isJsonOnly = true;
+    } else if (arg === '--report' || arg === '-r') {
+      customReportPath = args[++i];
+    } else if (arg === '--help' || arg === '-h') {
+      console.log(`
+Usage: node .agents/bin/quality-gate.mjs [options]
+
+Options:
+  --json             Output raw JSON report to stdout
+  -r, --report <p>   Custom report output path (default: .agent_execution/state/quality-gate-report.json)
+  -h, --help         Show this help message
+`);
+      process.exit(0);
+    }
+  }
+
+  const { report, targetReportPath, passed } = await executeQualityGateChecks(rootDir, customReportPath);
+
   if (isJsonOnly) {
     process.stdout.write(JSON.stringify(report, null, 2) + '\n');
   } else {
@@ -924,7 +931,7 @@ Options:
 
     if (!passed) {
       console.log('\nFailed Checks & Violations:');
-      for (const check of checks) {
+      for (const check of report.checks) {
         if (!check.passed) {
           console.log(`\n  ✖ [${check.name}]`);
           for (const err of check.errors) {

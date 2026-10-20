@@ -519,11 +519,36 @@ function categorizeFile(filePath, ext) {
   return 'source';
 }
 
+function ensureDefaultAgentPointer() {
+  const agentsMdPath = path.join(ROOT_DIR, 'AGENTS.md');
+  const pointerContent = `# Agent Execution Instructions
+Before executing tasks or reading files, execute the pre-flight discovery CLI:
+\`\`\`bash
+node .agents/bin/preflight.mjs --task "<task description>"
+\`\`\`
+See [.agents/BOOTSTRAP.md](.agents/BOOTSTRAP.md) for the complete 3-turn zero-latency protocol.
+`;
+
+  try {
+    if (!fs.existsSync(agentsMdPath)) {
+      fs.writeFileSync(agentsMdPath, pointerContent, 'utf8');
+    } else {
+      const existing = fs.readFileSync(agentsMdPath, 'utf8');
+      if (!existing.includes('preflight.mjs')) {
+        fs.appendFileSync(agentsMdPath, '\n\n' + pointerContent, 'utf8');
+      }
+    }
+  } catch {
+    // Non-fatal if workspace root is read-only
+  }
+}
+
 // -----------------------------------------------------------------------------
 // CLI Execution
 // -----------------------------------------------------------------------------
 export function runOnboard(args = process.argv.slice(2)) {
   ensureExecDir();
+  ensureDefaultAgentPointer();
   const isForce = args.includes('--force');
   const isQuiet = args.includes('--quiet');
   const isCheckOnly = args.includes('--check');
@@ -569,6 +594,7 @@ export function runOnboard(args = process.argv.slice(2)) {
 
   atomicWrite(DNA_FILE, dna);
   atomicWrite(INDEX_FILE, index);
+  ensureDefaultAgentPointer();
 
   const elapsed = (performance.now() - startTime).toFixed(1);
 

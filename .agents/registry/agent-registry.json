@@ -1,13 +1,18 @@
 {
   "companyName": "AgenticDev: Autonomous AI Software Company",
-  "version": "5.0.0",
-  "architecture": "Neural Orchestra v5 (Deterministic Control Plane + 8 Macro Vertical Engineers + Contract-First AST Context)",
-  "lastUpdated": "2026-10-19",
+  "version": "5.3.0",
+  "architecture": "Neural Orchestra v5.3 (Deterministic Preflight/Postflight CLI + 8 Macro Vertical Engineers + JIT Micro-Shards)",
+  "lastUpdated": "2026-10-20",
   "totalAgents": 9,
   "controlPlane": {
-    "extractSkeleton": ".agents/bin/extract-skeleton.mjs",
+    "preflight": ".agents/bin/preflight.mjs",
+    "postflight": ".agents/bin/postflight.mjs",
+    "codeQuery": ".agents/bin/code-query.mjs",
     "qualityGate": ".agents/bin/quality-gate.mjs",
-    "orchestraState": ".agents/bin/orchestra-state.mjs"
+    "orchestraState": ".agents/bin/orchestra-state.mjs",
+    "symbolIndexer": ".agents/bin/symbol-indexer.mjs",
+    "skillLoader": ".agents/bin/skill-loader.mjs",
+    "onboardProject": ".agents/bin/onboard-project.mjs"
   },
   "agents": [
     {
@@ -28,6 +33,9 @@
       "can_delegate": true,
       "skills": [
         "software-project-management"
+      ],
+      "shards": [
+        ".agents/skills/shards/arch-intake-scope.md"
       ],
       "description": "The ultra-thin Supreme Director of Neural Orchestra v5 — the single user-facing entry point. Classifies intent, drives the deterministic control plane (.agents/bin/), dispatches to 8 Macro Vertical Engineers, and handles user escalation relays."
     },
@@ -53,9 +61,9 @@
         "api-design",
         "software-project-management"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/architecture/code-contracts.md",
-        ".agents/skills/sub-roles/architecture/intake-interview.md"
+      "shards": [
+        ".agents/skills/shards/arch-contracts-design.md",
+        ".agents/skills/shards/arch-intake-scope.md"
       ],
       "description": "Principal Architect of Neural Orchestra v5. Conducts intake and produces executable code contracts (contracts.ts, Zod schemas, OpenAPI specs, Prisma schemas) and bootstraps project scaffolding."
     },
@@ -84,13 +92,13 @@
         "typescript-patterns",
         "localization"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/frontend/ui-components.md",
-        ".agents/skills/sub-roles/frontend/state-management.md",
-        ".agents/skills/sub-roles/frontend/routing.md",
-        ".agents/skills/sub-roles/frontend/api-integration.md",
-        ".agents/skills/sub-roles/frontend/accessibility.md",
-        ".agents/skills/sub-roles/frontend/performance.md"
+      "shards": [
+        ".agents/skills/shards/fe-component-ui.md",
+        ".agents/skills/shards/ui-anti-vibecode.md",
+        ".agents/skills/shards/fe-state-data.md",
+        ".agents/skills/shards/fe-routing-nav.md",
+        ".agents/skills/shards/fe-a11y-perf.md",
+        ".agents/skills/shards/fe-i18n-rtl.md"
       ],
       "description": "Fullstack Frontend Engineer of Neural Orchestra v5. Owns complete UI vertical slices end-to-end: UI/UX visual craft, accessible components, client state management, client-side routing, API client integration, and unit tests."
     },
@@ -119,13 +127,13 @@
         "security-review",
         "analytics-tracking"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/backend/api-routes.md",
-        ".agents/skills/sub-roles/backend/auth-rbac.md",
-        ".agents/skills/sub-roles/backend/business-logic.md",
-        ".agents/skills/sub-roles/backend/data-access.md",
-        ".agents/skills/sub-roles/backend/error-handling.md",
-        ".agents/skills/sub-roles/backend/analytics.md"
+      "shards": [
+        ".agents/skills/shards/be-api-validation.md",
+        ".agents/skills/shards/be-auth-security.md",
+        ".agents/skills/shards/be-business-logic.md",
+        ".agents/skills/shards/be-data-access.md",
+        ".agents/skills/shards/be-caching-ratelimit.md",
+        ".agents/skills/shards/be-analytics-events.md"
       ],
       "description": "Fullstack Backend Engineer of Neural Orchestra v5. Owns complete backend vertical slices end-to-end: REST/GraphQL route controllers, authentication/RBAC middleware, domain business services, data access layer, caching, rate limiting, and backend unit tests."
     },
@@ -148,11 +156,11 @@
       "skills": [
         "database-engineering"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/data/schema-design.md",
-        ".agents/skills/sub-roles/data/migrations.md",
-        ".agents/skills/sub-roles/data/seed-data.md",
-        ".agents/skills/sub-roles/data/query-optimization.md"
+      "shards": [
+        ".agents/skills/shards/db-schema-indexing.md",
+        ".agents/skills/shards/db-migrations.md",
+        ".agents/skills/shards/db-seed-fixtures.md",
+        ".agents/skills/shards/db-query-tuning.md"
       ],
       "description": "Data Platform Engineer of Neural Orchestra v5. Owns database schema design, migrations (UP/DOWN), indexing strategies, representative seed data generation, and query performance optimization."
     },
@@ -176,10 +184,10 @@
       "skills": [
         "ai-ml-engineering"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/ai/llm-config.md",
-        ".agents/skills/sub-roles/ai/rag-pipeline.md",
-        ".agents/skills/sub-roles/ai/vector-database.md"
+      "shards": [
+        ".agents/skills/shards/ai-llm-config.md",
+        ".agents/skills/shards/ai-rag-retrieval.md",
+        ".agents/skills/shards/ai-vector-indexing.md"
       ],
       "description": "AI & RAG Engineer of Neural Orchestra v5. Owns LLM provider integrations, structured generation, RAG document pipelines, semantic chunking, vector database indexing, and reranking systems."
     },
@@ -205,10 +213,10 @@
         "mobile-notifications",
         "localization"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/mobile/mobile-screens.md",
-        ".agents/skills/sub-roles/mobile/push-notifications.md",
-        ".agents/skills/sub-roles/mobile/offline-storage.md"
+      "shards": [
+        ".agents/skills/shards/mobile-screens-ux.md",
+        ".agents/skills/shards/mobile-push-fcm.md",
+        ".agents/skills/shards/mobile-offline-sync.md"
       ],
       "description": "Mobile Engineer of Neural Orchestra v5. Owns Flutter and React Native cross-platform applications, touch-optimized screens, mobile state management, offline local storage, push notifications (FCM/APNs), and platform channels."
     },
@@ -235,12 +243,11 @@
         "code-review",
         "load-testing"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/qa/e2e-browser-testing.md",
-        ".agents/skills/sub-roles/qa/security-audit.md",
-        ".agents/skills/sub-roles/qa/code-review.md",
-        ".agents/skills/sub-roles/qa/stress-load-testing.md",
-        ".agents/skills/sub-roles/qa/integration-contract-testing.md"
+      "shards": [
+        ".agents/skills/shards/qa-code-review.md",
+        ".agents/skills/shards/qa-security-audit.md",
+        ".agents/skills/shards/qa-e2e-playwright.md",
+        ".agents/skills/shards/qa-load-stress.md"
       ],
       "description": "QA & Security Verifier of Neural Orchestra v5. Triggered ONLY after .agents/bin/quality-gate.mjs passes compiler and linter checks. Executes E2E journeys, integration tests, security audits, load testing, and rigorous git diff review against business requirements."
     },
@@ -266,11 +273,11 @@
         "observability",
         "git-integration"
       ],
-      "subRoles": [
-        ".agents/skills/sub-roles/devops/docker-containers.md",
-        ".agents/skills/sub-roles/devops/ci-cd-pipelines.md",
-        ".agents/skills/sub-roles/devops/observability.md",
-        ".agents/skills/sub-roles/devops/release-notes.md"
+      "shards": [
+        ".agents/skills/shards/devops-docker-builds.md",
+        ".agents/skills/shards/devops-ci-pipelines.md",
+        ".agents/skills/shards/devops-observability.md",
+        ".agents/skills/shards/devops-release-semver.md"
       ],
       "description": "DevOps & Release Engineer of Neural Orchestra v5. Owns Docker containerization, CI/CD automation pipelines, production observability instrumentation (Pino logs, Sentry, Prometheus metrics), health probes, semantic versioning, and release packaging."
     }

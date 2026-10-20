@@ -21,7 +21,7 @@
         "context-skeleton.d.ts"
       ],
       "hardGate": true,
-      "instructions": "Run node .agents/bin/extract-skeleton.mjs <target-files> to extract exact type signatures without loading implementation bloat. Isolate root cause."
+      "instructions": "Run node .agents/bin/preflight.mjs --file <target-files> (or node .agents/bin/code-query.mjs skeleton <target-files>) to extract exact type signatures without loading implementation bloat. Isolate root cause."
     },
     {
       "id": "phase_2_targeted_fix_execution",

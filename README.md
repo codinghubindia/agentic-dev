@@ -44,14 +44,15 @@ Neural Orchestra v5 completely refactors the multi-agent system from **58 horizo
 
 Instead of burning tokens on LLMs to read/write JSON states, the control plane executes deterministically in pure Node.js:
 
-### 1. `extract-skeleton.mjs` (Context-Manager & Codebase-Onboarder Replacement)
-- **Path**: [`.agents/bin/extract-skeleton.mjs`](file:///C:/Users/maxxc/Desktop/agenticdev/.agents/bin/extract-skeleton.mjs)
-- **Languages**: `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.dart`
-- **Functionality**: Strips implementation bodies while preserving 100% accurate `import`/`export` statements, `interface` definitions, `type` aliases, `enum` declarations, `zod` schemas (`z.object(...)`), class hierarchies, and function/method signatures with return types.
+### 1. `preflight.mjs` & `code-query.mjs` (Unified Discovery & AST Skeletons)
+- **Path**: [`.agents/bin/preflight.mjs`](file:///C:/Users/maxxc/Desktop/agenticdev/.agents/bin/preflight.mjs), [`.agents/bin/code-query.mjs`](file:///C:/Users/maxxc/Desktop/agenticdev/.agents/bin/code-query.mjs)
+- **Languages**: `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.dart`, `.rs`, `.c`, `.cpp`, `.cs`, `.java`, `.go`
+- **Functionality**: `preflight.mjs` executes incremental onboarding, multi-language AST indexing, and micro-skill shard loading in <40ms. Skeletons can be generated on demand via `code-query.mjs skeleton`.
 - **Efficiency**: Generates [`context-skeleton.d.ts`](file:///C:/Users/maxxc/Desktop/agenticdev/context-skeleton.d.ts), achieving **~85% to 97% token reduction** with zero hallucination.
 
 ```bash
-node .agents/bin/extract-skeleton.mjs src/
+node .agents/bin/preflight.mjs --task "implement user auth"
+node .agents/bin/code-query.mjs skeleton src/
 ```
 
 ### 2. `quality-gate.mjs` (Quality-Manager & Conflict-Resolver Replacement)
@@ -125,8 +126,9 @@ flowchart TD
     USER((User)) <--> C[conductor\nSupreme Director]
 
     subgraph ControlPlane [Deterministic CLI Control Plane .agents/bin/]
-        ES[extract-skeleton.mjs\nAST-lite Type Extractor]
-        QG[quality-gate.mjs\nShift-Left Static Gate]
+        PF[preflight.mjs\nUnified JIT Context & Skills]
+        CQ[code-query.mjs\nSurgical AST & Skeletons]
+        QG[postflight.mjs\nRe-Index & Quality Gate]
         OS[orchestra-state.mjs\nState & Memory Manager]
     end
 

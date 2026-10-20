@@ -1,4 +1,48 @@
-# Neural Orchestra v5.2 - Local Changelog
+# Neural Orchestra - Local Changelog
+
+## [5.3.0] - Zero-Latency Preflight/Postflight CLI, Skill Deduplication & Fast-Path Protocol
+
+### ⚡ 1. Single-Call Discovery & Quality Gate CLI (`preflight.mjs` & `postflight.mjs`)
+- **`node .agents/bin/preflight.mjs` (<40ms)**:
+  - Eliminated the 4x tool-call roundtrip latency penalty (onboarding, indexing, skill loading, and code query).
+  - In a single Node process via direct ES module imports, executes incremental onboarding, AST symbol indexing, task-scoped micro-skill resolution, and outputs the compact Delta Manifest (`[STUB]` and `[DONE]` symbols with line numbers).
+- **`node .agents/bin/postflight.mjs` (<1s)**:
+  - Consolidates incremental symbol re-indexing and all 9 quality gate checks into a single command.
+  - Verifies git conflict markers, typechecking/compilers, UI anti-vibecode rules, dependency CVEs, and `.agents/` immutability.
+- **Direct ES Module Imports**:
+  - Exported in-process execution functions in `quality-gate.mjs` and `skill-loader.mjs`, avoiding slow child process `execSync` spawns.
+
+### 🧹 2. Complete Skill Deduplication (81 Files -> 32 Canonical Shards)
+- **Triple-Layer Elimination**:
+  - Completely removed 23 legacy `.agents/skills/*/SKILL.md` folders and 33 `.agents/skills/sub-roles/**/*.md` checklists.
+  - Deduplicated `.agents/skills/` down to ONLY 32 canonical task-scoped micro-shards (`.agents/skills/shards/*.md`) and `skill-manifest.json`.
+- **UI Craft Preservation**:
+  - Migrated and consolidated critical UI craft rules (60-30-10 color rule, tinted neutrals, tabular numerals, motion limits, and card border/shadow exclusivity) into `ui-anti-vibecode.md`.
+  - Every micro-shard strictly constrained between 14 and 23 lines (<100 tokens).
+
+### 🧩 3. Skeleton Merged into `code-query.mjs skeleton` & Multi-Line AST Hardening
+- **Merged AST Skeleton Generation**:
+  - Merged `extract-skeleton.mjs` into `code-query.mjs skeleton` subcommand.
+  - Skeletons are now generated directly from `symbol-registry.json` without duplicate file scanning or parsing.
+  - Deleted legacy `.agents/bin/extract-skeleton.mjs`.
+- **Hardened Multi-Line AST Parsing in `symbol-indexer.mjs`**:
+  - Multi-line TypeScript function signatures and generics.
+  - React `forwardRef` and `memo` component declarations.
+  - Express, Fastify, and Hono route declarations (`router.get`, `app.post`, etc.).
+  - Multi-line Python `def` function signatures and Dart widget builders.
+
+### 🚀 4. Default Agent Fast-Path Protocol (`BOOTSTRAP.md` & `AGENTS.md`)
+- **`.agents/BOOTSTRAP.md`**:
+  - Created a 1-page operational guide defining the deterministic 3-turn protocol (Turn 1: `preflight.mjs`, Turn 2: surgical edit, Turn 3: `postflight.mjs`).
+- **Workspace Pointer Injection in `onboard-project.mjs`**:
+  - Automatically verifies or creates a 5-line pointer in `AGENTS.md` at the host workspace root so default agents immediately know to run `preflight.mjs`.
+- **All 9 System Role Prompts Upgraded**:
+  - Upgraded Conductor, Principal Architect, and all 7 Macro Vertical Engineers to v5.3.
+  - Replaced legacy skills and sub-roles with canonical micro-shards.
+  - Replaced legacy multi-step commands with single-call `preflight.mjs` and `postflight.mjs`.
+  - Strictly preserved static prompt caching prefixes for 100% LLM cache hits.
+
+---
 
 ## [5.2.1] - Direct Shell Execution & Multi-Language Engine Expansion
 

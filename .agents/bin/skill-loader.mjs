@@ -15,8 +15,8 @@ import {
 
 const MANIFEST_FILE = SKILL_MANIFEST_PATH;
 
-function parseArgs() {
-  const args = process.argv.slice(2);
+function parseArgs(rawArgs = process.argv.slice(2)) {
+  const args = rawArgs;
   const options = {
     task: '',
     file: '',
@@ -46,14 +46,14 @@ function parseArgs() {
   return options;
 }
 
-function loadManifest() {
+export function loadManifest() {
   if (!fs.existsSync(MANIFEST_FILE)) {
     throw new Error(`Skill manifest not found at ${MANIFEST_FILE}`);
   }
   return JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf-8'));
 }
 
-function resolveShards(manifest, options) {
+export function resolveShards(manifest, options) {
   const matchedShards = new Set();
 
   // 1. Match task intent
@@ -118,9 +118,22 @@ function listAvailableShards() {
   }
 }
 
-function main() {
+export function getShardContents(shardNames) {
+  const contents = [];
+  for (const shardName of shardNames) {
+    const shardPath = path.resolve(SHARDS_DIR, shardName);
+    if (fs.existsSync(shardPath)) {
+      contents.push(fs.readFileSync(shardPath, 'utf-8').trim());
+    } else {
+      contents.push(`<!-- Warning: shard ${shardName} not found -->`);
+    }
+  }
+  return contents;
+}
+
+export function runSkillLoader(args = process.argv.slice(2)) {
   const startTime = Date.now();
-  const options = parseArgs();
+  const options = parseArgs(args);
 
   if (options.list) {
     listAvailableShards();
@@ -131,7 +144,6 @@ function main() {
   const selectedShards = resolveShards(manifest, options);
 
   if (selectedShards.length === 0) {
-    // If still empty, fall back to conductor intake
     selectedShards.push('arch-intake-scope.md');
   }
 
@@ -149,17 +161,10 @@ function main() {
     return;
   }
 
-  const contents = [];
-  for (const shardName of selectedShards) {
-    const shardPath = path.resolve(SHARDS_DIR, shardName);
-    if (fs.existsSync(shardPath)) {
-      contents.push(fs.readFileSync(shardPath, 'utf-8').trim());
-    } else {
-      contents.push(`<!-- Warning: shard ${shardName} not found -->`);
-    }
-  }
-
+  const contents = getShardContents(selectedShards);
   console.log(contents.join('\n\n---\n\n'));
 }
 
-main();
+if (process.argv[1] && process.argv[1].endsWith('skill-loader.mjs')) {
+  runSkillLoader();
+}
